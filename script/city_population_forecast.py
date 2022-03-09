@@ -7,6 +7,7 @@ import iteround
 import warnings
 warnings.filterwarnings("ignore")
 
+
 def replace_nan(df):
     df.index = range(101)
     # Заполнение пропусков средним значением в строке
@@ -68,7 +69,7 @@ def main(path):
 
     # Чтение данных из таблицы Excel
     # ----
-    period_city_total = pd.read_excel(r'./Input_data/'
+    period_city_total = pd.read_excel(r'./population_model/script/Input_data/'
                                       r'report_17 Jun 2021 08_52_44 GMT(old_excel).xls', skiprows=5,
                                       usecols='A,B,R:CR,CT:DN')
     df = period_city_total
