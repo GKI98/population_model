@@ -33,6 +33,11 @@ def del_tmp_files(path='') -> None:
     os.remove(f'{path}adm_age_sex_df.csv')
     os.remove(f'{path}mun_soc_allages_sum.csv')
 
+    folder_path = './population_model'
+    if os.path.exists(folder_path) and os.path.exists(f'{folder_path}/.idea'):
+        os.rmdir(folder_path)
+
+
 
 def make_calc(args, path='', year=2023, city_id=1, set_population=0):
     city_population_forecast.main(path=path)
