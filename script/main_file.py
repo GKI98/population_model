@@ -1,5 +1,6 @@
 # last
 import os
+import shutil
 
 import city_population_forecast
 import changes_forecast_coef
@@ -35,8 +36,7 @@ def del_tmp_files(path='') -> None:
 
     folder_path = './population_model'
     if os.path.exists(folder_path) and os.path.exists(f'{folder_path}/.idea'):
-        os.rmdir(folder_path)
-
+        shutil.rmtree(folder_path)
 
 
 def make_calc(args, path='', year=2023, city_id=1, set_population=0):
