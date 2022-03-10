@@ -30,7 +30,7 @@ def main(args, df):
 
     conn = Properties.connect(db_addr, db_port, db_name, db_user, db_pass)
 
-    if args.to_db:
+    if args.update_in_db:
         with conn, conn.cursor() as cur:
             create_table_houses_soc_age = \
                 '''
