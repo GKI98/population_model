@@ -2,11 +2,12 @@
 
 import iteround
 import pandas as pd
+import push_to_db
 
 
 # Распределить жителей домов (по соц. группам) по возрастам (0-100)
 # и сохранить локально
-def houses_soc_to_ages(houses_soc, mun_soc, path):
+def houses_soc_to_ages(args, houses_soc, mun_soc, path):
     print('В процессе: распределение жителей домов (по соц. группам) по возрастам')
 
     soc_list = set(houses_soc['social_group_id'])
@@ -40,13 +41,15 @@ def houses_soc_to_ages(houses_soc, mun_soc, path):
     df['women'] = women_list_tmp
 
     df = df.drop('mun_percent', axis=1)
+    push_to_db.main(args, df)
 
     # print(df)
+    # df.to_csv(f'{path}houses_soc_age.csv', index=False, header=True)
 
-    df.to_csv(f'{path}houses_soc_age.csv', index=False, header=True)
+    return df
 
 
-def main(path=''):
+def main(args, path=''):
     pd.set_option('display.max_rows', 10)
     pd.set_option('display.max_columns', 20)
 
@@ -55,7 +58,8 @@ def main(path=''):
     houses_soc = houses_soc.drop(['house_total_soc', 'house_men_soc', 'house_women_soc'], axis=1)
     mun_soc = pd.read_csv(f'{path}mun_soc.csv')
 
-    houses_soc_to_ages(houses_soc, mun_soc, path)
+    df = houses_soc_to_ages(args, houses_soc, mun_soc, path)
+    return df
 
 
 if __name__ == '__main__':

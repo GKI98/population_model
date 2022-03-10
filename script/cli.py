@@ -7,10 +7,10 @@ def main():
 
     # Group_1 "Connection to DB"
     parser_conn = parser.add_argument_group(title='Connection options')
-    parser_conn.add_argument('-db-addr', nargs='?', const=0, default='10.32.1.62', type=str.lower)
+    parser_conn.add_argument('-db-addr', nargs='?', const=0, default='127.0.0.1', type=str.lower)
     parser_conn.add_argument('-db-port', nargs='?', const=0, default=5432, type=int)
     parser_conn.add_argument('-db-name', nargs='?', const=0, default='city_db_final', type=str.lower)
-    parser_conn.add_argument('-db-user', nargs='?', const=0, default='postgres', type=str.lower)
+    parser_conn.add_argument('-db-user', nargs='?', const=0, default='gk', type=str.lower)
     parser_conn.add_argument('-db-pass', nargs='?', const=0, default='postgres', type=str.lower)
 
     # Group_2 "Data args"
@@ -21,6 +21,9 @@ def main():
                                   help='Задать число жителей в год прогнозирования (суммарно по городу)')
     parser_data_info.add_argument('--path', nargs='?', const=0, default='./Output_data/', type=str,
                                   help='Папка сохранения')
+    parser_data_info.add_argument('--update_in_db', default=False,
+                                  help='Update buildings.resident_number in database')
+
 
     args = parser.parse_args()
     main_file.main(args)

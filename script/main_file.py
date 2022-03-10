@@ -5,11 +5,10 @@ import shutil
 import city_population_forecast
 import changes_forecast_coef
 import process_data
-import houses_to_ages
+import houses_soc_age
 import houses_soc
 import balance_houses
-
-# import cli
+import push_to_db
 
 
 def check_dir_existence(dir_path='./Output_data') -> None:
@@ -45,7 +44,8 @@ def make_calc(args, path='', year=2023, city_id=1, set_population=0):
     process_data.main(year=year, city_id=city_id, path=path, set_population=set_population, args=args)
     balance_houses.main(args, path=path)
     houses_soc.main(path=path)
-    houses_to_ages.main(path=path)
+    df = houses_soc_age.main(args=args, path=path)
+    push_to_db.main(args=args, df=df)
 
 
 def main(args):
