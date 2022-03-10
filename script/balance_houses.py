@@ -40,6 +40,7 @@ def forecast_house_population(args):
 # Сбалансировать вероятное кол-во жителей в домике
 # и сохранить локально
 def balance_houses_population(houses_df_upd, path) -> None:
+    # path = '/home/gk/code/tmppycharm/ifmo_1/script/data/'
     mun_age_sex_df = pd.read_csv(f'{path}mun_age_sex_df.csv')
 
     mun_list = set(houses_df_upd['municipality_id'])

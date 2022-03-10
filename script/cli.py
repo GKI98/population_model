@@ -19,7 +19,8 @@ def main():
     parser_data_info.add_argument('-city_id', nargs='?', const=0, default=1, type=int, help='Город')
     parser_data_info.add_argument('--set_population', nargs='?', const=0, default=0, type=int,
                                   help='Задать число жителей в год прогнозирования (суммарно по городу)')
-    parser_data_info.add_argument('--path', nargs='?', const=0, default='./Output_data/', type=str, help='Папка сохранения')
+    parser_data_info.add_argument('--path', nargs='?', const=0, default='./Output_data/', type=str,
+                                  help='Папка сохранения')
 
     args = parser.parse_args()
     main_file.main(args)
