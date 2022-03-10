@@ -49,9 +49,9 @@ def houses_to_soc(houses_bal, mun_soc_allages_sum, path) -> None:
     houses_soc['house_women_soc'] = women_list_tmp
 
     houses_soc = houses_soc.sort_values(by='municipality_id')
-    houses_soc = houses_soc.drop(['total_mun_soc_sum', 'men_mun_soc_sum', 'women_mun_soc_sum',
-                                  'resident_number'], axis=1)
-    houses_soc = houses_soc.rename(columns={"citizens_reg_bal": "resident_number"})
+    houses_soc = houses_soc.drop(['total_mun_soc_sum', 'men_mun_soc_sum', 'women_mun_soc_sum'], axis=1)
+    # 'resident_number'
+    # houses_soc = houses_soc.rename(columns={"citizens_reg_bal": "resident_number"})
 
     print('\nhouses_soc:\n', houses_soc)
 

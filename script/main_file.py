@@ -24,7 +24,7 @@ def check_dir_existence(dir_path='./Output_data') -> None:
 
 
 def del_tmp_files(path='') -> None:
-    os.remove(f'{path}houses_bal.csv')
+    # os.remove(f'{path}houses_bal.csv')
     os.remove(f'{path}changes_forecast.csv')
     os.remove(f'{path}city_forecast_years_age_ratio.csv')
     os.remove(f'{path}city_population_forecast.csv')
@@ -39,8 +39,8 @@ def make_calc(args, path='', year=2023, city_id=1, set_population=0):
     changes_forecast_coef.main(path=path)
     process_data.main(year=year, city_id=city_id, path=path, set_population=set_population, args=args)
     balance_houses.main(args, path=path)
-    houses_soc.main(path=path)
-    houses_to_ages.main(path=path)
+    # houses_soc.main(path=path)
+    # houses_to_ages.main(path=path)
 
 
 def main(args):
