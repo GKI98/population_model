@@ -63,4 +63,4 @@ def main(args, path=''):
 
 
 if __name__ == '__main__':
-    main()
+    pass
