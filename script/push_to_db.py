@@ -39,7 +39,7 @@ def create_mun_soc_age(args, table_name='mun_soc_age'):
         men float,
         women float,
         total float
-        )
+        );
         '''
     push_db(args, df, table_name, sql)
 
