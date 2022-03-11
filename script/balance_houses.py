@@ -45,9 +45,9 @@ def balance_houses_population(houses_df_upd, path) -> None:
 
     mun_list = set(houses_df_upd['municipality_id'])
     # Минимальное значение, до которого может сокращаться населения в доме при балансировке, кол-во человек
-    balancing_min = 10
+    balancing_min = 3
     # Точность балансировки, кол-во человек
-    accuracy = 5
+    accuracy = 1
     counter = 0
     df_mkd_balanced_mo = pd.DataFrame()
     sex = 'total'
@@ -90,13 +90,15 @@ def balance_houses_population(houses_df_upd, path) -> None:
             while citizens_mo_reg_bal < citizens_mo_bal:
                 df_mkd_mo_not_f = df_mkd_mo[df_mkd_mo['citizens_reg_bal'] > balancing_min]
 
-                # try:
-                the_house = (df_mkd_mo_not_f['max_population'] - df_mkd_mo_not_f['citizens_reg_bal']).idxmin()
-                # Вычитаем жителей из "сбалансированной численности" этого дома
-                df_mkd_mo.at[the_house, 'citizens_reg_bal'] = df_mkd_mo.at[
+                try:
+                    the_house = (df_mkd_mo_not_f['max_population'] - df_mkd_mo_not_f['citizens_reg_bal']).idxmin()
+                    # Вычитаем жителей из "сбалансированной численности" этого дома
+                    df_mkd_mo.at[the_house, 'citizens_reg_bal'] = df_mkd_mo.at[
                                                                       the_house, 'citizens_reg_bal'] - accuracy
-                # except ValueError as e:
-                #     pass
+                except ValueError as e:
+                    print('Численность по МУН меньше, чем минимальное распределение по домикам в этом МУН')
+                    print('Необходимо уменьшить минимальную численность населения для каждого домика')
+                    raise e
 
                 # Ищем новое значение сбалансированной численности для МО
                 citizens_mo_bal = df_mkd_mo['citizens_reg_bal'].sum()
