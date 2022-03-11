@@ -24,18 +24,15 @@ def check_dir_existence(dir_path='./Output_data') -> None:
 
 
 def del_tmp_files(path='') -> None:
-    os.remove(f'{path}houses_bal.csv')
-    os.remove(f'{path}changes_forecast.csv')
-    os.remove(f'{path}city_forecast_years_age_ratio.csv')
-    os.remove(f'{path}city_population_forecast.csv')
-    os.remove(f'{path}houses_soc.csv')
-    os.remove(f'{path}mun_age_sex_df.csv')
-    os.remove(f'{path}adm_age_sex_df.csv')
-    os.remove(f'{path}mun_soc_allages_sum.csv')
+    folder_one_path = './population_model'
+    if os.path.exists(folder_one_path) and os.path.exists(f'{folder_one_path}/.idea'):
+        shutil.rmtree(folder_one_path)
 
-    folder_path = './population_model'
-    if os.path.exists(folder_path) and os.path.exists(f'{folder_path}/.idea'):
-        shutil.rmtree(folder_path)
+    folder_two_path = './Output_data'
+    if os.path.exists(folder_two_path):
+        shutil.rmtree(folder_two_path)
+
+
 
 
 def make_calc(args, path='', year=2023, city_id=1, set_population=0):
