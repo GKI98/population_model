@@ -1,10 +1,52 @@
 # 0
-
+import pandas as pd
 from sqlalchemy import create_engine
 from connect_db import Properties
 
 
-def main(args, df):
+def create_city_soc_age(args, df, table_name='city_soc_age'):
+    sql = \
+        f'''
+            CREATE TABLE {table_name}(
+            id int NOT NULL, 
+            municipality_id int NOT NULL, 
+            administrative_unit_id int NOT NULL,
+            living_area float,
+            document_population int,
+            failure bool,
+            max_population int,
+            prob_population int,
+            resident_number int,
+            social_group_id int, 
+            age int,
+            men float,
+            women float,
+            total float);
+            '''
+    push_db(args, df, table_name, sql)
+
+
+def create_mun_soc_age(args, table_name='mun_soc_age'):
+    df = pd.read_csv('./Output_data/mun_soc.csv')
+    df = df[['admin_unit_parent_id', 'municipality_id', 'age', 'social_group_id', 'men', 'women', 'total']]
+    sql = \
+        f'''
+        CREATE TABLE {table_name}(
+        admin_unit_parent_id int,
+        municipality_id int,
+        age int,
+        social_group_id int,
+        men float,
+        women float,
+        total float
+        )
+        '''
+    push_db(args, df, table_name, sql)
+
+    return
+
+
+def push_db(args, df, table_name, sql):
     db_addr = getattr(args, 'db_addr')
     db_port = getattr(args, 'db_port')
     db_name = getattr(args, 'db_name')
@@ -23,27 +65,7 @@ def main(args, df):
     cursor = conn1.cursor()
 
     # drop table if it already exists
-    cursor.execute('drop table if exists city_db_final')
-
-    sql = \
-        '''
-        CREATE TABLE houses_soc_age(
-        id int NOT NULL, 
-        municipality_id int NOT NULL, 
-        administrative_unit_id int NOT NULL,
-        living_area float,
-        document_population int,
-        failure bool,
-        max_population int,
-        prob_population int,
-        resident_number int,
-        social_group_id int, 
-        age int,
-        men float,
-        women float,
-        total float);
-        '''
-
+    cursor.execute(f'drop table if exists {table_name}')
     cursor.execute(sql)
 
     # import the csv file to create a dataframe
@@ -67,16 +89,19 @@ def main(args, df):
     # df = pd.DataFrame(data)
 
     # converting data to sql
-    df.to_sql('houses_soc_age', conn, if_exists='replace')
+    df.to_sql(f'{table_name}', conn, if_exists='replace')
 
     # fetching all rows
-    sql1 = '''select * from houses_soc_age;'''
+    sql1 = f'''select * from {table_name};'''
     cursor.execute(sql1)
-    # for i in cursor.fetchall():
-    #     print(i)
 
     conn1.commit()
     conn1.close()
+
+
+def main(args, df):
+    create_city_soc_age(args, df)
+    create_mun_soc_age(args)
 
 
 if __name__ == '__main__':

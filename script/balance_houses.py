@@ -45,9 +45,9 @@ def balance_houses_population(houses_df_upd, path) -> None:
 
     mun_list = set(houses_df_upd['municipality_id'])
     # Минимальное значение, до которого может сокращаться населения в доме при балансировке, кол-во человек
-    balancing_min = 3
+    balancing_min = 5
     # Точность балансировки, кол-во человек
-    accuracy = 1
+    accuracy = 5
     counter = 0
     df_mkd_balanced_mo = pd.DataFrame()
     sex = 'total'

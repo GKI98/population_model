@@ -92,6 +92,7 @@ def calc_mun_soc_age(mun_age_sex_df, soc_adm_age_sex_df, path) -> None:
     mun_soc.to_csv(f'{path}mun_soc.csv', index=False, header=True)
 
 
+
 # Посчитать суммарное кол-во по людей по соц.группам по АДМ
 def calc_adm_soc_sum(soc_list, adm_list, soc_adm_age_sex_df, year):
 

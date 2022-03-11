@@ -33,8 +33,6 @@ def del_tmp_files(path='') -> None:
         shutil.rmtree(folder_two_path)
 
 
-
-
 def make_calc(args, path='', year=2023, city_id=1, set_population=0):
     city_population_forecast.main(path=path)
     changes_forecast_coef.main(path=path)
