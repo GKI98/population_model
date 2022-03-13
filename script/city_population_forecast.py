@@ -109,7 +109,8 @@ def main(path):
         #    value = (df[2020 + i] * df3['coef'])
 
         # Это с пропусками в исходном датафрейме
-        df.iloc[1, 2020 + i] = df.iloc[1].median()
+        value_to_replace = df.iloc[1].median()
+        df.iloc[1, 2020 + i] = value_to_replace
 
         value = (df[2020 + i][:] * df3['coef'][:])
         value = iteround.saferound(value.values, 0)
