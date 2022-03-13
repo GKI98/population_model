@@ -2,10 +2,8 @@
 
 import iteround
 import pandas as pd
-# import warnings
 import changes_coef
 import get_data
-# warnings.filterwarnings("ignore")
 
 
 # Посчитать % коэф. жителей в возрасте и МУН
@@ -142,7 +140,7 @@ def calc_mun_sum(mun_list, mun_age_sex_df, adm_list, year):
                                      'men_adm_sum': [men_adm_sum], 'women_adm_sum': [women_adm_sum],
                                      'total_adm_sum': [total_adm_sum]})
 
-        adm_allages_sum = adm_allages_sum.append(df_to_insert, ignore_index=True)
+        adm_allages_sum = pd.concat([adm_allages_sum, df_to_insert], ignore_index=True)
 
     # Найти процент суммы по соц.группам в МУН от общего числа в АДМ
     mun_allages_percent = pd.DataFrame(columns=['year', 'admin_unit_parent_id', 'municipality_id',
@@ -164,7 +162,7 @@ def calc_mun_sum(mun_list, mun_age_sex_df, adm_list, year):
                                      'men_mun_ratio': [men_ratio], 'women_mun_ratio': [women_ratio]
                                      })
 
-        mun_allages_percent = mun_allages_percent.append(df_to_insert, ignore_index=True)
+        mun_allages_percent = pd.concat([mun_allages_percent, df_to_insert], ignore_index=True)
 
     return mun_allages_percent
 
@@ -201,7 +199,7 @@ def calc_mun_soc_sum(adm_list, soc_list, mun_allages_percent, adm_soc_sum, year,
                                              'men_mun_soc_sum': [men_mun_soc_sum],
                                              'women_mun_soc_sum': [women_mun_soc_sum]})
 
-                mun_soc_allages_sum = mun_soc_allages_sum.append(df_to_insert,
+                mun_soc_allages_sum = pd.concat([mun_soc_allages_sum, df_to_insert],
                                                                  ignore_index=True).sort_values(by='social_group_id')
 
     # Сбалансированное округление по соц.группам

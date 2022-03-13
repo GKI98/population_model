@@ -56,7 +56,7 @@ def balance_houses_population(houses_df_upd, path) -> None:
         df_mkd_mo = houses_df_upd.query(f'municipality_id == {mun}')
 
         # Сделать вероятные количества жителей в домах отправной точкой для расчета сбалансированных значений
-        df_mkd_mo['citizens_reg_bal'] = df_mkd_mo['prob_population']
+        df_mkd_mo['citizens_reg_bal'] = df_mkd_mo.loc('prob_population')
         citizens_mo_bal = df_mkd_mo['citizens_reg_bal'].sum()
 
         # Шаг балансировки
@@ -70,7 +70,6 @@ def balance_houses_population(houses_df_upd, path) -> None:
         # чем расчитанное вероятное количество жителей для этого МО,
         # то разница должна быть распределена между неаварийными домами МО
         if citizens_mo_reg_bal > citizens_mo_bal:
-            # print(citizens_mo_reg_bal, citizens_mo_bal)
             while citizens_mo_reg_bal > citizens_mo_bal:
                 df_mkd_mo_not_f = df_mkd_mo[df_mkd_mo['failure'] == 0]
                 # Находим индекс неаварийного дома с максимальной разницей между ОМЧ и ВЧ
@@ -84,7 +83,6 @@ def balance_houses_population(houses_df_upd, path) -> None:
         # Если количество жителей в МО после балансировки по району МЕНЬШЕ, чем расчитанное вероятное количество жителей для этого МО,
         # то разница должна быть вычтена из количества жителей домов, причем аварийные дома также участвуют в балансировке
         elif citizens_mo_reg_bal < citizens_mo_bal:
-            # print(citizens_mo_reg_bal, citizens_mo_bal)
             while citizens_mo_reg_bal < citizens_mo_bal:
                 df_mkd_mo_not_f = df_mkd_mo[df_mkd_mo['citizens_reg_bal'] > balancing_min]
 
@@ -102,7 +100,7 @@ def balance_houses_population(houses_df_upd, path) -> None:
                 citizens_mo_bal = df_mkd_mo['citizens_reg_bal'].sum()
                 i = i + 1
 
-        df_mkd_balanced_mo = df_mkd_balanced_mo.append(df_mkd_mo)
+        df_mkd_balanced_mo = pd.concat([df_mkd_balanced_mo, df_mkd_mo])
         counter += 1
         print('Конец балансировки для ', mun, ' \n')
         print('Выполнено шагов: ', i, '\n')

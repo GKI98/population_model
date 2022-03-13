@@ -4,8 +4,6 @@ import pandas as pd
 import numpy as np
 from statistics import mean
 import iteround
-import warnings
-# warnings.filterwarnings("ignore")
 
 
 def replace_nan(df):
