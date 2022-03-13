@@ -53,19 +53,15 @@ def houses_to_soc(houses_bal, mun_soc_allages_sum, path) -> None:
     houses_soc = houses_soc.rename(columns={"resident_number": "document_population"})
     houses_soc = houses_soc.rename(columns={"citizens_reg_bal": "resident_number"})
 
-    print('\nhouses_soc:\n', houses_soc)
-
-    houses_soc.to_csv(f'{path}houses_soc.csv', index=False, header=True)
+    houses_soc.to_csv(f'{path}/houses_soc.csv', index=False, header=True)
 
 
 def main(path=''):
     pd.set_option('display.max_rows', 10)
     pd.set_option('display.max_columns', 20)
 
-    # path = '/home/gk/code/tmppycharm/ifmo_1/script/data/'
-
-    houses_bal = pd.read_csv(f'{path}houses_bal.csv').drop(['Unnamed: 0'], axis=1)
-    mun_soc_allages_sum = pd.read_csv(f'{path}mun_soc_allages_sum.csv')
+    houses_bal = pd.read_csv(f'{path}/houses_bal.csv').drop(['Unnamed: 0'], axis=1)
+    mun_soc_allages_sum = pd.read_csv(f'{path}/mun_soc_allages_sum.csv')
 
     houses_to_soc(houses_bal, mun_soc_allages_sum, path)
 

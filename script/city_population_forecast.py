@@ -5,7 +5,7 @@ import numpy as np
 from statistics import mean
 import iteround
 import warnings
-warnings.filterwarnings("ignore")
+# warnings.filterwarnings("ignore")
 
 
 def replace_nan(df):
@@ -69,8 +69,8 @@ def main(path):
 
     # Чтение данных из таблицы Excel
     # ----
-    period_city_total = pd.read_excel(r'./population_model/script/Input_data/'
-                                      r'report_17 Jun 2021 08_52_44 GMT(old_excel).xls', skiprows=5,
+    period_city_total = pd.read_excel(io='./population_model/script/Input_data/'
+                                      'report_17 Jun 2021 08_52_44 GMT(old_excel).xls', skiprows=5,
                                       usecols='A,B,R:CR,CT:DN')
     df = period_city_total
     # ----
@@ -94,7 +94,6 @@ def main(path):
     # Тут я немного корректирую значение для 100 т.к. оно каждый раз увеличивалось в 2 раза
     # вероятно из-за кривых данных
     df3.at[100] = df3.loc[99] / 2
-    # print('Таблица коэффициентов дожития', df3['coef'])
 
     # Прогноз на кол-во лет
     years_forecast = 10
@@ -117,11 +116,9 @@ def main(path):
 
     df = df.astype(int)
     df = df.rename_axis('Age', axis='columns')
-    # print(df)
 
     # Сохранить в csv
-    # path = '/home/gk/code/tmppycharm/ifmo_1/script/data/'
-    df.to_csv(f'{path}city_population_forecast.csv', index=True, header=True)
+    df.to_csv(f'{path}/city_population_forecast.csv', index=True, header=True)
 
     print('Выполнено: прогноз изменения населения')
 

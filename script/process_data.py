@@ -5,7 +5,7 @@ import pandas as pd
 import warnings
 import changes_coef
 import get_data
-warnings.filterwarnings("ignore")
+# warnings.filterwarnings("ignore")
 
 
 # Посчитать % коэф. жителей в возрасте и МУН
@@ -64,8 +64,8 @@ def calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list, path) -> No
                     # print(f'Exception: {e}')
 
     # path = '/home/gk/code/tmppycharm/ifmo_1/script/data/'
-    mun_age_sex_df.to_csv(f'{path}mun_age_sex_df.csv', index=False, header=True)
-    adm_age_sex_df.to_csv(f'{path}adm_age_sex_df.csv', index=False, header=True)
+    mun_age_sex_df.to_csv(f'{path}/mun_age_sex_df.csv', index=False, header=True)
+    adm_age_sex_df.to_csv(f'{path}/adm_age_sex_df.csv', index=False, header=True)
 
 
 # Посчитать население по соц.группам по возрасту для МУН
@@ -86,16 +86,11 @@ def calc_mun_soc_age(mun_age_sex_df, soc_adm_age_sex_df, path) -> None:
         mun_soc_sex = [0.0 if pd.isna(x) else x for x in mun_soc_sex]
         mun_soc[sex] = iteround.saferound(mun_soc_sex, 0)
 
-    # print('\nmun_soc\n',mun_soc)
-
-    # path = '/home/gk/code/tmppycharm/ifmo_1/script/data/'
-    mun_soc.to_csv(f'{path}mun_soc.csv', index=False, header=True)
-
+    mun_soc.to_csv(f'{path}/mun_soc.csv', index=False, header=True)
 
 
 # Посчитать суммарное кол-во по людей по соц.группам по АДМ
 def calc_adm_soc_sum(soc_list, adm_list, soc_adm_age_sex_df, year):
-
     adm_soc_sum = pd.DataFrame(columns=['year', 'admin_unit_parent_id', 'social_group_id',
                                         'total_sum', 'men_ratio', 'women_ratio'])
     for soc in soc_list:
@@ -114,7 +109,6 @@ def calc_adm_soc_sum(soc_list, adm_list, soc_adm_age_sex_df, year):
 
             adm_soc_sum = adm_soc_sum.append(df_to_insert, ignore_index=True)
 
-    # print('\nadm_soc_sum\n',adm_soc_sum)
     return adm_soc_sum
 
 
@@ -136,8 +130,6 @@ def calc_mun_sum(mun_list, mun_age_sex_df, adm_list, year):
 
         mun_allages_sum = mun_allages_sum.append(df_to_insert, ignore_index=True)
 
-    # print('\nmun_allages_sum:\n',mun_allages_sum)
-
     # Посчитать общее число во всех соц.группах для АДМ
     adm_allages_sum = pd.DataFrame(columns=['year', 'admin_unit_parent_id', 'men_adm_sum',
                                             'women_adm_sum', 'total_adm_sum'])
@@ -151,8 +143,6 @@ def calc_mun_sum(mun_list, mun_age_sex_df, adm_list, year):
                                      'total_adm_sum': [total_adm_sum]})
 
         adm_allages_sum = adm_allages_sum.append(df_to_insert, ignore_index=True)
-
-    # print('\nadm_allages_sum:\n', adm_allages_sum)
 
     # Найти процент суммы по соц.группам в МУН от общего числа в АДМ
     mun_allages_percent = pd.DataFrame(columns=['year', 'admin_unit_parent_id', 'municipality_id',
@@ -175,8 +165,6 @@ def calc_mun_sum(mun_list, mun_age_sex_df, adm_list, year):
                                      })
 
         mun_allages_percent = mun_allages_percent.append(df_to_insert, ignore_index=True)
-
-    # print('\nmun_allages_percent\n', mun_allages_percent)
 
     return mun_allages_percent
 
@@ -203,8 +191,6 @@ def calc_mun_soc_sum(adm_list, soc_list, mun_allages_percent, adm_soc_sum, year,
             for mun in mun_list:
                 mun_in_adm_total_percent = mun_allages_percent.query(
                     f'municipality_id == {mun}')['mun_in_adm_total_percent'].values[0]
-                # men_mun_ratio = mun_allages_percent.query(f'municipality_id == {mun}')['men_mun_ratio'].values[0]
-                # women_mun_ratio = mun_allages_percent.query(f'municipality_id == {mun}')['men_mun_ratio'].values[0]
 
                 total_mun_soc_sum = total_adm_soc_sum * mun_in_adm_total_percent
                 men_mun_soc_sum = (total_adm_soc_sum * men_adm_soc_ratio) * mun_in_adm_total_percent
@@ -240,18 +226,16 @@ def calc_mun_soc_sum(adm_list, soc_list, mun_allages_percent, adm_soc_sum, year,
 
     mun_soc_allages_sum = mun_soc_allages_sum.astype(int)
 
-    # path = '/home/gk/code/tmppycharm/ifmo_1/script/data/'
-    mun_soc_allages_sum.to_csv(f'{path}mun_soc_allages_sum.csv', index=False, header=True)
+    mun_soc_allages_sum.to_csv(f'{path}/mun_soc_allages_sum.csv', index=False, header=True)
 
 
-def main(args, year=2023, city_id=1, path='', set_population=0):
+def main(args, year=2023, path='', set_population=0):
     adm_total_df, mun_total_df, adm_age_sex_df, mun_age_sex_df, soc_adm_age_sex_df, _ = get_data.main(args)
 
     pd.set_option('display.max_rows', 10)
     pd.set_option('display.max_columns', 20)
 
     if year > 2019:
-
         coef_changes, year_ratio, change_coef = changes_coef.main(year, path)
 
         def update_total_population(df):
@@ -324,10 +308,8 @@ def main(args, year=2023, city_id=1, path='', set_population=0):
     mun_age_sex_df['women_percent'] = mun_age_sex_df['women'] / mun_age_sex_df['total']
     soc_adm_age_sex_df['women_percent'] = soc_adm_age_sex_df['women'] / soc_adm_age_sex_df['total']
 
-    adm_total_df['population_percent'] = adm_total_df['population'] / \
-                                         adm_total_df['population'].sum()
-    mun_total_df['population_percent'] = mun_total_df['population'] / \
-                                         mun_total_df['population'].sum()
+    adm_total_df['population_percent'] = adm_total_df['population'] / adm_total_df['population'].sum()
+    mun_total_df['population_percent'] = mun_total_df['population'] / mun_total_df['population'].sum()
     mun_total_df = mun_total_df.rename(columns={"id": "municipality_id"})
 
     soc_adm_age_sex_df = soc_adm_age_sex_df.rename(columns={"administrative_unit_id": "admin_unit_parent_id"})
@@ -339,9 +321,7 @@ def main(args, year=2023, city_id=1, path='', set_population=0):
     calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list, path)
 
     # Прочитать CSV и добавить колонку с АДМ_id
-    # path = '/home/gk/code/tmppycharm/ifmo_1/script/data/'
-    # adm_age_sex_df = pd.read_csv(f'{path}adm_age_sex_df.csv')
-    mun_age_sex_df = pd.read_csv(f'{path}mun_age_sex_df.csv')
+    mun_age_sex_df = pd.read_csv(f'{path}/mun_age_sex_df.csv')
     mun_age_sex_df = pd.merge(mun_age_sex_df, mun_total_df[['municipality_id', 'admin_unit_parent_id']],
                               on='municipality_id')
 

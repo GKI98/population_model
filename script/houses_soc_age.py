@@ -7,7 +7,7 @@ import push_to_db
 
 # Распределить жителей домов (по соц. группам) по возрастам (0-100)
 # и сохранить локально
-def houses_soc_to_ages(args, houses_soc, mun_soc, path):
+def houses_soc_to_ages(args, houses_soc, mun_soc):
     print('В процессе: распределение жителей домов (по соц. группам) по возрастам')
 
     soc_list = set(houses_soc['social_group_id'])
@@ -43,7 +43,6 @@ def houses_soc_to_ages(args, houses_soc, mun_soc, path):
     df = df.drop('mun_percent', axis=1)
     push_to_db.main(args, df)
 
-    # print(df)
     # df.to_csv(f'{path}houses_soc_age.csv', index=False, header=True)
 
     return df
@@ -53,12 +52,11 @@ def main(args, path=''):
     pd.set_option('display.max_rows', 10)
     pd.set_option('display.max_columns', 20)
 
-    # path = '/home/gk/code/tmppycharm/ifmo_1/script/data/'
-    houses_soc = pd.read_csv(f'{path}houses_soc.csv')
+    houses_soc = pd.read_csv(f'{path}/houses_soc.csv')
     houses_soc = houses_soc.drop(['house_total_soc', 'house_men_soc', 'house_women_soc'], axis=1)
-    mun_soc = pd.read_csv(f'{path}mun_soc.csv')
+    mun_soc = pd.read_csv(f'{path}/mun_soc.csv')
 
-    df = houses_soc_to_ages(args, houses_soc, mun_soc, path)
+    df = houses_soc_to_ages(args, houses_soc, mun_soc)
     return df
 
 

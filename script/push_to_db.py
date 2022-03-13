@@ -1,108 +1,108 @@
 # 0
 import pandas as pd
-from sqlalchemy import create_engine
+import psycopg2
 from connect_db import Properties
 
 
-def create_city_soc_age(args, df, table_name='city_soc_age'):
-    sql = \
-        f'''
-            CREATE TABLE {table_name}(
-            id int NOT NULL, 
-            municipality_id int NOT NULL, 
-            administrative_unit_id int NOT NULL,
-            living_area float,
-            document_population int,
-            failure bool,
-            max_population int,
-            prob_population int,
-            resident_number int,
-            social_group_id int, 
-            age int,
-            men float,
-            women float,
-            total float);
-            '''
-    push_db(args, df, table_name, sql)
-
-
-def create_mun_soc_age(args, table_name='mun_soc_age'):
-    df = pd.read_csv('./Output_data/mun_soc.csv')
-    df = df[['admin_unit_parent_id', 'municipality_id', 'age', 'social_group_id', 'men', 'women', 'total']]
-    sql = \
+def sex_age_social_houses(args, df, table_name='social_stats.sex_age_social_houses'):
+    create_query = \
         f'''
         CREATE TABLE {table_name}(
-        admin_unit_parent_id int,
-        municipality_id int,
-        age int,
-        social_group_id int,
-        men float,
-        women float,
-        total float
+        house_id SERIAL PRIMARY KEY NOT NULL REFERENCES functional_objects(id), 
+        municipality_id SERIAL NOT NULL, 
+        administrative_unit_id SERIAL NOT NULL,
+        living_area real,
+        document_population integer,
+        failure bool,
+        max_population integer,
+        prob_population integer,
+        resident_number integer,
+        social_group_id serial NOT NULL, 
+        age integer,
+        men integer,
+        women integer,
+        total integer);
+        '''
+    push_db(args, df, table_name, create_query)
+
+
+def create_municipality_sex_age_social(args, table_name='social_stats.municipality_sex_age_social'):
+    df = pd.read_csv('./Output_data/mun_soc.csv')
+    df = df[['admin_unit_parent_id', 'municipality_id', 'age', 'social_group_id', 'men', 'women', 'total']]
+    create_query = \
+        f'''
+        CREATE TABLE {table_name}(
+        admin_unit_parent_id serial,
+        municipality_id serial,
+        age integer,
+        social_group_id serial,
+        men integer,
+        women integer,
+        total integer
         );
         '''
-    push_db(args, df, table_name, sql)
-
-    return
+    push_db(args, df, table_name, create_query)
 
 
-def push_db(args, df, table_name, sql):
-    db_addr = getattr(args, 'db_addr')
-    db_port = getattr(args, 'db_port')
-    db_name = getattr(args, 'db_name')
-    db_user = getattr(args, 'db_user')
-    db_pass = getattr(args, 'db_pass')
+def insert_df(cur, df, table_name):
+    tuples = [tuple(x) for x in df.to_numpy()]
+    cols = ','.join(list(df.columns))
+    values_space = '%s,' * len(list(df.columns))
+    values_space = values_space[:-1]
+    query = f"INSERT INTO {table_name} ({cols}) VALUES ({values_space})"
+    print(query)
+
+    try:
+        cur.executemany(query, tuples)
+
+    except (Exception, psycopg2.DatabaseError) as e:
+        print("Error: %s" % e)
+
+        raise e
 
 
-    # establish connections
-    conn_string = f'postgresql://{db_user}:{db_pass}@{db_addr}/{db_name}'
+def push_db(args, df, table_name, create_query):
 
-    db = create_engine(conn_string)
-    conn = db.connect()
-    conn1 = Properties.connect(db_addr, db_port, db_name, db_user, db_pass)
+    conn = Properties.connect(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass)
+    # conn = Properties.connect()
 
-    conn1.autocommit = True
-    cursor = conn1.cursor()
+    with conn, conn.cursor() as cur:
+        cur.execute(f'drop table if exists {table_name}')
+        cur.execute(create_query)
+        insert_df(cur, df, table_name)
 
-    # drop table if it already exists
-    cursor.execute(f'drop table if exists {table_name}')
-    cursor.execute(sql)
+        check_query = f"select * from {table_name} limit 5"
+        cur.execute(check_query)
+        records = cur.fetchall(5)
 
-    # import the csv file to create a dataframe
-    # data = {
-    #     'id': [1],
-    #     'municipality_id': [1],
-    #     'administrative_unit_id': [1],
-    #     'living_area': [10],
-    #     'document_population': [100],
-    #     'failure': [False],
-    #     'max_population': [11],
-    #     'prob_population': [9],
-    #     'resident_number': [5],
-    #     'social_group_id': [2],
-    #     'age': [3],
-    #     'men': [1],
-    #     'women': [1],
-    #     'total': [1]
-    # }
+        for row in records:
+            print(row)
 
-    # df = pd.DataFrame(data)
-
-    # converting data to sql
-    df.to_sql(f'{table_name}', conn, if_exists='replace')
-
-    # fetching all rows
-    sql1 = f'''select * from {table_name};'''
-    cursor.execute(sql1)
-
-    conn1.commit()
-    conn1.close()
+    print(f'{table_name} успешно добавлена в бд')
 
 
 def main(args, df):
-    create_city_soc_age(args, df)
-    create_mun_soc_age(args)
+    sex_age_social_houses(args, df)
+    create_municipality_sex_age_social(args)
 
 
 if __name__ == '__main__':
     pass
+    # data = {
+    #     'house_id': [1, 2],
+    #     'municipality_id': [1, 2],
+    #     'administrative_unit_id': [1, 2],
+    #     'living_area': [1, 2],
+    #     'document_population': [1, 2],
+    #     'failure': [False, True],
+    #     'max_population': [10, 11],
+    #     'prob_population': [10, 11],
+    #     'resident_number': [10, 11],
+    #     'social_group_id': [1, 11],
+    #     'age': [10, 11],
+    #     'men': [1.0, 2.0],
+    #     'women': [1.0, 2.0],
+    #     'total': [2.0, 3.0]
+    # }
+    # df = pd.DataFrame(data)
+    # main(df)

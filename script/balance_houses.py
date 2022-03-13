@@ -32,7 +32,6 @@ def forecast_house_population(args):
         return val
 
     houses_df['prob_population'] = houses_df.apply(vch_calc, axis=1).round().astype(int)
-    # print(houses_df)
 
     return houses_df
 
@@ -40,7 +39,6 @@ def forecast_house_population(args):
 # Сбалансировать вероятное кол-во жителей в домике
 # и сохранить локально
 def balance_houses_population(houses_df_upd, path) -> None:
-    # path = '/home/gk/code/tmppycharm/ifmo_1/script/data/'
     mun_age_sex_df = pd.read_csv(f'{path}mun_age_sex_df.csv')
 
     mun_list = set(houses_df_upd['municipality_id'])
@@ -109,8 +107,7 @@ def balance_houses_population(houses_df_upd, path) -> None:
         print('Конец балансировки для ', mun, ' \n')
         print('Выполнено шагов: ', i, '\n')
 
-    df_mkd_balanced_mo.to_csv(f'{path}houses_bal.csv')
-    # print(df_mkd_balanced_mo)
+    df_mkd_balanced_mo.to_csv(f'{path}/houses_bal.csv')
 
 
 def main(args, path=''):

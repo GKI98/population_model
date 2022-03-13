@@ -27,15 +27,7 @@ def get_table(cur, query: str, set_index_id: bool = False):
 
 def main(args):
 
-    city_id = getattr(args, 'city_id')
-
-    db_addr = getattr(args, 'db_addr')
-    db_port = getattr(args, 'db_port')
-    db_name = getattr(args, 'db_name')
-    db_user = getattr(args, 'db_user')
-    db_pass = getattr(args, 'db_pass')
-
-    conn = Properties.connect(db_addr, db_port, db_name, db_user, db_pass)
+    conn = Properties.connect(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass)
 
     with conn, conn.cursor() as cur:
         # houses
@@ -43,19 +35,18 @@ def main(args):
                    f'b.resident_number, b.failure FROM buildings b ' \
                    f'INNER JOIN functional_objects f ON b.physical_object_id = f.physical_object_id ' \
                    f'INNER JOIN physical_objects p ON b.physical_object_id = p.id ' \
-                   f'WHERE b.living_area IS NOT NULL AND p.city_id = {city_id}'
+                   f'WHERE b.living_area IS NOT NULL AND p.city_id = {args.city}'
 
         cur.execute(houses_q)
         houses_df = pd.DataFrame(cur.fetchall(), columns=get_columns(cur, query=houses_q))
 
         # administrative_units
-        administrative_units_q = 'SELECT id, name, population FROM administrative_units ' \
-                                 'WHERE city_id = 1'
+        administrative_units_q = f'SELECT id, name, population FROM administrative_units WHERE city_id = {args.city}'
         administrative_units_df = get_table(cur, administrative_units_q)
 
         # municipalities
-        municipalities_q = 'SELECT id, admin_unit_parent_id, name, population FROM municipalities ' \
-                           'WHERE city_id = 1'
+        municipalities_q = f'SELECT id, admin_unit_parent_id, name, population FROM municipalities ' \
+                           f'WHERE city_id = {args.city}'
         municipalities_df = get_table(cur, municipalities_q)
 
         # age_sex_administrative_units

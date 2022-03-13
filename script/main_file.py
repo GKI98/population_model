@@ -28,15 +28,19 @@ def del_tmp_files(path='') -> None:
     if os.path.exists(folder_one_path) and os.path.exists(f'{folder_one_path}/.idea'):
         shutil.rmtree(folder_one_path)
 
-    folder_two_path = './Output_data'
+    if not path:
+        folder_two_path = './Output_data'
+    else:
+        folder_two_path = path
+
     if os.path.exists(folder_two_path):
         shutil.rmtree(folder_two_path)
 
 
-def make_calc(args, path='', year=2023, city_id=1, set_population=0):
+def make_calc(args, path='', year=2023, set_population=0):
     city_population_forecast.main(path=path)
     changes_forecast_coef.main(path=path)
-    process_data.main(year=year, city_id=city_id, path=path, set_population=set_population, args=args)
+    process_data.main(year=year, path=path, set_population=set_population, args=args)
     balance_houses.main(args, path=path)
     houses_soc.main(path=path)
     df = houses_soc_age.main(args=args, path=path)
@@ -44,13 +48,12 @@ def make_calc(args, path='', year=2023, city_id=1, set_population=0):
 
 
 def main(args):
-    year = getattr(args, 'year')
-    set_population = getattr(args, 'set_population')
-    city_id = getattr(args, 'city_id')
-    path = getattr(args, 'path')
+    year = args.year
+    set_population = args.population
+    path = args.path
 
     check_dir_existence(path)
-    make_calc(args, path, year, city_id, set_population)
+    make_calc(args, path, year, set_population)
     del_tmp_files(path)
 
 
