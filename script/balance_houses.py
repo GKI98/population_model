@@ -56,7 +56,7 @@ def balance_houses_population(houses_df_upd, path) -> None:
         df_mkd_mo = houses_df_upd.query(f'municipality_id == {mun}')
 
         # Сделать вероятные количества жителей в домах отправной точкой для расчета сбалансированных значений
-        df_mkd_mo['citizens_reg_bal'] = df_mkd_mo.loc[:, 'prob_population']
+        df_mkd_mo['citizens_reg_bal'] = df_mkd_mo.copy()['prob_population']
         citizens_mo_bal = df_mkd_mo['citizens_reg_bal'].sum()
 
         # Шаг балансировки
