@@ -109,12 +109,7 @@ def main(path):
         #    value = (df[2020 + i] * df3['coef'])
 
         # Это с пропусками в исходном датафрейме
-        print('NULEVOE', df[2020 + i])
-        print('PERVOE', df[2020 + i][1])
-        print('VTOROE', df.iloc[1].median())
-        print('TRETYE', df.iloc[1], '\n')
-
-        df[2020 + i][1] = df.iloc[1].median()
+        df.iloc[1, 2020 + i] = df.iloc[1].median()
 
         value = (df[2020 + i][:] * df3['coef'][:])
         value = iteround.saferound(value.values, 0)
