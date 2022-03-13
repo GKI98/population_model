@@ -126,7 +126,7 @@ def calc_mun_sum(mun_list, mun_age_sex_df, adm_list, year):
         df_to_insert = pd.DataFrame({'year': [year], 'admin_unit_parent_id': [adm], 'municipality_id': [mun],
                                      'men_sum': [men_sum], 'women_sum': [women_sum], 'total_sum': [total_sum]})
 
-        mun_allages_sum = mun_allages_sum.append(df_to_insert, ignore_index=True)
+        mun_allages_sum = pd.concat([mun_allages_sum, df_to_insert], ignore_index=True)
 
     # Посчитать общее число во всех соц.группах для АДМ
     adm_allages_sum = pd.DataFrame(columns=['year', 'admin_unit_parent_id', 'men_adm_sum',
