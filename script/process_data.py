@@ -107,7 +107,7 @@ def calc_adm_soc_sum(soc_list, adm_list, soc_adm_age_sex_df, year):
                                          'total_sum': [total_sum], 'men_ratio': [men_ratio],
                                          'women_ratio': [women_ratio]})
 
-            adm_soc_sum = adm_soc_sum.append(df_to_insert, ignore_index=True)
+            adm_soc_sum = pd.concat([adm_soc_sum, df_to_insert], ignore_index=True)
 
     return adm_soc_sum
 
