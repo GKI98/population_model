@@ -42,7 +42,7 @@ def calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list, path) -> No
             # Расчет для МО
 
             # По возрасту среди всех мун
-            mun_age_sex_slice = mun_age_sex_df.loc[mun_age_sex_df['age'] == age, f'{sex}'][sex]
+            mun_age_sex_slice = mun_age_sex_df.loc[mun_age_sex_df['age'] == age][sex]
             mun_age_sex_sum = mun_age_sex_df.loc[mun_age_sex_df['age'] == age][sex].sum()
 
             try:
