@@ -110,8 +110,8 @@ def main(path):
 
         # Это с пропусками в исходном датафрейме
         df[2020 + i][1] = df.iloc[1].median()
-        print(df[2020 + i][1])
-        print(df.iloc[1].median())
+        print('PERVOE', df[2020 + i][1])
+        print('VTOROE', df.iloc[1].median(), '\n')
         value = (df[2020 + i][:] * df3['coef'][:])
         value = iteround.saferound(value.values, 0)
         df.insert(loc=col_num, column=column, value=value, allow_duplicates=True)
