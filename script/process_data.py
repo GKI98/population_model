@@ -34,7 +34,7 @@ def calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list, path) -> No
                 adm_age_sex_mun_id_sum = adm_age_sex_df.query(f"administrative_unit_id == {adm_id}")[sex].sum()
 
                 try:
-                    adm_age_sex_df.loc[f'{sex}_age_adm_percent', adm_age_sex_df['administrative_unit_id'] == adm_id] = \
+                    adm_age_sex_df.loc[adm_age_sex_df['administrative_unit_id', f'{sex}_age_adm_percent'] == adm_id] = \
                         adm_age_sex_mun_id_slice / adm_age_sex_mun_id_sum
                 except KeyError as e:
                     adm_age_sex_df[f'{sex}_age_adm_percent'] = adm_age_sex_mun_id_slice / adm_age_sex_mun_id_sum
@@ -42,11 +42,11 @@ def calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list, path) -> No
             # Расчет для МО
 
             # По возрасту среди всех мун
-            mun_age_sex_slice = mun_age_sex_df.loc[mun_age_sex_df['age'] == age][sex]
+            mun_age_sex_slice = mun_age_sex_df.loc[mun_age_sex_df['age'] == age, f'{sex}'][sex]
             mun_age_sex_sum = mun_age_sex_df.loc[mun_age_sex_df['age'] == age][sex].sum()
 
             try:
-                mun_age_sex_df.loc[f'{sex}_age_allmun_percent', mun_age_sex_df['age'] == age] = \
+                mun_age_sex_df.loc[mun_age_sex_df['age'] == age, f'{sex}_age_allmun_percent'] = \
                     mun_age_sex_slice / mun_age_sex_sum
             except KeyError as e:
                 mun_age_sex_df[f'{sex}_age_allmun_percent'] = mun_age_sex_slice / mun_age_sex_sum
@@ -57,7 +57,7 @@ def calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list, path) -> No
                 mun_sex_mun_id_sum = mun_age_sex_df.query(f"municipality_id == {mun_id}")[sex].sum()
 
                 try:
-                    mun_age_sex_df.loc[f'{sex}_mun_allages_percent', mun_age_sex_df['municipality_id'] == mun_id] = \
+                    mun_age_sex_df.loc[mun_age_sex_df['municipality_id'] == mun_id, f'{sex}_mun_allages_percent'] = \
                         mun_sex_mun_id_slice / mun_sex_mun_id_sum
                 except KeyError as e:
                     mun_age_sex_df[f'{sex}_mun_allages_percent'] = mun_sex_mun_id_slice / mun_sex_mun_id_sum
