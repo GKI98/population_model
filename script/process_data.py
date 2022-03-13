@@ -23,7 +23,7 @@ def calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list, path) -> No
             adm_age_sex_sum = adm_age_sex_df[adm_age_sex_df['age'] == age][sex].sum()
 
             try:
-                adm_age_sex_df.loc[f'{sex}_age_adm_percent', adm_age_sex_df['age'] == age] = \
+                adm_age_sex_df.loc[adm_age_sex_df['age'] == age, f'{sex}_age_adm_percent'] = \
                     adm_age_sex_slice / adm_age_sex_sum
             except KeyError as e:
                 adm_age_sex_df[f'{sex}_age_adm_percent'] = adm_age_sex_slice / adm_age_sex_sum
