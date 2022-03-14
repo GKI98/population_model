@@ -67,6 +67,8 @@ def main(df_mkd_balanced_mo, path=''):
 
     houses_soc = houses_to_soc(houses_bal, mun_soc_allages_sum, path)
 
+    return houses_soc
+
 
 if __name__ == '__main__':
     # main()
