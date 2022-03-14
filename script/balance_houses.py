@@ -38,7 +38,7 @@ def forecast_house_population(args):
 
 # Сбалансировать вероятное кол-во жителей в домике
 # и сохранить локально
-def balance_houses_population(houses_df_upd, path) -> None:
+def balance_houses_population(houses_df_upd, path):
     mun_age_sex_df = pd.read_csv(f'{path}/mun_age_sex_df.csv')
     mun_list = set(houses_df_upd['municipality_id'])
     houses_df_upd = houses_df_upd.assign(**{'citizens_reg_bal': houses_df_upd['prob_population']})
@@ -105,12 +105,14 @@ def balance_houses_population(houses_df_upd, path) -> None:
         print('Конец балансировки для ', mun, ' \n')
         print('Выполнено шагов: ', i, '\n')
 
-    df_mkd_balanced_mo.to_csv(f'{path}/houses_bal.csv')
-
+    # df_mkd_balanced_mo.to_csv(f'{path}/houses_bal.csv')
+    return df_mkd_balanced_mo
 
 def main(args, path=''):
     houses_df_upd = forecast_house_population(args)
-    balance_houses_population(houses_df_upd, path)
+    df_mkd_balanced_mo = balance_houses_population(houses_df_upd, path)
+
+    return df_mkd_balanced_mo
 
 
 if __name__ == '__main__':

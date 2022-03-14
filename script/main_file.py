@@ -41,9 +41,9 @@ def make_calc(args, path='', year=2023, set_population=0):
     city_population_forecast.main(path=path)
     changes_forecast_coef.main(path=path)
     process_data.main(year=year, path=path, set_population=set_population, args=args)
-    balance_houses.main(args, path=path)
-    houses_soc.main(path=path)
-    df = houses_soc_age.main(args=args, path=path)
+    df_mkd_balanced_mo = balance_houses.main(args, path=path)
+    houses_soc_df = houses_soc.main(df_mkd_balanced_mo=df_mkd_balanced_mo, path=path)
+    df = houses_soc_age.main(houses_soc_df, args=args, path=path)
     push_to_db.main(args=args, df=df)
 
 

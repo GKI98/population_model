@@ -6,7 +6,7 @@ import pandas as pd
 
 # Распределить жителей домов по соц.группам
 # и сохранить локально
-def houses_to_soc(houses_bal, mun_soc_allages_sum, path) -> None:
+def houses_to_soc(houses_bal, mun_soc_allages_sum, path):
 
     print('В процессе: распределение жителей домов по соц.группам')
 
@@ -53,18 +53,21 @@ def houses_to_soc(houses_bal, mun_soc_allages_sum, path) -> None:
     houses_soc = houses_soc.rename(columns={"resident_number": "document_population"})
     houses_soc = houses_soc.rename(columns={"citizens_reg_bal": "resident_number"})
 
-    houses_soc.to_csv(f'{path}/houses_soc.csv', index=False, header=True)
+    # houses_soc.to_csv(f'{path}/houses_soc.csv', index=False, header=True)
+    return houses_soc
 
 
-def main(path=''):
+def main(df_mkd_balanced_mo, path=''):
     pd.set_option('display.max_rows', 10)
     pd.set_option('display.max_columns', 20)
 
-    houses_bal = pd.read_csv(f'{path}/houses_bal.csv').drop(['Unnamed: 0'], axis=1)
+    # houses_bal = pd.read_csv(f'{path}/houses_bal.csv').drop(['Unnamed: 0'], axis=1)
+    houses_bal = df_mkd_balanced_mo
     mun_soc_allages_sum = pd.read_csv(f'{path}/mun_soc_allages_sum.csv')
 
-    houses_to_soc(houses_bal, mun_soc_allages_sum, path)
+    houses_soc = houses_to_soc(houses_bal, mun_soc_allages_sum, path)
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    pass

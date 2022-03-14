@@ -48,11 +48,12 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
     return df
 
 
-def main(args, path=''):
+def main(houses_soc, args, path=''):
     pd.set_option('display.max_rows', 10)
     pd.set_option('display.max_columns', 20)
 
-    houses_soc = pd.read_csv(f'{path}/houses_soc.csv')
+    # houses_soc = pd.read_csv(f'{path}/houses_soc.csv')
+    # houses_soc = houses_soc
     houses_soc = houses_soc.drop(['house_total_soc', 'house_men_soc', 'house_women_soc'], axis=1)
     mun_soc = pd.read_csv(f'{path}/mun_soc.csv')
 
