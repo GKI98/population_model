@@ -13,7 +13,7 @@ def main(changes_forecast_df, city_forecast_years_age_ratio_df, city_population_
 
     # Изменение в прогнозируемой численности в сравнении с 2019 годом (отношение к численности в 2019 по возрастам)
     coef_ages = changes_forecast_df[year]
-    print(changes_forecast_df)
+    # print(changes_forecast_df)
 
     # Состав населения в % в прогнозируемом году
     year_ratio = city_forecast_years_age_ratio_df[year]
