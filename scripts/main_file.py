@@ -53,11 +53,11 @@ def make_calc(args, path='', year=2023, set_population=0):
 def main(args):
     year = args.year
     set_population = args.population
-    path = args.path
+    # path = args.path
 
     # check_dir_existence(path)
-    make_calc(args, path, year, set_population)
-    del_tmp_files(path)
+    make_calc(args=args, year=year, set_population=set_population)
+    del_tmp_files()
 
 
 if __name__ == '__main__':
