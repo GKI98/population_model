@@ -8,19 +8,22 @@ from scripts import push_to_db
 # Распределить жителей домов (по соц. группам) по возрастам (0-100)
 # и сохранить локально
 def houses_soc_to_ages(args, houses_soc, mun_soc):
-    print(f'houses_soc SIZE:{houses_soc.memory_usage(index=True).sum() / 10 ^ 9} GB')
-    print(f'mun_soc SIZE:{mun_soc.memory_usage(index=True).sum() / 10 ^ 9} GB')
+    print(f'houses_soc SIZE:{houses_soc.memory_usage(index=True).sum() / 10 ** 9} GB')
+    print(f'mun_soc SIZE:{mun_soc.memory_usage(index=True).sum() / 10 ** 9} GB')
 
     soc_list = set(houses_soc['social_group_id'])
 
     df = pd.merge(houses_soc, mun_soc[['municipality_id', 'admin_unit_parent_id', 'social_group_id', 'age',
                                        'men', 'women', 'total']],
                   on=['municipality_id', 'social_group_id'])
+
+    print(f'DF SIZE:{df.memory_usage(index=True).sum() / 10 ** 9} GB')
+
     df['total'] = df['total'] * df['mun_percent']
     df['men'] = df['total'] * df['mun_percent']
     df['women'] = df['total'] * df['mun_percent']
 
-    print(f'DF SIZE:{df.memory_usage(index=True).sum() / 10^9} GB')
+    print(f'DF SIZE:{df.memory_usage(index=True).sum() / 10**9} GB')
 
     total_list_tmp = []
     men_list_tmp = []
@@ -41,15 +44,15 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
 
     df['total'] = total_list_tmp
 
-    print(f'DF SIZE:{df.memory_usage(index=True).sum() / 10^9} GB')
+    print(f'DF SIZE:{df.memory_usage(index=True).sum() / 10**9} GB')
 
     df['men'] = men_list_tmp
 
-    print(f'DF SIZE:{df.memory_usage(index=True).sum() / 10^9} GB')
+    print(f'DF SIZE:{df.memory_usage(index=True).sum() / 10**9} GB')
 
     df['women'] = women_list_tmp
 
-    print(f'DF SIZE:{df.memory_usage(index=True).sum() / 10^9} GB')
+    print(f'DF SIZE:{df.memory_usage(index=True).sum() / 10**9} GB')
 
     df = df.drop('mun_percent', axis=1)
     push_to_db.main(args, df)
