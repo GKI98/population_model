@@ -15,9 +15,7 @@ def calc_age_changes_coef(city_forecast):
     # Посчитать изменения населения в прогнозируемых годах относительно 2019 г. по возрастам
     changes_forecast = pd.DataFrame()
     columns = list(city_forecast.columns)
-    print(city_forecast.head())
-    print(city_forecast.columns.tolist())
-    print(city_forecast[2019])
+
     for col in columns:
         changes_forecast[col] = city_forecast[col].div(city_forecast[2019])
     # changes_forecast.drop(2019, axis=1, inplace=True)
@@ -26,7 +24,7 @@ def calc_age_changes_coef(city_forecast):
     changes_forecast.loc[-1] = list(changes_forecast.iloc[[0]].values[0] * death_coef)  # adding a row
     changes_forecast.index = changes_forecast.index + 1  # shifting index
     changes_forecast.sort_index(inplace=True)
-    changes_forecast['2019'][0] = 1
+    changes_forecast[2019][0] = 1
 
     return changes_forecast
 
@@ -35,7 +33,7 @@ def calc_total_changes_percent(city_forecast):
     changes_forecast = pd.DataFrame()
     columns = list(city_forecast.columns)
     for col in columns:
-        changes_forecast[col] = city_forecast[col].div(city_forecast['2019'])
+        changes_forecast[col] = city_forecast[col].div(city_forecast[2019])
     # changes_forecast.drop(2019, axis=1, inplace=True)
 
     death_coef = 1.1
