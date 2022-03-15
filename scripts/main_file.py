@@ -2,13 +2,13 @@
 import os
 import shutil
 
-import city_population_forecast
-import changes_forecast_coef
-import process_data
-import houses_soc_age
-import houses_soc
-import balance_houses
-import push_to_db
+from scripts import city_population_forecast
+from scripts import changes_forecast_coef
+from scripts import process_data
+from scripts import houses_soc_age
+from scripts import houses_soc
+from scripts import balance_houses
+from scripts import push_to_db
 
 
 # def check_dir_existence(dir_path='./Output_data') -> None:
