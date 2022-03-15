@@ -256,6 +256,11 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
             new_total_age_list = list()
             for age in range(0, 101):
                 age_slice = df.query(f'age == {age}')
+                print(age_slice)
+                print(age_slice['total'])
+                print(coef_changes)
+                print(coef_changes[age])
+
                 total_age_value = age_slice['total'] * coef_changes[age]
                 new_total_age_list += list(total_age_value)
 
