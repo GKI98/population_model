@@ -8,7 +8,7 @@ import get_data
 
 # Посчитать % коэф. жителей в возрасте и МУН
 # и сохранить локально
-def calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list, path) -> None:
+def calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list, path):
     print('В процессе: расчет кол-ва жителей по возрастам')
 
     for age in range(0, 101):
@@ -61,9 +61,11 @@ def calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list, path) -> No
                     mun_age_sex_df[f'{sex}_mun_allages_percent'] = mun_sex_mun_id_slice / mun_sex_mun_id_sum
                     # print(f'Exception: {e}')
 
-    # path = '/home/gk/code/tmppycharm/ifmo_1/script/data/'
-    mun_age_sex_df.to_csv(f'{path}/mun_age_sex_df.csv', index=False, header=True)
-    adm_age_sex_df.to_csv(f'{path}/adm_age_sex_df.csv', index=False, header=True)
+    # path = '/home/gk/code/tmppycharm/ifmo_1/scripts/data/'
+    # mun_age_sex_df.to_csv(f'{path}/mun_age_sex_df.csv', index=False, header=True)
+    # adm_age_sex_df.to_csv(f'{path}/adm_age_sex_df.csv', index=False, header=True)
+
+    return mun_age_sex_df, adm_age_sex_df
 
 
 # Посчитать население по соц.группам по возрасту для МУН
@@ -84,7 +86,8 @@ def calc_mun_soc_age(mun_age_sex_df, soc_adm_age_sex_df, path) -> None:
         mun_soc_sex = [0.0 if pd.isna(x) else x for x in mun_soc_sex]
         mun_soc[sex] = iteround.saferound(mun_soc_sex, 0)
 
-    mun_soc.to_csv(f'{path}/mun_soc.csv', index=False, header=True)
+    # mun_soc.to_csv(f'{path}/mun_soc.csv', index=False, header=True)
+    return mun_soc
 
 
 # Посчитать суммарное кол-во по людей по соц.группам по АДМ
@@ -224,17 +227,20 @@ def calc_mun_soc_sum(adm_list, soc_list, mun_allages_percent, adm_soc_sum, year,
 
     mun_soc_allages_sum = mun_soc_allages_sum.astype(int)
 
-    mun_soc_allages_sum.to_csv(f'{path}/mun_soc_allages_sum.csv', index=False, header=True)
+    # mun_soc_allages_sum.to_csv(f'{path}/mun_soc_allages_sum.csv', index=False, header=True)
+    return mun_soc_allages_sum
 
 
-def main(args, year=2023, path='', set_population=0):
+def main(args, changes_forecast, city_forecast_years_age_ratio, city_population_forecast,
+         year=2023, path='', set_population=0):
     adm_total_df, mun_total_df, adm_age_sex_df, mun_age_sex_df, soc_adm_age_sex_df, _ = get_data.main(args)
 
     pd.set_option('display.max_rows', 10)
     pd.set_option('display.max_columns', 20)
 
     if year > 2019:
-        coef_changes, year_ratio, change_coef = changes_coef.main(year, path)
+        coef_changes, year_ratio, change_coef = changes_coef.main(changes_forecast, city_forecast_years_age_ratio,
+                                                                  city_population_forecast,year, path)
 
         def update_total_population(df):
             new_population = df['population'] * change_coef
@@ -316,10 +322,10 @@ def main(args, year=2023, path='', set_population=0):
     adm_list = set(adm_age_sex_df['administrative_unit_id'])
     soc_list = set(soc_adm_age_sex_df['social_group_id'])
 
-    calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list, path)
+    mun_age_sex_df, adm_age_sex_df = calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list, path)
 
     # Прочитать CSV и добавить колонку с АДМ_id
-    mun_age_sex_df = pd.read_csv(f'{path}/mun_age_sex_df.csv')
+    # mun_age_sex_df = pd.read_csv(f'{path}/mun_age_sex_df.csv')
     mun_age_sex_df = pd.merge(mun_age_sex_df, mun_total_df[['municipality_id', 'admin_unit_parent_id']],
                               on='municipality_id')
 
@@ -327,12 +333,14 @@ def main(args, year=2023, path='', set_population=0):
     col = mun_age_sex_df.pop("admin_unit_parent_id")
     mun_age_sex_df.insert(1, col.name, col)
 
-    calc_mun_soc_age(mun_age_sex_df, soc_adm_age_sex_df, path)
+    mun_soc = calc_mun_soc_age(mun_age_sex_df, soc_adm_age_sex_df, path)
     adm_soc_sum = calc_adm_soc_sum(soc_list, adm_list, soc_adm_age_sex_df, year)
     mun_allages_percent = calc_mun_sum(mun_list, mun_age_sex_df, adm_list, year)
     calc_mun_soc_sum(adm_list, soc_list, mun_allages_percent, adm_soc_sum, year, path)
 
     print('Выполнено: посчитана статистика по населению')
+
+    return mun_soc, mun_age_sex_df, adm_age_sex_df
 
 
 if __name__ == '__main__':

@@ -3,12 +3,12 @@
 import pandas as pd
 
 
-def read_data(path):
-    # Прочитать таблицу с прогнозом изменения населения на N лет вперед
-    city_forecast = pd.read_csv(f'{path}/city_population_forecast.csv')
-    city_forecast.drop(city_forecast.iloc[:, 0:24], inplace=True, axis=1)
-
-    return city_forecast
+# def read_data(path):
+#     # Прочитать таблицу с прогнозом изменения населения на N лет вперед
+#     city_forecast = pd.read_csv(f'{path}/city_population_forecast.csv')
+#     city_forecast.drop(city_forecast.iloc[:, 0:24], inplace=True, axis=1)
+#
+#     return city_forecast
 
 
 def calc_age_changes_coef(city_forecast):
@@ -47,22 +47,29 @@ def calc_total_changes_percent(city_forecast):
     return city_years_age_ratio
 
 
-def save_data(df, path, file_name):
-    # Сохранить в csv
-    df.to_csv(f'{path}/{file_name}.csv', index=True, header=True)
+# def save_data(df, path, file_name):
+#     # Сохранить в csv
+#     df.to_csv(f'{path}/{file_name}.csv', index=True, header=True)
 
 
-def main(path):
+def main(city_forecast, path):
+    print('В процессе: расчет прогноза изменения численности населения')
+
     pd.set_option('display.max_rows', 10)
     pd.set_option('display.max_columns', 20)
 
-    city_forecast = read_data(path)
+    # city_forecast = read_data(path)
+    city_forecast.drop(city_forecast.iloc[:, 0:24], inplace=True, axis=1)
 
     changes_forecast = calc_age_changes_coef(city_forecast)
     city_years_age_ratio = calc_total_changes_percent(city_forecast)
 
-    save_data(changes_forecast, path, file_name='changes_forecast')
-    save_data(city_years_age_ratio, path, file_name='city_forecast_years_age_ratio')
+    # save_data(changes_forecast, path, file_name='changes_forecast')
+    # save_data(city_years_age_ratio, path, file_name='city_forecast_years_age_ratio')
+
+    print('Выполнено: расчет прогноза изменения численности населения\n')
+
+    return changes_forecast, city_years_age_ratio
 
 
 if __name__ == '__main__':

@@ -38,8 +38,8 @@ def forecast_house_population(args):
 
 # Сбалансировать вероятное кол-во жителей в домике
 # и сохранить локально
-def balance_houses_population(houses_df_upd, path):
-    mun_age_sex_df = pd.read_csv(f'{path}/mun_age_sex_df.csv')
+def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
+    # mun_age_sex_df = pd.read_csv(f'{path}/mun_age_sex_df.csv')
     mun_list = set(houses_df_upd['municipality_id'])
     houses_df_upd = houses_df_upd.assign(**{'citizens_reg_bal': houses_df_upd['prob_population']})
     # Минимальное значение, до которого может сокращаться населения в доме при балансировке, кол-во человек
@@ -108,9 +108,10 @@ def balance_houses_population(houses_df_upd, path):
     # df_mkd_balanced_mo.to_csv(f'{path}/houses_bal.csv')
     return df_mkd_balanced_mo
 
-def main(args, path=''):
+
+def main(args, mun_age_sex_df, path=''):
     houses_df_upd = forecast_house_population(args)
-    df_mkd_balanced_mo = balance_houses_population(houses_df_upd, path)
+    df_mkd_balanced_mo = balance_houses_population(houses_df_upd, mun_age_sex_df, path)
 
     return df_mkd_balanced_mo
 

@@ -8,7 +8,6 @@ import push_to_db
 # Распределить жителей домов (по соц. группам) по возрастам (0-100)
 # и сохранить локально
 def houses_soc_to_ages(args, houses_soc, mun_soc):
-    print('В процессе: распределение жителей домов (по соц. группам) по возрастам')
 
     soc_list = set(houses_soc['social_group_id'])
 
@@ -48,16 +47,21 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
     return df
 
 
-def main(houses_soc, args, path=''):
+def main(houses_soc, mun_soc, args, path=''):
+    print('В процессе: распределение жителей домов (по соц. группам) по возрастам')
+
     pd.set_option('display.max_rows', 10)
     pd.set_option('display.max_columns', 20)
 
     # houses_soc = pd.read_csv(f'{path}/houses_soc.csv')
     # houses_soc = houses_soc
     houses_soc = houses_soc.drop(['house_total_soc', 'house_men_soc', 'house_women_soc'], axis=1)
-    mun_soc = pd.read_csv(f'{path}/mun_soc.csv')
+    # mun_soc = pd.read_csv(f'{path}/mun_soc.csv')
 
     df = houses_soc_to_ages(args, houses_soc, mun_soc)
+
+    print('Выполнено: распределение жителей домов (по соц. группам) по возрастам\n')
+
     return df
 
 

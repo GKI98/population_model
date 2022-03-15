@@ -1,8 +1,8 @@
 import argparse
-import main_file
+from scripts import main_file
 
 
-def main():
+def main(main_file):
     parser = argparse.ArgumentParser(prog='CLI-parser', description='')
 
     # Group_1 "Connection to DB"
@@ -19,8 +19,8 @@ def main():
     parser_data_info.add_argument('--city-id', dest='city', nargs='?', const=0, default=1, type=int, help='Город')
     parser_data_info.add_argument('--set-population', dest='population', nargs='?', const=0, default=0, type=int,
                                   help='Задать число жителей в год прогнозирования (суммарно по городу)')
-    parser_data_info.add_argument('--path', nargs='?', const=0, default='./Output_data', type=str,
-                                  help='Папка сохранения')
+    # parser_data_info.add_argument('--path', nargs='?', const=0, default='./Output_data', type=str,
+    #                               help='Папка сохранения')
     parser_data_info.add_argument('--update-in-db', dest='update', default=False, action='store_true',
                                   help='Update buildings.resident_number in database')
 
@@ -29,7 +29,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(main_file)
 
 
 

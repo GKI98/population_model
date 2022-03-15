@@ -67,7 +67,7 @@ def main(path):
 
     # Чтение данных из таблицы Excel
     # ----
-    period_city_total = pd.read_excel(io='./population_model/script/Input_data/'
+    period_city_total = pd.read_excel(io='./population_model/scripts/Input_data/'
                                       'report_17 Jun 2021 08_52_44 GMT(old_excel).xls', skiprows=5,
                                       usecols='A,B,R:CR,CT:DN')
     df = period_city_total
@@ -116,9 +116,11 @@ def main(path):
     df = df.rename_axis('Age', axis='columns')
 
     # Сохранить в csv
-    df.to_csv(f'{path}/city_population_forecast.csv', index=True, header=True)
+    # df.to_csv(f'{path}/city_population_forecast.csv', index=True, header=True)
 
     print('Выполнено: прогноз изменения населения')
+
+    return df
 
 
 if __name__ == '__main__':

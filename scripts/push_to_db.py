@@ -87,9 +87,9 @@ def push_db(args, df, table_name, create_query):
     print(f'{table_name} успешно добавлена в бд')
 
 
-def main(args, df):
+def main(args, houses_df):
     print('push 0')
-    sex_age_social_houses(args, df)
+    sex_age_social_houses(args, houses_df)
     create_municipality_sex_age_social(args)
 
 

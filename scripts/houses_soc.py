@@ -8,8 +8,6 @@ import pandas as pd
 # и сохранить локально
 def houses_to_soc(houses_bal, mun_soc_allages_sum, path):
 
-    print('В процессе: распределение жителей домов по соц.группам')
-
     mun_percent = []
     houses_bal['mun_percent'] = ''
     mun_list = set(houses_bal['municipality_id'])
@@ -57,15 +55,18 @@ def houses_to_soc(houses_bal, mun_soc_allages_sum, path):
     return houses_soc
 
 
-def main(df_mkd_balanced_mo, path=''):
+def main(df_mkd_balanced_mo, mun_soc_allages_sum, path=''):
+    print('В процессе: распределение жителей домов по соц.группам')
+
     pd.set_option('display.max_rows', 10)
     pd.set_option('display.max_columns', 20)
 
     # houses_bal = pd.read_csv(f'{path}/houses_bal.csv').drop(['Unnamed: 0'], axis=1)
     houses_bal = df_mkd_balanced_mo
-    mun_soc_allages_sum = pd.read_csv(f'{path}/mun_soc_allages_sum.csv')
+    # mun_soc_allages_sum = pd.read_csv(f'{path}/mun_soc_allages_sum.csv')
 
     houses_soc = houses_to_soc(houses_bal, mun_soc_allages_sum, path)
+    print('Выполнено: распределение жителей домов по соц.группам')
 
     return houses_soc
 
