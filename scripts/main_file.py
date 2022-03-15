@@ -44,6 +44,11 @@ def make_calc(args, path='', year=2023, set_population=0):
                                                                 city_forecast_years_age_ratio_df=city_forecast_years_age_ratio_df,
                                                                 city_population_forecast_df=city_forecast_df,
                                                                 path=path, set_population=set_population, args=args)
+    city_forecast_df = None
+    changes_forecast_df = None
+    city_forecast_years_age_ratio_df = None
+    adm_age_sex_df = None
+
     df = balance_houses.main(args, mun_age_sex_df, path=path)
     df = houses_soc.main(df_mkd_balanced_mo=df, mun_soc_allages_sum=mun_soc, path=path)
     df = houses_soc_age.main(houses_soc=df, mun_soc=mun_soc, args=args, path=path)
