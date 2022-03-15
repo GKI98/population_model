@@ -2,8 +2,8 @@
 
 import iteround
 import pandas as pd
-import changes_coef
-import get_data
+from scripts import changes_coef
+from scripts import get_data
 
 
 # Посчитать % коэф. жителей в возрасте и МУН

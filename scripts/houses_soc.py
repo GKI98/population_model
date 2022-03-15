@@ -66,7 +66,7 @@ def main(df_mkd_balanced_mo, mun_soc_allages_sum, path=''):
     # mun_soc_allages_sum = pd.read_csv(f'{path}/mun_soc_allages_sum.csv')
 
     houses_soc = houses_to_soc(houses_bal, mun_soc_allages_sum, path)
-    print('Выполнено: распределение жителей домов по соц.группам')
+    print('Выполнено: распределение жителей домов по соц.группам\n')
 
     return houses_soc
 

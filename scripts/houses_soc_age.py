@@ -2,7 +2,7 @@
 
 import iteround
 import pandas as pd
-import push_to_db
+from scripts import push_to_db
 
 
 # Распределить жителей домов (по соц. группам) по возрастам (0-100)
@@ -48,7 +48,7 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
 
 
 def main(houses_soc, mun_soc, args, path=''):
-    print('В процессе: распределение жителей домов (по соц. группам) по возрастам')
+    print('В процессе: распределение жителей домиков (по соц. группам) по возрастам')
 
     pd.set_option('display.max_rows', 10)
     pd.set_option('display.max_columns', 20)
@@ -60,7 +60,7 @@ def main(houses_soc, mun_soc, args, path=''):
 
     df = houses_soc_to_ages(args, houses_soc, mun_soc)
 
-    print('Выполнено: распределение жителей домов (по соц. группам) по возрастам\n')
+    print('Выполнено: распределение жителей домиков (по соц. группам) по возрастам\n')
 
     return df
 

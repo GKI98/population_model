@@ -62,6 +62,8 @@ def rename_new_table_attributes(df, df2):
 
 
 def main(path):
+    print('В процессе: прогноз изменения численности населения\n')
+
     pd.set_option('display.max_rows', 10)
     pd.set_option('display.max_columns', 20)
 
@@ -118,7 +120,7 @@ def main(path):
     # Сохранить в csv
     # df.to_csv(f'{path}/city_population_forecast.csv', index=True, header=True)
 
-    print('Выполнено: прогноз изменения населения')
+    print('Выполнено: прогноз изменения численности населения\n')
 
     return df
 

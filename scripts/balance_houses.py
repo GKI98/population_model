@@ -1,7 +1,7 @@
 # 3
 
 import pandas as pd
-import get_data
+from scripts import get_data
 
 
 '''
@@ -110,8 +110,12 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
 
 
 def main(args, mun_age_sex_df, path=''):
+    print('В процессе: балансировка населения по домикам')
+
     houses_df_upd = forecast_house_population(args)
     df_mkd_balanced_mo = balance_houses_population(houses_df_upd, mun_age_sex_df, path)
+
+    print('Выполнено: балансировка населения по домикам\n')
 
     return df_mkd_balanced_mo
 

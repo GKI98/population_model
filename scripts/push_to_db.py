@@ -1,7 +1,7 @@
 # 0
 import pandas as pd
 import psycopg2
-from connect_db import Properties
+from scripts.connect_db import Properties
 
 
 def sex_age_social_houses(args, df, table_name='social_stats.sex_age_social_houses'):
