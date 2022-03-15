@@ -23,8 +23,12 @@ def calc_age_changes_coef(city_forecast):
     death_coef = 1.1
     changes_forecast.loc[-1] = list(changes_forecast.iloc[[0]].values[0] * death_coef)  # adding a row
     changes_forecast.index = changes_forecast.index + 1  # shifting index
+    index = pd.Index(range(0,101))
+    changes_forecast = changes_forecast.set_index(index)
     changes_forecast.sort_index(inplace=True)
     changes_forecast[2019][0] = 1
+
+    print(changes_forecast)
 
     return changes_forecast
 
