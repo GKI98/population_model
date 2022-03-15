@@ -341,11 +341,11 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
     mun_soc = calc_mun_soc_age(mun_age_sex_df, soc_adm_age_sex_df, path)
     adm_soc_sum = calc_adm_soc_sum(soc_list, adm_list, soc_adm_age_sex_df, year)
     mun_allages_percent = calc_mun_sum(mun_list, mun_age_sex_df, adm_list, year)
-    calc_mun_soc_sum(adm_list, soc_list, mun_allages_percent, adm_soc_sum, year, path)
+    mun_soc_allages_sum = calc_mun_soc_sum(adm_list, soc_list, mun_allages_percent, adm_soc_sum, year, path)
 
     print('Выполнено: посчитана статистика по населению')
 
-    return mun_soc, mun_age_sex_df, adm_age_sex_df
+    return mun_soc, mun_age_sex_df, adm_age_sex_df, mun_soc_allages_sum
 
 
 if __name__ == '__main__':
