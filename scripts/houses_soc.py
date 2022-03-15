@@ -18,6 +18,9 @@ def houses_to_soc(houses_bal, mun_soc_allages_sum, path):
         mun_percent += [(mun_house / mun_sum) for mun_house in mun_houses_ppl]
 
     houses_bal['mun_percent'] = mun_percent
+
+    print(mun_soc_allages_sum.head())
+
     houses_soc = pd.merge(houses_bal, mun_soc_allages_sum[['municipality_id', 'social_group_id',
                                                            'total_mun_soc_sum', 'men_mun_soc_sum',
                                                            'women_mun_soc_sum']], on='municipality_id')
