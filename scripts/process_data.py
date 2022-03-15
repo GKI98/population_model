@@ -231,7 +231,7 @@ def calc_mun_soc_sum(adm_list, soc_list, mun_allages_percent, adm_soc_sum, year,
     return mun_soc_allages_sum
 
 
-def main(args, changes_forecast, city_forecast_years_age_ratio, city_population_forecast,
+def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_population_forecast_df,
          year=2023, path='', set_population=0):
     adm_total_df, mun_total_df, adm_age_sex_df, mun_age_sex_df, soc_adm_age_sex_df, _ = get_data.main(args)
 
@@ -239,8 +239,8 @@ def main(args, changes_forecast, city_forecast_years_age_ratio, city_population_
     pd.set_option('display.max_columns', 20)
 
     if year > 2019:
-        coef_changes, year_ratio, change_coef = changes_coef.main(changes_forecast, city_forecast_years_age_ratio,
-                                                                  city_population_forecast,year, path)
+        coef_changes, year_ratio, change_coef = changes_coef.main(changes_forecast_df, city_forecast_years_age_ratio_df,
+                                                                  city_population_forecast_df, year, path)
 
         def update_total_population(df):
             new_population = df['population'] * change_coef
