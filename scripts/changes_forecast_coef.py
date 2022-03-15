@@ -17,8 +17,9 @@ def calc_age_changes_coef(city_forecast):
     columns = list(city_forecast.columns)
     print(city_forecast.head())
     print(city_forecast.columns.tolist())
+    print(city_forecast[2019])
     for col in columns:
-        changes_forecast[col] = city_forecast[col].div(city_forecast['2019'])
+        changes_forecast[col] = city_forecast[col].div(city_forecast[2019])
     # changes_forecast.drop(2019, axis=1, inplace=True)
 
     death_coef = 1.1
