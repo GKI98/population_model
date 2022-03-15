@@ -28,7 +28,7 @@ def calc_age_changes_coef(city_forecast):
     changes_forecast.sort_index(inplace=True)
     changes_forecast[2019][0] = 1
 
-    print(changes_forecast)
+    # print(changes_forecast)
 
     return changes_forecast
 
