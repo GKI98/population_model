@@ -51,14 +51,14 @@ def make_calc(args, path='', year=2023, set_population=0):
 
     df = balance_houses.main(args, mun_age_sex_df, path=path)
     print(df.head())
-    print(df.dtype)
+    print(df.dtypes)
 
     df = houses_soc.main(df_mkd_balanced_mo=df, mun_soc_allages_sum=mun_soc_allages_sum, path=path)
 
     print('****')
 
     print(df.head())
-    print(df.dtype)
+    print(df.dtypes)
 
     df = houses_soc_age.main(houses_soc=df, mun_soc=mun_soc, args=args, path=path)
     push_to_db.main(args=args, houses_df=df)
