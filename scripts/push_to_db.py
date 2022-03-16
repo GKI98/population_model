@@ -80,7 +80,7 @@ def push_db(args, df, table_name, create_query):
         check_query = f"select * from {table_name} limit 5"
         cur.execute(check_query)
         print('push x')
-        records = cur.fetchall(5)
+        records = cur.fetchall()
 
         for row in records:
             print(row)
