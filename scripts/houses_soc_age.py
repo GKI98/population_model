@@ -15,7 +15,7 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
     print(f'mun_soc SIZE:{round((mun_soc.memory_usage(index=True, deep=True).sum() / 10 ** 9), 2)} GB')
 
     soc_list = set(houses_soc['social_group_id'])
-    mun_list = set(houses_soc['municipality_id'])
+    mun_list = list(set(houses_soc['municipality_id']))
 
     df = pd.DataFrame()
     for mun in mun_list[:3]:
