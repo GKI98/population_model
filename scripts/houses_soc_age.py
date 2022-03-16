@@ -78,8 +78,7 @@ def main(houses_soc, mun_soc, args, path=''):
     # houses_soc = pd.read_csv(f'{path}/houses_soc.csv')
     # houses_soc = houses_soc
     houses_soc = houses_soc.drop(['house_total_soc', 'house_men_soc', 'house_women_soc',
-                                  'administrative_unit_id', 'prob_population', 'failure', 'living_area',
-                                  ''], axis=1)
+                                  'administrative_unit_id', 'prob_population', 'failure', 'living_area'], axis=1)
     mun_soc = mun_soc[['municipality_id', 'social_group_id', 'age',
              'men', 'women', 'total']]
     # mun_soc = pd.read_csv(f'{path}/mun_soc.csv')
