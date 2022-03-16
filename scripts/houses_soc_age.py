@@ -87,6 +87,8 @@ def main(houses_soc, mun_soc, args, path=''):
     df = houses_soc_to_ages(args, houses_soc, mun_soc)
     df = df.rename({'id': 'house_id'})
 
+    print(df.head())
+
     print('Выполнено: распределение жителей домиков (по соц. группам) по возрастам\n')
 
     return df
