@@ -18,7 +18,7 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
     mun_list = set(houses_soc['municipality_id'])
 
     df = pd.DataFrame()
-    for mun in mun_list:
+    for mun in mun_list[:3]:
 
         print(f'\nMUN: {mun}\n'
               f'DF SIZE:{round((df.memory_usage(index=True, deep=True).sum() / 10 ** 9), 2)} GB\n')
@@ -49,7 +49,7 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
     men_list_tmp = []
     women_list_tmp = []
 
-    print('Расчет соц.группы №:')
+    print('Округление соц.группы до целых чисел №:')
     for soc in soc_list:
         print(soc)
         df_slice = df.query(f'social_group_id == {soc}')
