@@ -23,7 +23,7 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         print(f'\nMUN: {mun}\n'
               f'DF SIZE:{round((df.memory_usage(index=True, deep=True).sum() / 10 ** 9), 2)} GB\n')
 
-        if not df:
+        if df.empty:
             df = pd.merge(houses_soc.loc[houses_soc['municipality_id'] == mun],
                           mun_soc.loc[mun_soc['municipality_id'] == mun],
                           on=['municipality_id', 'social_group_id'])
