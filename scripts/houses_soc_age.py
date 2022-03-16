@@ -11,16 +11,17 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
 
     print(houses_soc.head())
     print(mun_soc.head())
-    print(f'houses_soc SIZE:{houses_soc.memory_usage(index=True).sum() / 10 ** 9} GB')
-    print(f'mun_soc SIZE:{mun_soc.memory_usage(index=True).sum() / 10 ** 9} GB')
+    print(f'houses_soc SIZE:{round((houses_soc.memory_usage(index=True, deep=True).sum() / 10 ** 9), 2)} GB')
+    print(f'mun_soc SIZE:{round((mun_soc.memory_usage(index=True, deep=True).sum() / 10 ** 9), 2)} GB')
 
     soc_list = set(houses_soc['social_group_id'])
     mun_list = set(houses_soc['municipality_id'])
 
     df = pd.DataFrame()
     for mun in mun_list:
+
         print(f'\nMUN: {mun}\n'
-              f'DF SIZE:{df.memory_usage(index=True).sum() / 10 ** 9} GB\n')
+              f'DF SIZE:{round((df.memory_usage(index=True, deep=True).sum() / 10 ** 9), 2)} GB\n')
 
         if not df:
             df = pd.merge(houses_soc.loc[houses_soc['municipality_id'] == mun],
@@ -34,14 +35,15 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
 
     houses_soc = None
     mun_soc = None
+
     print('\n\n***\n\n')
-    print(f'DF SIZE:{df.memory_usage(index=True).sum() / 10 ** 9} GB')
+    print(f'DF SIZE:{round((df.memory_usage(index=True, deep=True).sum() / 10 ** 9), 2)} GB\n')
 
     df['total'] = df['total'] * df['mun_percent']
     df['men'] = df['total'] * df['mun_percent']
     df['women'] = df['total'] * df['mun_percent']
 
-    print(f'DF SIZE:{df.memory_usage(index=True).sum() / 10**9} GB')
+    print(f'DF SIZE:{round((df.memory_usage(index=True, deep=True).sum() / 10 ** 9), 2)} GB\n')
 
     total_list_tmp = []
     men_list_tmp = []
@@ -61,16 +63,10 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         women_list_tmp += women
 
     df['total'] = total_list_tmp
-
-    print(f'DF SIZE:{df.memory_usage(index=True).sum() / 10**9} GB')
-
     df['men'] = men_list_tmp
-
-    print(f'DF SIZE:{df.memory_usage(index=True).sum() / 10**9} GB')
-
     df['women'] = women_list_tmp
 
-    print(f'DF SIZE:{df.memory_usage(index=True).sum() / 10**9} GB')
+    print(f'DF SIZE:{df.memory_usage(index=True, deep=True).sum() / 10**9} GB')
 
     df = df.drop('mun_percent', axis=1)
     push_to_db.main(args, df)
