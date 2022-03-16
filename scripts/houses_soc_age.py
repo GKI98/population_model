@@ -33,8 +33,8 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
                           on=['municipality_id', 'social_group_id'])])
 
 
-    houses_soc = None
-    mun_soc = None
+    # houses_soc = None
+    # mun_soc = None
 
     print('\n\n***\n\n')
     print(f'DF SIZE:{round((df.memory_usage(index=True, deep=True).sum() / 10 ** 9), 2)} GB\n')
@@ -69,7 +69,7 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
     print(f'DF SIZE:{df.memory_usage(index=True, deep=True).sum() / 10**9} GB')
 
     df = df.drop('mun_percent', axis=1)
-    push_to_db.main(args, df)
+    # push_to_db.main(args, df)
 
     return df
 
