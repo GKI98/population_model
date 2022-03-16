@@ -27,9 +27,9 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
                           mun_soc.loc[mun_soc['municipality_id'] == mun],
                           on=['municipality_id', 'social_group_id'])
         else:
-            df.concat(pd.merge(houses_soc.loc[houses_soc['municipality_id'] == mun],
+            df = pd.concat([df, pd.merge(houses_soc.loc[houses_soc['municipality_id'] == mun],
                           mun_soc.loc[mun_soc['municipality_id'] == mun],
-                          on=['municipality_id', 'social_group_id']))
+                          on=['municipality_id', 'social_group_id'])])
 
 
     houses_soc = None
