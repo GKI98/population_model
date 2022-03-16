@@ -8,6 +8,9 @@ from scripts import push_to_db
 # Распределить жителей домов (по соц. группам) по возрастам (0-100)
 # и сохранить локально
 def houses_soc_to_ages(args, houses_soc, mun_soc):
+
+    print(houses_soc.head())
+    print(mun_soc.head())
     print(f'houses_soc SIZE:{houses_soc.memory_usage(index=True).sum() / 10 ** 9} GB')
     print(f'mun_soc SIZE:{mun_soc.memory_usage(index=True).sum() / 10 ** 9} GB')
 
