@@ -72,6 +72,8 @@ def make_calc(args, path='', year=2023, set_population=0):
     df.house_men_soc = df.house_men_soc.astype('uint8')
     df.house_women_soc = df.house_women_soc.astype('uint8')
 
+    mun_soc = mun_soc[['municipality_id', 'social_group_id', 'age', 'men', 'women', 'total']]
+
     df = houses_soc_age.main(houses_soc=df, mun_soc=mun_soc, args=args, path=path)
 
     df.age = df.age.astype('uint8')
