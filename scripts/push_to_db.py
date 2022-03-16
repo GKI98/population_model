@@ -6,10 +6,11 @@ from scripts.connect_db import Properties
 
 def sex_age_social_houses(args, df, table_name='social_stats.sex_age_social_houses'):
     print('push 1')
+    # REFERENCES functional_objects(id)
     create_query = \
         f'''
         CREATE TABLE {table_name}(
-        house_id SERIAL PRIMARY KEY NOT NULL REFERENCES functional_objects(id), 
+        house_id SERIAL PRIMARY KEY NOT NULL, 
         municipality_id SERIAL NOT NULL, 
         
         
