@@ -16,9 +16,15 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
 
     soc_list = set(houses_soc['social_group_id'])
 
-    df = pd.merge(houses_soc, mun_soc[['municipality_id', 'admin_unit_parent_id', 'social_group_id', 'age',
-                                       'men', 'women', 'total']],
-                  on=['municipality_id', 'social_group_id'])
+    try:
+        df = pd.merge(houses_soc, mun_soc[['municipality_id', 'admin_unit_parent_id', 'social_group_id', 'age',
+                                           'men', 'women', 'total']],
+                      on=['municipality_id', 'social_group_id'])
+    except Exception:
+        print(print(f'ERROR: df size:{df.memory_usage(index=True).sum() / 10 ** 9} GB'))
+
+    houses_soc = None
+    mun_soc = None
 
     print(f'DF SIZE:{df.memory_usage(index=True).sum() / 10 ** 9} GB')
 
