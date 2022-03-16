@@ -15,15 +15,26 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
     print(f'mun_soc SIZE:{mun_soc.memory_usage(index=True).sum() / 10 ** 9} GB')
 
     soc_list = set(houses_soc['social_group_id'])
+    mun_list = set(houses_soc['municipality_id'])
 
-    try:
-        df = pd.merge(houses_soc, mun_soc, on=['municipality_id', 'social_group_id'])
-    except Exception:
-        print(f'ERROR: df size:{df.memory_usage(index=True).sum() / 10 ** 9} GB')
+    df = pd.DataFrame()
+    for mun in mun_list:
+        print(f'\nMUN: {mun}\n'
+              f'DF SIZE:{df.memory_usage(index=True).sum() / 10 ** 9} GB\n')
+
+        if not df:
+            df = pd.merge(houses_soc.loc[houses_soc['municipality_id'] == mun],
+                          mun_soc.loc[mun_soc['municipality_id'] == mun],
+                          on=['municipality_id', 'social_group_id'])
+        else:
+            df.concat(pd.merge(houses_soc.loc[houses_soc['municipality_id'] == mun],
+                          mun_soc.loc[mun_soc['municipality_id'] == mun],
+                          on=['municipality_id', 'social_group_id']))
+
 
     houses_soc = None
     mun_soc = None
-
+    print('\n\n***\n\n')
     print(f'DF SIZE:{df.memory_usage(index=True).sum() / 10 ** 9} GB')
 
     df['total'] = df['total'] * df['mun_percent']
@@ -64,8 +75,6 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
     df = df.drop('mun_percent', axis=1)
     push_to_db.main(args, df)
 
-    # df.to_csv(f'{path}houses_soc_age.csv', index=False, header=True)
-
     return df
 
 
@@ -75,13 +84,9 @@ def main(houses_soc, mun_soc, args, path=''):
     pd.set_option('display.max_rows', 10)
     pd.set_option('display.max_columns', 20)
 
-    # houses_soc = pd.read_csv(f'{path}/houses_soc.csv')
-    # houses_soc = houses_soc
     houses_soc = houses_soc.drop(['house_total_soc', 'house_men_soc', 'house_women_soc',
                                   'administrative_unit_id', 'prob_population', 'failure', 'living_area'], axis=1)
-    mun_soc = mun_soc[['municipality_id', 'social_group_id', 'age',
-             'men', 'women', 'total']]
-    # mun_soc = pd.read_csv(f'{path}/mun_soc.csv')
+    mun_soc = mun_soc[['municipality_id', 'social_group_id', 'age', 'men', 'women']]
 
     df = houses_soc_to_ages(args, houses_soc, mun_soc)
 
