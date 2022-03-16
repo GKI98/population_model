@@ -17,11 +17,9 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
     soc_list = set(houses_soc['social_group_id'])
 
     try:
-        df = pd.merge(houses_soc, mun_soc[['municipality_id', 'admin_unit_parent_id', 'social_group_id', 'age',
-                                           'men', 'women', 'total']],
-                      on=['municipality_id', 'social_group_id'])
+        df = pd.merge(houses_soc, mun_soc, on=['municipality_id', 'social_group_id'])
     except Exception:
-        print(print(f'ERROR: df size:{df.memory_usage(index=True).sum() / 10 ** 9} GB'))
+        print(f'ERROR: df size:{df.memory_usage(index=True).sum() / 10 ** 9} GB')
 
     houses_soc = None
     mun_soc = None
@@ -79,7 +77,11 @@ def main(houses_soc, mun_soc, args, path=''):
 
     # houses_soc = pd.read_csv(f'{path}/houses_soc.csv')
     # houses_soc = houses_soc
-    houses_soc = houses_soc.drop(['house_total_soc', 'house_men_soc', 'house_women_soc'], axis=1)
+    houses_soc = houses_soc.drop(['house_total_soc', 'house_men_soc', 'house_women_soc',
+                                  'administrative_unit_id', 'prob_population', 'failure', 'living_area',
+                                  ''], axis=1)
+    mun_soc = mun_soc[['municipality_id', 'social_group_id', 'age',
+             'men', 'women', 'total']]
     # mun_soc = pd.read_csv(f'{path}/mun_soc.csv')
 
     df = houses_soc_to_ages(args, houses_soc, mun_soc)
