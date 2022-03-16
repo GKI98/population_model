@@ -10,7 +10,7 @@ def sex_age_social_houses(args, df, table_name='social_stats.sex_age_social_hous
     create_query = \
         f'''
         CREATE TABLE {table_name}(
-        house_id SERIAL PRIMARY KEY NOT NULL, 
+        house_id SERIAL NOT NULL, 
         municipality_id SERIAL NOT NULL, 
         
         
