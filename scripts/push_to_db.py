@@ -11,12 +11,12 @@ def sex_age_social_houses(args, df, table_name='social_stats.sex_age_social_hous
         CREATE TABLE {table_name}(
         house_id SERIAL PRIMARY KEY NOT NULL REFERENCES functional_objects(id), 
         municipality_id SERIAL NOT NULL, 
-        administrative_unit_id SERIAL NOT NULL,
-        living_area real,
+        
+        
         document_population integer,
-        failure bool,
+        
         max_population integer,
-        prob_population integer,
+        
         resident_number integer,
         social_group_id serial NOT NULL, 
         age integer,
@@ -27,14 +27,14 @@ def sex_age_social_houses(args, df, table_name='social_stats.sex_age_social_hous
     push_db(args, df, table_name, create_query)
 
 
-def create_municipality_sex_age_social(args, table_name='social_stats.municipality_sex_age_social'):
+def create_municipality_sex_age_social(args, mun_soc_df, table_name='social_stats.municipality_sex_age_social'):
     print('push 4')
-    df = pd.read_csv('./Output_data/mun_soc.csv')
-    df = df[['admin_unit_parent_id', 'municipality_id', 'age', 'social_group_id', 'men', 'women', 'total']]
+    # df = pd.read_csv('./Output_data/mun_soc.csv')
+    df = mun_soc_df
     create_query = \
         f'''
         CREATE TABLE {table_name}(
-        admin_unit_parent_id serial,
+        
         municipality_id serial,
         age integer,
         social_group_id serial,
@@ -87,10 +87,10 @@ def push_db(args, df, table_name, create_query):
     print(f'{table_name} успешно добавлена в бд')
 
 
-def main(args, houses_df):
+def main(args, houses_df, mun_soc_df):
     print('push 0')
     sex_age_social_houses(args, houses_df)
-    create_municipality_sex_age_social(args)
+    create_municipality_sex_age_social(args, mun_soc_df)
 
 
 if __name__ == '__main__':

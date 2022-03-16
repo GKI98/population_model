@@ -76,7 +76,7 @@ def make_calc(args, path='', year=2023, set_population=0):
 
     df.age = df.age.astype('uint8')
 
-    push_to_db.main(args=args, houses_df=df)
+    push_to_db.main(args=args, mun_soc_df=mun_soc, houses_df=df)
 
 
 def main(args):
