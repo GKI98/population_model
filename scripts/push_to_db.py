@@ -29,7 +29,7 @@ def sex_age_social_houses(args, df, table_name='social_stats.sex_age_social_hous
 
 
 def create_municipality_sex_age_social(args, mun_soc_df, table_name='social_stats.municipality_sex_age_social'):
-    print('push 4')
+    print('push 1')
     # df = pd.read_csv('./Output_data/mun_soc.csv')
     df = mun_soc_df
     create_query = \
@@ -48,7 +48,7 @@ def create_municipality_sex_age_social(args, mun_soc_df, table_name='social_stat
 
 
 def insert_df(cur, df, table_name):
-    print('push 2')
+    print('push 4')
     tuples = [tuple(x) for x in df.to_numpy()]
     cols = ','.join(list(df.columns))
     values_space = '%s,' * len(list(df.columns))
@@ -66,21 +66,21 @@ def insert_df(cur, df, table_name):
 
 
 def push_db(args, df, table_name, create_query):
-    print('push 3')
+    print('push 2')
 
     conn = Properties.connect(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass)
     # conn = Properties.connect()
 
     with conn, conn.cursor() as cur:
-        cur.execute(f'drop table if exists {table_name}')
+        # cur.execute(f'drop table if exists {table_name}')
         cur.execute(create_query)
-        print('push 2')
+        print('push 3')
         insert_df(cur, df, table_name)
 
+        print('push 5')
         check_query = f"select * from {table_name} limit 5"
         cur.execute(check_query)
-        print('push x')
-        records = cur.fetchmany(5)
+        records = cur.fetchall()
 
         for row in records:
             print(row)
@@ -88,10 +88,13 @@ def push_db(args, df, table_name, create_query):
     print(f'{table_name} успешно добавлена в бд')
 
 
-def main(args, houses_df, mun_soc_df):
+def main(args, houses_df=None, mun_soc_df=None):
     print('push 0')
-    sex_age_social_houses(args, houses_df)
-    create_municipality_sex_age_social(args, mun_soc_df)
+
+    if houses_df:
+        sex_age_social_houses(args, houses_df)
+    if mun_soc_df:
+        create_municipality_sex_age_social(args, mun_soc_df)
 
 
 if __name__ == '__main__':

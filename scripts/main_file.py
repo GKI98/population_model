@@ -45,12 +45,10 @@ def make_calc(args, path='', year=2023, set_population=0):
                                                                 city_forecast_years_age_ratio_df=city_forecast_years_age_ratio_df,
                                                                 city_population_forecast_df=city_forecast_df,
                                                                 path=path, set_population=set_population, args=args)
-    city_forecast_df = None
-    changes_forecast_df = None
-    city_forecast_years_age_ratio_df = None
-    adm_age_sex_df = None
-
-
+    del city_forecast_df
+    del changes_forecast_df
+    del city_forecast_years_age_ratio_df
+    del adm_age_sex_df
 
     df = balance_houses.main(args, mun_age_sex_df, path=path)
 
@@ -72,13 +70,7 @@ def make_calc(args, path='', year=2023, set_population=0):
     df.house_men_soc = df.house_men_soc.astype('uint8')
     df.house_women_soc = df.house_women_soc.astype('uint8')
 
-    mun_soc = mun_soc[['municipality_id', 'social_group_id', 'age', 'men', 'women', 'total']]
-
-    df = houses_soc_age.main(houses_soc=df, mun_soc=mun_soc, args=args, path=path)
-
-    df.age = df.age.astype('uint8')
-
-    push_to_db.main(args=args, mun_soc_df=mun_soc, houses_df=df)
+    houses_soc_age.main(houses_soc=df, mun_soc=mun_soc, args=args, path=path)
 
 
 def main(args):

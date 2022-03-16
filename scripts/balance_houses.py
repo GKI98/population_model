@@ -45,6 +45,7 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
 
     # Минимальное значение, до которого может сокращаться населения в доме при балансировке, кол-во человек
     balancing_min = 0
+    # 5
     # Точность балансировки, кол-во человек
     accuracy = 10000
 
