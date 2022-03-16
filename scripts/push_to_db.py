@@ -88,12 +88,12 @@ def push_db(args, df, table_name, create_query):
     print(f'{table_name} успешно добавлена в бд')
 
 
-def main(args, houses_df=None, mun_soc_df=None):
+def main(args, houses_df=pd.DataFrame(), mun_soc_df=pd.DataFrame()):
     print('push 0')
 
-    if houses_df:
+    if not houses_df.empty:
         sex_age_social_houses(args, houses_df)
-    if mun_soc_df:
+    if not mun_soc_df.empty:
         create_municipality_sex_age_social(args, mun_soc_df)
 
 
