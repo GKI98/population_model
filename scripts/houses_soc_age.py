@@ -18,7 +18,7 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
     mun_list = list(set(houses_soc['municipality_id']))
 
     df = pd.DataFrame()
-    for mun in mun_list[:3]:
+    for mun in mun_list[:1]:
 
         print(f'\nMUN: {mun}\n'
               f'DF SIZE:{round((df.memory_usage(index=True, deep=True).sum() / 10 ** 9), 2)} GB\n')
@@ -82,7 +82,7 @@ def main(houses_soc, mun_soc, args, path=''):
 
     houses_soc = houses_soc.drop(['house_total_soc', 'house_men_soc', 'house_women_soc',
                                   'administrative_unit_id', 'prob_population', 'failure', 'living_area'], axis=1)
-    mun_soc = mun_soc[['municipality_id', 'social_group_id', 'age', 'men', 'women']]
+    mun_soc = mun_soc[['municipality_id', 'social_group_id', 'age', 'men', 'women', 'total']]
 
     df = houses_soc_to_ages(args, houses_soc, mun_soc)
 
