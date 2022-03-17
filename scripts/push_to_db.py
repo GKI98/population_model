@@ -63,7 +63,7 @@ def insert_df(cur, df, table_name):
     cols = ','.join(list(tmp_df.columns))
     values_space = '%s,' * len(list(tmp_df.columns))
     values_space = values_space[:-1]
-    query = f"\nINSERT INTO {table_name} ({cols}) VALUES ({values_space})"
+    query = f"INSERT INTO {table_name} ({cols}) VALUES ({values_space})"
     print(query)
 
     print('\nChunking df')
