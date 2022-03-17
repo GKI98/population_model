@@ -72,7 +72,7 @@ def main(houses_soc, mun_soc, args, path=''):
                                   'administrative_unit_id', 'prob_population', 'failure', 'living_area'], axis=1)
 
     mun_soc = mun_soc[['municipality_id', 'social_group_id', 'age', 'men', 'women', 'total']]
-    mun_soc.age = mun_soc.age.astype('uint8')
+    mun_soc.age = mun_soc.loc['age'].astype('uint8')
     houses_soc.rename({'id': 'house_id'}, axis=1, inplace=True)
 
     houses_soc_to_ages(args, houses_soc, mun_soc)
