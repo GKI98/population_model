@@ -74,10 +74,9 @@ def push_db(args, df, table_name, create_query):
     with conn, conn.cursor() as cur:
         # cur.execute(f'drop table if exists {table_name}')
         cur.execute(create_query)
-        print('push 3')
         insert_df(cur, df, table_name)
 
-        print('push 5')
+        print('check inserted df in db')
         check_query = f"select * from {table_name} limit 5"
         cur.execute(check_query)
         records = cur.fetchall()
