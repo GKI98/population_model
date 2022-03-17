@@ -15,8 +15,12 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
 
     soc_list = set(houses_soc['social_group_id'])
     mun_list = set(houses_soc['municipality_id'])
+    len_mun_list = len(mun_list)
 
+    counter = 0
     for mun in mun_list:
+        counter += 1
+        print(f'\nРасчет МУН: {counter} / {len_mun_list}\n')
         df = pd.merge(houses_soc.loc[houses_soc['municipality_id'] == mun],
                       mun_soc.loc[mun_soc['municipality_id'] == mun], on=['municipality_id', 'social_group_id'])
 
