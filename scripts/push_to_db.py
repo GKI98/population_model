@@ -52,11 +52,7 @@ def chunking(df):
     chunk_size = 1000
     index_slices = sliced(range(len(df)), chunk_size)
 
-    return index_slices
-
-
-
-
+    return index_slices, chunk_size
 
 
 def insert_df(cur, df, table_name):
@@ -67,13 +63,15 @@ def insert_df(cur, df, table_name):
     cols = ','.join(list(tmp_df.columns))
     values_space = '%s,' * len(list(tmp_df.columns))
     values_space = values_space[:-1]
-    query = f"INSERT INTO {table_name} ({cols}) VALUES ({values_space})"
+    query = f"\nINSERT INTO {table_name} ({cols}) VALUES ({values_space})"
     print(query)
 
-    index_slices = chunking(df)
     print('\nChunking df')
+    index_slices, chunk_size = chunking(df)
+    counter = 0
     for index_slice in index_slices:
-        print(f'Chunk: {index_slice} / {index_slices}')
+        counter += 1
+        print(f'Chunk: {counter} / {chunk_size}')
         chunk = df.iloc[index_slice]
         tuples = [tuple(x) for x in chunk.to_numpy()]
         try:
@@ -95,13 +93,13 @@ def push_db(args, df, table_name, create_query):
         cur.execute(create_query)
         insert_df(cur, df, table_name)
 
-        print('check inserted df in db')
-        check_query = f"select * from {table_name} limit 5"
-        cur.execute(check_query)
-        records = cur.fetchall()
-
-        for row in records:
-            print(row)
+        # print('check inserted df in db')
+        # check_query = f"select * from {table_name} limit 5"
+        # cur.execute(check_query)
+        # records = cur.fetchall()
+        #
+        # for row in records:
+        #     print(row)
 
     print(f'{table_name} успешно добавлена в бд')
 

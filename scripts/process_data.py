@@ -9,7 +9,7 @@ from scripts import get_data
 # Посчитать % коэф. жителей в возрасте и МУН
 # и сохранить локально
 def calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list, path):
-    print('В процессе: расчет кол-ва жителей по возрастам')
+    print('\nВ процессе: расчет кол-ва жителей по возрастам')
 
     for age in range(0, 101):
         for sex in ['men', 'women', 'total']:
@@ -84,6 +84,7 @@ def calc_mun_soc_age(mun_age_sex_df, soc_adm_age_sex_df, path) -> None:
         mun_soc_sex = [0.0 if pd.isna(x) else x for x in mun_soc_sex]
         mun_soc[sex] = iteround.saferound(mun_soc_sex, 0)
 
+    print('Выполнено: расчет кол-ва жителей по возрастам')
     # mun_soc.to_csv(f'{path}/mun_soc.csv', index=False, header=True)
     return mun_soc
 
