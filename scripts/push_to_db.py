@@ -79,7 +79,7 @@ def insert_df(cur, df, table_name):
         except (Exception, psycopg2.DatabaseError) as e:
             print("Error: %s" % e)
 
-            raise e
+            return 0
 
 
 def push_db(args, df, table_name, create_query):
