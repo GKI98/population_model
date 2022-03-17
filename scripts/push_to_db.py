@@ -2,6 +2,7 @@
 import pandas as pd
 import psycopg2
 from scripts.connect_db import Properties
+from more_itertools import sliced
 
 
 def sex_age_social_houses(args, df, table_name='social_stats.sex_age_social_houses'):
@@ -47,23 +48,40 @@ def create_municipality_sex_age_social(args, mun_soc_df, table_name='social_stat
     push_db(args, df, table_name, create_query)
 
 
+def chunking(df):
+    chunk_size = 1000
+    index_slices = sliced(range(len(df)), chunk_size)
+
+    return index_slices
+
+
+
+
+
+
 def insert_df(cur, df, table_name):
     tmp_df = df[:2]
     print(f'insert {table_name}')
-    tuples = [tuple(x) for x in df.to_numpy()]
+    len_df = len(df)
+    print(f'{table_name} len: {len_df}')
     cols = ','.join(list(tmp_df.columns))
     values_space = '%s,' * len(list(tmp_df.columns))
     values_space = values_space[:-1]
     query = f"INSERT INTO {table_name} ({cols}) VALUES ({values_space})"
     print(query)
 
-    try:
-        cur.executemany(query, tuples)
+    index_slices = chunking(df)
+    print('\nChunking df')
+    for index_slice in index_slices:
+        print(f'Chunk: {index_slice} / {index_slices}')
+        chunk = df.iloc[index_slice]
+        tuples = [tuple(x) for x in chunk.to_numpy()]
+        try:
+            cur.executemany(query, tuples)
+        except (Exception, psycopg2.DatabaseError) as e:
+            print("Error: %s" % e)
 
-    except (Exception, psycopg2.DatabaseError) as e:
-        print("Error: %s" % e)
-
-        raise e
+            raise e
 
 
 def push_db(args, df, table_name, create_query):
