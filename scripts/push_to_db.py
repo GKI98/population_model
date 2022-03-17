@@ -5,7 +5,7 @@ from scripts.connect_db import Properties
 
 
 def sex_age_social_houses(args, df, table_name='social_stats.sex_age_social_houses'):
-    print('push 1')
+    print('push sex_age_social_houses')
     # REFERENCES functional_objects(id)
     create_query = \
         f'''
@@ -29,7 +29,7 @@ def sex_age_social_houses(args, df, table_name='social_stats.sex_age_social_hous
 
 
 def create_municipality_sex_age_social(args, mun_soc_df, table_name='social_stats.municipality_sex_age_social'):
-    print('push 1')
+    print('create municipality_sex_age_social')
     # df = pd.read_csv('./Output_data/mun_soc.csv')
     df = mun_soc_df
     create_query = \
@@ -48,7 +48,7 @@ def create_municipality_sex_age_social(args, mun_soc_df, table_name='social_stat
 
 
 def insert_df(cur, df, table_name):
-    print('push 4')
+    print(f'insert {table_name}')
     tuples = [tuple(x) for x in df.to_numpy()]
     cols = ','.join(list(df.columns))
     values_space = '%s,' * len(list(df.columns))
@@ -66,7 +66,7 @@ def insert_df(cur, df, table_name):
 
 
 def push_db(args, df, table_name, create_query):
-    print('push 2')
+    print('push df')
 
     conn = Properties.connect(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass)
     # conn = Properties.connect()
@@ -89,8 +89,6 @@ def push_db(args, df, table_name, create_query):
 
 
 def main(args, houses_df=pd.DataFrame(), mun_soc_df=pd.DataFrame()):
-    print('push 0')
-
     if not houses_df.empty:
         sex_age_social_houses(args, houses_df)
     if not mun_soc_df.empty:
