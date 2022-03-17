@@ -10,7 +10,7 @@ def sex_age_social_houses(args, df, table_name='social_stats.sex_age_social_hous
     # REFERENCES functional_objects(id)
     create_query = \
         f'''
-        CREATE TABLE {table_name}(
+        CREATE TABLE IF NOT EXISTS {table_name}(
         house_id SERIAL NOT NULL, 
         municipality_id SERIAL NOT NULL, 
         
@@ -35,7 +35,7 @@ def create_municipality_sex_age_social(args, mun_soc_df, table_name='social_stat
     df = mun_soc_df
     create_query = \
         f'''
-        CREATE TABLE {table_name}(
+        CREATE TABLE IF NOT EXISTS {table_name}(
         
         municipality_id serial,
         age integer,
@@ -90,6 +90,7 @@ def push_db(args, df, table_name, create_query):
 
     with conn, conn.cursor() as cur:
         # cur.execute(f'drop table if exists {table_name}')
+
         cur.execute(create_query)
         insert_df(cur, df, table_name)
 
