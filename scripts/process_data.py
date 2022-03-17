@@ -71,8 +71,6 @@ def calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list, path):
 # Посчитать население по соц.группам по возрасту для МУН
 # и сохранить локально
 def calc_mun_soc_age(mun_age_sex_df, soc_adm_age_sex_df, path) -> None:
-    print('В процессе: расчет соц.групп по возрастам')
-
     mun_soc = pd.merge(mun_age_sex_df[['admin_unit_parent_id', 'municipality_id', 'age', 'men_age_allmun_percent',
                                        'women_age_allmun_percent', 'total_age_allmun_percent']],
                        soc_adm_age_sex_df[['admin_unit_parent_id', 'social_group_id', 'age', 'men', 'women', 'total']],
@@ -115,8 +113,6 @@ def calc_adm_soc_sum(soc_list, adm_list, soc_adm_age_sex_df, year):
 
 # Посчитать суммарное кол-во жителей по МУН и % жителей МУН в АДМ
 def calc_mun_sum(mun_list, mun_age_sex_df, adm_list, year):
-    print('В процессе: расчет % жителей МУН в АДМ')
-
     # Посчитать общее число во всех соц.группах для МУН
     mun_allages_sum = pd.DataFrame(columns=['year', 'admin_unit_parent_id', 'municipality_id',
                                            'men_sum', 'women_sum', 'total_sum'])
@@ -173,9 +169,6 @@ def calc_mun_sum(mun_list, mun_age_sex_df, adm_list, year):
 # Посчитать суммарное кол-во жителей в МУН по соц.группам
 # и сохранить локально
 def calc_mun_soc_sum(adm_list, soc_list, mun_allages_percent, adm_soc_sum, year, path) -> None:
-
-    print('В процессе: расчет соц.групп по МУН')
-
     mun_soc_allages_sum = pd.DataFrame(columns=['year', 'admin_unit_parent_id', 'municipality_id', 'social_group_id',
                                                 'total_mun_soc_sum', 'men_mun_soc_sum', 'women_mun_soc_sum'])
     for adm in adm_list:
@@ -332,12 +325,23 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
     col = mun_age_sex_df.pop("admin_unit_parent_id")
     mun_age_sex_df.insert(1, col.name, col)
 
+    print('\nВ процессе: расчет соц.групп по возрастам')
     mun_soc = calc_mun_soc_age(mun_age_sex_df, soc_adm_age_sex_df, path)
-    adm_soc_sum = calc_adm_soc_sum(soc_list, adm_list, soc_adm_age_sex_df, year)
-    mun_allages_percent = calc_mun_sum(mun_list, mun_age_sex_df, adm_list, year)
-    mun_soc_allages_sum = calc_mun_soc_sum(adm_list, soc_list, mun_allages_percent, adm_soc_sum, year, path)
+    print('Выполнено: расчет соц.групп по возрастам')
 
-    print('Выполнено: посчитана статистика по населению')
+    print('\nВ процессе: расчет соц.групп суммарно по АДМ')
+    adm_soc_sum = calc_adm_soc_sum(soc_list, adm_list, soc_adm_age_sex_df, year)
+    print('Выполнено: расчет соц.групп суммарно по АДМ')
+
+    print('\nВ процессе: расчет % жителей МУН в АДМ')
+    mun_allages_percent = calc_mun_sum(mun_list, mun_age_sex_df, adm_list, year)
+    print('Выполнено: расчет % жителей МУН в АДМ')
+
+    print('\nВ процессе: расчет соц.групп по МУН')
+    mun_soc_allages_sum = calc_mun_soc_sum(adm_list, soc_list, mun_allages_percent, adm_soc_sum, year, path)
+    print('Выполнено: расчет соц.групп по МУН')
+
+    print('\nВыполнено: посчитана статистика по населению')
 
     return mun_soc, mun_age_sex_df, adm_age_sex_df, mun_soc_allages_sum
 
