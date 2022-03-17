@@ -48,10 +48,11 @@ def create_municipality_sex_age_social(args, mun_soc_df, table_name='social_stat
 
 
 def insert_df(cur, df, table_name):
+    tmp_df = df[:2]
     print(f'insert {table_name}')
     tuples = [tuple(x) for x in df.to_numpy()]
-    cols = ','.join(list(df.columns))
-    values_space = '%s,' * len(list(df.columns))
+    cols = ','.join(list(tmp_df.columns))
+    values_space = '%s,' * len(list(tmp_df.columns))
     values_space = values_space[:-1]
     query = f"INSERT INTO {table_name} ({cols}) VALUES ({values_space})"
     print(query)
