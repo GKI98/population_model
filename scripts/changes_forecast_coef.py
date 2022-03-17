@@ -58,7 +58,7 @@ def calc_total_changes_percent(city_forecast):
 
 
 def main(city_forecast, path):
-    print('В процессе: расчет прогноза изменения численности населения')
+    print('\nВ процессе: расчет прогноза изменения численности населения')
 
     pd.set_option('display.max_rows', 10)
     pd.set_option('display.max_columns', 20)

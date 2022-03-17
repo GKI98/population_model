@@ -231,6 +231,9 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
     pd.set_option('display.max_columns', 20)
 
     if year > 2019:
+
+        print(f'\nВ процессе: пересчет населения на {year} год')
+
         coef_changes, year_ratio, change_coef = changes_coef.main(changes_forecast_df, city_forecast_years_age_ratio_df,
                                                                   city_population_forecast_df, year, path)
 
@@ -243,6 +246,7 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
 
         # Пересчитать адм по полу и возрастам
         def update_age_sex_population(df, year):
+
             df['total'] = df['men'] + df['women']
 
             new_total_age_list = list()

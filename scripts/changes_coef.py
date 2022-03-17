@@ -4,7 +4,7 @@
 
 
 def main(changes_forecast_df, city_forecast_years_age_ratio_df, city_population_forecast_df, year=2020, path=''):
-    print('В процессе: расчет коэффициентов изменения численности населения')
+    print('\nВ процессе: расчет коэффициентов изменения численности населения')
 
     # path = '/home/gk/code/tmppycharm/ifmo_1/scripts/data/'
 

@@ -26,7 +26,7 @@ def get_table(cur, query: str, set_index_id: bool = False):
 
 
 def main(args):
-    print('В процессе: получение данных из БД')
+    print('\nВ процессе: получение данных из БД')
     conn = Properties.connect(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass)
 
     with conn, conn.cursor() as cur:
@@ -63,7 +63,7 @@ def main(args):
         age_sex_social_administrative_units_df = get_table(cur, age_sex_social_administrative_units_q).sort_values(
             by=['age'])
 
-    print('Выполнено: получение данных из БД\n')
+    print('Выполнено: получение данных из БД')
 
     return administrative_units_df, municipalities_df, age_sex_administrative_units_df, age_sex_municipalities_df, \
            age_sex_social_administrative_units_df, houses_df
