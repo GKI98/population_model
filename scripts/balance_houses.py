@@ -12,7 +12,7 @@ from scripts import get_data
 # Посчитать макс. и вероятное кол-во жителей в домике
 def forecast_house_population(args):
     houses_df = get_data.main(args)[5]
-    max_sq_liv = 16
+    max_sq_liv = 9
     houses_df['max_population'] = (houses_df['living_area'] / max_sq_liv).astype(int)
 
     def vch_calc(row):

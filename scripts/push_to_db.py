@@ -81,6 +81,11 @@ def insert_df(cur, df, table_name):
 
             return 0
 
+    del index_slices
+    del tuples
+    del chunk
+    del df
+
 
 def push_db(args, df, table_name, create_query):
     print('push df')
@@ -106,6 +111,7 @@ def push_db(args, df, table_name, create_query):
 
 
 def main(args, houses_df=pd.DataFrame(), mun_soc_df=pd.DataFrame()):
+
     if not houses_df.empty:
         sex_age_social_houses(args, houses_df)
     if not mun_soc_df.empty:
