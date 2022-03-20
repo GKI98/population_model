@@ -1,12 +1,12 @@
 FROM python:3.9
 
-COPY req.txt /
+COPY requirements.txt /
 
-RUN pip3 install -r req.txt
+RUN pip3 install -r requirements.txt
 
-COPY scripts /
+COPY scripts/ /scripts
 COPY cli.py /
 
 WORKDIR /
 
-ENTRYPOINT ["python3" "cli.py" "--"]
+CMD [ "python", "cli.py" ]

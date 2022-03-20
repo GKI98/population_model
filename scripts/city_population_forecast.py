@@ -71,7 +71,7 @@ def main(path):
 
     # Чтение данных из таблицы Excel
     # ----
-    period_city_total = pd.read_excel(io='./population_model/scripts/Input_data/'
+    period_city_total = pd.read_excel(io='./scripts/Input_data/'
                                       'report_17 Jun 2021 08_52_44 GMT(old_excel).xls', skiprows=5,
                                       usecols='A,B,R:CR,CT:DN')
     df = period_city_total

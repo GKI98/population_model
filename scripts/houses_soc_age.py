@@ -17,16 +17,14 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
     mun_list = set(houses_soc['municipality_id'])
     len_mun_list = len(mun_list)
 
-    counter = 0
-    for mun in mun_list:
-        counter += 1
+    for counter, mun in enumerate(mun_list):
         print(f'\nРасчет МУН: {counter} / {len_mun_list}\n')
         df = pd.merge(houses_soc.loc[houses_soc['municipality_id'] == mun],
                       mun_soc.loc[mun_soc['municipality_id'] == mun], on=['municipality_id', 'social_group_id'])
 
         df['total'] = df['total'] * df['mun_percent']
-        df['men'] = df['total'] * df['mun_percent']
-        df['women'] = df['total'] * df['mun_percent']
+        df['men'] = df['men'] * df['mun_percent']
+        df['women'] = df['women'] * df['mun_percent']
 
         total_list_tmp = []
         men_list_tmp = []
@@ -61,7 +59,7 @@ def drop_tables_if_exist(args):
 
     with conn, conn.cursor() as cur:
         cur.execute(f'drop table if exists social_stats.sex_age_social_houses')
-        cur.execute(f'drop table if exists social_stats.municipality_sex_age_social')
+        # cur.execute(f'drop table if exists social_stats.municipality_sex_age_social')
 
 
 def main(houses_soc, mun_soc, args, path=''):
@@ -79,6 +77,7 @@ def main(houses_soc, mun_soc, args, path=''):
     mun_soc = mun_soc[['municipality_id', 'social_group_id', 'age', 'men', 'women', 'total']]
 
     houses_soc.rename({'id': 'house_id'}, axis=1, inplace=True)
+    # print(houses_soc.head())
 
     houses_soc_to_ages(args, houses_soc, mun_soc)
 

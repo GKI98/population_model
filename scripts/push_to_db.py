@@ -11,20 +11,16 @@ def sex_age_social_houses(args, df, table_name='social_stats.sex_age_social_hous
     create_query = \
         f'''
         CREATE TABLE IF NOT EXISTS {table_name}(
-        house_id SERIAL NOT NULL, 
-        municipality_id SERIAL NOT NULL, 
-        
-        
+        house_id int NOT NULL REFERENCES functional_object(id), 
+        municipality_id int NOT NULL REFERENCES municipalities(id), 
         document_population integer,
-        
         max_population integer,
-        
         resident_number integer,
-        social_group_id serial NOT NULL, 
+        social_group_id int NOT NULL REFERENCES social_groups(id), 
         age integer,
         men integer,
         women integer,
-        total integer);
+        total integer)
         '''
     push_db(args, df, table_name, create_query)
 
@@ -36,10 +32,9 @@ def create_municipality_sex_age_social(args, mun_soc_df, table_name='social_stat
     create_query = \
         f'''
         CREATE TABLE IF NOT EXISTS {table_name}(
-        
-        municipality_id serial,
+        municipality_id int NOT NULL REFERENCES municipalities(id),
         age integer,
-        social_group_id serial,
+        social_group_id int NOT NULL REFERENCES social_groups(id),
         men integer,
         women integer,
         total integer
@@ -58,7 +53,7 @@ def chunking(df):
 def insert_df(cur, df, table_name):
     tmp_df = df[:2]
     print(f'insert {table_name}')
-    len_df = len(df)
+    len_df = df.shape[0]
     print(f'{table_name} len: {len_df}')
     cols = ','.join(list(tmp_df.columns))
     values_space = '%s,' * len(list(tmp_df.columns))
@@ -110,11 +105,21 @@ def push_db(args, df, table_name, create_query):
     print(f'{table_name} успешно добавлена в бд')
 
 
+def drop_tables_if_exist(args):
+    conn = Properties.connect(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass)
+
+    with conn, conn.cursor() as cur:
+        # cur.execute(f'drop table if exists social_stats.sex_age_social_houses')
+        cur.execute(f'drop table if exists social_stats.municipality_sex_age_social')
+
+
 def main(args, houses_df=pd.DataFrame(), mun_soc_df=pd.DataFrame()):
 
     if not houses_df.empty:
         sex_age_social_houses(args, houses_df)
+
     if not mun_soc_df.empty:
+        drop_tables_if_exist(args)
         create_municipality_sex_age_social(args, mun_soc_df)
 
 

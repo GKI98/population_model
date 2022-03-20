@@ -44,10 +44,12 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
     houses_df_upd = houses_df_upd.assign(**{'citizens_reg_bal': houses_df_upd['prob_population']})
 
     # Минимальное значение, до которого может сокращаться населения в доме при балансировке, кол-во человек
-    balancing_min = 5
+    balancing_min = 0
     # 5
+
     # Точность балансировки, кол-во человек
-    accuracy = 1
+    accuracy = 10000
+    # 1
 
     counter = 0
     df_mkd_balanced_mo = pd.DataFrame()
@@ -107,6 +109,8 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
         counter += 1
         print('Конец балансировки для ', mun, ' \n')
         print('Выполнено шагов: ', i, '\n')
+
+    # print(houses_df_upd.head())
 
     # df_mkd_balanced_mo.to_csv(f'{path}/houses_bal.csv')
     return df_mkd_balanced_mo
