@@ -11,13 +11,14 @@ def main(main_file):
     # Group_1 "Connection to DB"
     parser_conn = parser.add_argument_group(title='Connection options')
     # parser_conn.add_argument('--db-addr', nargs='?', const=0, default='172.17.0.1', type=str.lower)
-    parser_conn.add_argument('--db-addr', nargs='?', const=0, default='127.0.0.1', type=str.lower)
+    parser_conn.add_argument('--db-addr', nargs='?', const=0, default='10.32.1.62', type=str.lower)
+    # parser_conn.add_argument('--db-addr', nargs='?', const=0, default='127.0.0.1', type=str.lower)
 
     parser_conn.add_argument('--db-port', nargs='?', const=0, default=5432, type=int)
     parser_conn.add_argument('--db-name', nargs='?', const=0, default='city_db_final', type=str.lower)
 
-    # parser_conn.add_argument('--db-user', nargs='?', const=0, default='postgres', type=str.lower)
-    parser_conn.add_argument('--db-user', nargs='?', const=0, default='gk', type=str.lower)
+    parser_conn.add_argument('--db-user', nargs='?', const=0, default='postgres', type=str.lower)
+    # parser_conn.add_argument('--db-user', nargs='?', const=0, default='gk', type=str.lower)
 
     parser_conn.add_argument('--db-pass', nargs='?', const=0, default='postgres', type=str.lower)
 

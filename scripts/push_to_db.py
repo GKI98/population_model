@@ -11,12 +11,12 @@ def sex_age_social_houses(args, df, table_name='social_stats.sex_age_social_hous
     create_query = \
         f'''
         CREATE TABLE IF NOT EXISTS {table_name}(
-        house_id int NOT NULL REFERENCES functional_object(id), 
-        municipality_id int NOT NULL REFERENCES municipalities(id), 
+        house_id int NOT NULL , 
+        municipality_id int NOT NULL , 
         document_population integer,
         max_population integer,
         resident_number integer,
-        social_group_id int NOT NULL REFERENCES social_groups(id), 
+        social_group_id int NOT NULL , 
         age integer,
         men integer,
         women integer,
@@ -32,9 +32,9 @@ def create_municipality_sex_age_social(args, mun_soc_df, table_name='social_stat
     create_query = \
         f'''
         CREATE TABLE IF NOT EXISTS {table_name}(
-        municipality_id int NOT NULL REFERENCES municipalities(id),
+        municipality_id int NOT NULL ,
         age integer,
-        social_group_id int NOT NULL REFERENCES social_groups(id),
+        social_group_id int NOT NULL ,
         men integer,
         women integer,
         total integer
@@ -73,8 +73,8 @@ def insert_df(cur, df, table_name):
             cur.executemany(query, tuples)
         except (Exception, psycopg2.DatabaseError) as e:
             print("Error: %s" % e)
-
-            return 0
+            raise e
+            # return 0
 
     del index_slices
     del tuples
@@ -120,7 +120,14 @@ def main(args, houses_df=pd.DataFrame(), mun_soc_df=pd.DataFrame()):
 
     if not mun_soc_df.empty:
         drop_tables_if_exist(args)
-        create_municipality_sex_age_social(args, mun_soc_df)
+
+        mun_soc_df_new = mun_soc_df.copy()
+        mun_soc_df_new = mun_soc_df_new.drop('admin_unit_parent_id', axis=1)
+        mun_soc_df_new = mun_soc_df_new.drop('men_age_allmun_percent', axis=1)
+        mun_soc_df_new = mun_soc_df_new.drop('women_age_allmun_percent', axis=1)
+        mun_soc_df_new = mun_soc_df_new.drop('total_age_allmun_percent', axis=1)
+
+        create_municipality_sex_age_social(args, mun_soc_df=mun_soc_df_new)
 
 
 if __name__ == '__main__':

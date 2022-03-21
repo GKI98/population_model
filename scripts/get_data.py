@@ -62,6 +62,7 @@ def main(args):
         age_sex_social_administrative_units_q = 'SELECT * FROM age_sex_social_administrative_units'
         age_sex_social_administrative_units_df = get_table(cur, age_sex_social_administrative_units_q).sort_values(
             by=['age'])
+        # print(age_sex_social_administrative_units_df)
 
     print('Выполнено: получение данных из БД')
 
