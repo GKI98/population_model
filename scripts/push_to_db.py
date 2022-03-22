@@ -19,8 +19,8 @@ def sex_age_social_houses(args, df, table_name='social_stats.sex_age_social_hous
         social_group_id int NOT NULL , 
         age integer,
         men integer,
-        women integer,
-        total integer)
+        women integer
+        );
         '''
     push_db(args, df, table_name, create_query)
 
@@ -36,8 +36,7 @@ def create_municipality_sex_age_social(args, mun_soc_df, table_name='social_stat
         age integer,
         social_group_id int NOT NULL ,
         men integer,
-        women integer,
-        total integer
+        women integer
         );
         '''
     push_db(args, df, table_name, create_query)
@@ -114,7 +113,7 @@ def drop_tables_if_exist(args):
 
 
 def main(args, houses_df=pd.DataFrame(), mun_soc_df=pd.DataFrame()):
-
+    # pass
     if not houses_df.empty:
         sex_age_social_houses(args, houses_df)
 
@@ -126,6 +125,7 @@ def main(args, houses_df=pd.DataFrame(), mun_soc_df=pd.DataFrame()):
         mun_soc_df_new = mun_soc_df_new.drop('men_age_allmun_percent', axis=1)
         mun_soc_df_new = mun_soc_df_new.drop('women_age_allmun_percent', axis=1)
         mun_soc_df_new = mun_soc_df_new.drop('total_age_allmun_percent', axis=1)
+        mun_soc_df_new = mun_soc_df_new.drop('total', axis=1)
 
         create_municipality_sex_age_social(args, mun_soc_df=mun_soc_df_new)
 

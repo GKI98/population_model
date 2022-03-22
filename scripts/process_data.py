@@ -10,9 +10,6 @@ from scripts import get_data
 # и сохранить локально
 def calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list, path):
     print('\nВ процессе: расчет кол-ва жителей по возрастам')
-    print(mun_age_sex_df)
-    print('adm_age_sex_df | SUM:', sum(adm_age_sex_df['total']))
-    print('mun_age_sex_df | SUM:', sum(mun_age_sex_df['total']))
 
     for age in range(0, 101):
         for sex in ['men', 'women', 'total']:
@@ -76,7 +73,7 @@ def calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list, path):
                     mun_age_sex_df[f'{sex}_mun_allages_percent'] = mun_sex_mun_id_slice / mun_sex_mun_id_sum
                     # print(f'Exception: {e}')
 
-    print('\ntotal_mun_allages_percent', sum(mun_age_sex_df['total_mun_allages_percent']))
+    # print('\ntotal_mun_allages_percent', sum(mun_age_sex_df['total_mun_allages_percent']))
 
     # path = '/home/gk/code/tmppycharm/ifmo_1/scripts/data/'
     # mun_age_sex_df.to_csv(f'{path}/mun_age_sex_df.csv', index=False, header=True)
@@ -87,14 +84,7 @@ def calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list, path):
 
 # Посчитать население по соц.группам по возрасту для МУН
 # и сохранить локально
-def calc_mun_soc_age(mun_age_sex_df, soc_adm_age_sex_df, path) -> None:
-
-    print('mun_age_sex_df',mun_age_sex_df)
-    print('soc_adm_age_sex_df', soc_adm_age_sex_df)
-
-    print('\nmun_age_sex_df | SUM:',sum(mun_age_sex_df['total']))
-    print('soc_adm_age_sex_df | SUM:', sum(soc_adm_age_sex_df['total']))
-
+def calc_mun_soc_age(mun_age_sex_df, soc_adm_age_sex_df, path):
     mun_soc = pd.merge(mun_age_sex_df[['admin_unit_parent_id', 'municipality_id', 'age', 'men_age_allmun_percent',
                                        'women_age_allmun_percent', 'total_age_allmun_percent']],
                        soc_adm_age_sex_df[['admin_unit_parent_id', 'social_group_id', 'age', 'men', 'women', 'total']],
@@ -102,13 +92,13 @@ def calc_mun_soc_age(mun_age_sex_df, soc_adm_age_sex_df, path) -> None:
                        right_on=['admin_unit_parent_id', 'age']).sort_values(by=['age'])
 
     for sex in ['men', 'women', 'total']:
+
         mun_sex_soc_slice = mun_soc[sex]
         mun_sex_soc_percent_slice = mun_soc[f'{sex}_age_allmun_percent']
         mun_soc_sex = (mun_sex_soc_slice * mun_sex_soc_percent_slice).tolist()
+
         mun_soc_sex = [0.0 if pd.isna(x) else x for x in mun_soc_sex]
         mun_soc[sex] = iteround.saferound(mun_soc_sex, 0)
-
-    print('mun_soc | SUM:', sum(mun_soc['total']), '\n')
 
     print('Выполнено: расчет кол-ва жителей по возрастам')
 
@@ -195,8 +185,7 @@ def calc_mun_sum(mun_list, mun_age_sex_df, adm_list, year):
 
 
 # Посчитать суммарное кол-во жителей в МУН по соц.группам
-# и сохранить локально
-def calc_mun_soc_sum(adm_list, soc_list, mun_allages_percent, adm_soc_sum, year, path) -> None:
+def calc_mun_soc_sum(adm_list, soc_list, mun_allages_percent, adm_soc_sum, year, path):
     mun_soc_allages_sum = pd.DataFrame(columns=['year', 'admin_unit_parent_id', 'municipality_id', 'social_group_id',
                                                 'total_mun_soc_sum', 'men_mun_soc_sum', 'women_mun_soc_sum'])
     for adm in adm_list:
@@ -254,9 +243,6 @@ def calc_mun_soc_sum(adm_list, soc_list, mun_allages_percent, adm_soc_sum, year,
 def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_population_forecast_df,
          year=2023, path='', set_population=0):
     adm_total_df, mun_total_df, adm_age_sex_df, mun_age_sex_df, soc_adm_age_sex_df, _ = get_data.main(args)
-
-    print('adm_age_sex_df | SUM before update:', sum(adm_age_sex_df['men']) + sum(adm_age_sex_df['women']))
-    print('soc_adm_age_sex_df | SUM before update:', sum(soc_adm_age_sex_df['men']) + sum(soc_adm_age_sex_df['women']))
 
     pd.set_option('display.max_rows', 10)
     pd.set_option('display.max_columns', 20)
@@ -347,9 +333,6 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
     adm_list = set(adm_age_sex_df['administrative_unit_id'])
     soc_list = set(soc_adm_age_sex_df['social_group_id'])
 
-
-
-
     # Прочитать CSV и добавить колонку с АДМ_id
     # mun_age_sex_df = pd.read_csv(f'{path}/mun_age_sex_df.csv')
     mun_age_sex_df = pd.merge(mun_age_sex_df, mun_total_df[['municipality_id', 'admin_unit_parent_id']],
@@ -359,11 +342,7 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
     col = mun_age_sex_df.pop("admin_unit_parent_id")
     mun_age_sex_df.insert(1, col.name, col)
 
-
     mun_age_sex_df, adm_age_sex_df = calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list, path)
-
-
-
 
     print('\nВ процессе: расчет соц.групп по возрастам')
     mun_soc = calc_mun_soc_age(mun_age_sex_df, soc_adm_age_sex_df, path)

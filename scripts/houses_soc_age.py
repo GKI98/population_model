@@ -4,14 +4,15 @@ import iteround
 import pandas as pd
 from scripts import push_to_db
 from scripts.connect_db import Properties
+# import time
 
 # Распределить жителей домов (по соц. группам) по возрастам (0-100)
 # и сохранить локально
 
 
 def houses_soc_to_ages(args, houses_soc, mun_soc):
-    print(f'houses_soc SIZE:{round((houses_soc.memory_usage(index=True, deep=True).sum() / 10 ** 9), 2)} GB')
-    print(f'mun_soc SIZE:{round((mun_soc.memory_usage(index=True, deep=True).sum() / 10 ** 9), 2)} GB')
+    print(f'houses_soc memory usage:{round((houses_soc.memory_usage(index=True, deep=True).sum() / 10 ** 9), 2)} GB')
+    print(f'mun_soc memory usage:{round((mun_soc.memory_usage(index=True, deep=True).sum() / 10 ** 9), 2)} GB')
 
     soc_list = set(houses_soc['social_group_id'])
     mun_list = set(houses_soc['municipality_id'])
@@ -22,28 +23,33 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         df = pd.merge(houses_soc.loc[houses_soc['municipality_id'] == mun],
                       mun_soc.loc[mun_soc['municipality_id'] == mun], on=['municipality_id', 'social_group_id'])
 
-        df['total'] = df['total'] * df['mun_percent']
+        # df['total'] = df['total'] * df['mun_percent']
         df['men'] = df['men'] * df['mun_percent']
         df['women'] = df['women'] * df['mun_percent']
 
-        total_list_tmp = []
+        # print(sum(df.query('social_group_id == 33')['men']))
+
+        # total_list_tmp = []
         men_list_tmp = []
         women_list_tmp = []
+
+        df = df.sort_values(by=['social_group_id'])
 
         print('Округление соц.группы до целых чисел №:')
         for soc in soc_list:
             print(soc)
             df_slice = df.query(f'social_group_id == {soc}')
 
-            total = iteround.saferound(df_slice['total'].values, 0)
+            # total = iteround.saferound(df_slice['total'].values, 0)
             men = iteround.saferound(df_slice['men'].values, 0)
             women = iteround.saferound(df_slice['women'].values, 0)
+            # print(sum(men))
 
-            total_list_tmp += total
+            # total_list_tmp += total
             men_list_tmp += men
             women_list_tmp += women
 
-        df['total'] = total_list_tmp
+        # df['total'] = total_list_tmp
         df['men'] = men_list_tmp
         df['women'] = women_list_tmp
 
@@ -74,10 +80,9 @@ def main(houses_soc, mun_soc, args, path=''):
                                   'administrative_unit_id', 'prob_population', 'failure', 'living_area'], axis=1)
 
     mun_soc.age = mun_soc.age.astype('uint8')
-    mun_soc = mun_soc[['municipality_id', 'social_group_id', 'age', 'men', 'women', 'total']]
+    mun_soc = mun_soc[['municipality_id', 'social_group_id', 'age', 'men', 'women']]
 
     houses_soc.rename({'id': 'house_id'}, axis=1, inplace=True)
-    # print(houses_soc.head())
 
     houses_soc_to_ages(args, houses_soc, mun_soc)
 
