@@ -33,8 +33,8 @@ def main(args):
         # houses
         houses_q = f'SELECT f.id, p.municipality_id, p.administrative_unit_id, b.living_area, ' \
                    f'b.resident_number, b.failure FROM buildings b ' \
-                   f'INNER JOIN functional_objects f ON b.physical_object_id = f.physical_object_id ' \
-                   f'INNER JOIN physical_objects p ON b.physical_object_id = p.id ' \
+                   f'JOIN functional_objects f ON b.physical_object_id = f.physical_object_id ' \
+                   f'JOIN physical_objects p ON b.physical_object_id = p.id ' \
                    f'WHERE b.living_area IS NOT NULL AND p.city_id = {args.city}'
 
         cur.execute(houses_q)

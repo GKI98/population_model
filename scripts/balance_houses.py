@@ -2,6 +2,7 @@
 
 import pandas as pd
 from scripts import get_data
+from math import sqrt
 
 
 '''
@@ -78,7 +79,8 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
             while citizens_mo_reg_bal > citizens_mo_bal:
                 df_mkd_mo_not_f = df_mkd_mo[df_mkd_mo['failure'] == 0]
                 # Находим индекс неаварийного дома с максимальной разницей между ОМЧ и ВЧ
-                the_house = (df_mkd_mo_not_f['max_population'] - df_mkd_mo_not_f['citizens_reg_bal']).idxmax()
+                the_house = (df_mkd_mo_not_f['max_population'].apply(sqrt) -
+                             df_mkd_mo_not_f['citizens_reg_bal'].apply(sqrt)).idxmax()
                 # Прибавляем жителей к "сбалансированной численности" этого дома
                 df_mkd_mo.at[the_house, 'citizens_reg_bal'] = df_mkd_mo.at[the_house, 'citizens_reg_bal'] + accuracy
                 # Ищем новое значение сбалансированной численности для МО
@@ -92,7 +94,7 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
                 df_mkd_mo_not_f = df_mkd_mo[df_mkd_mo['citizens_reg_bal'] > balancing_min]
 
                 try:
-                    the_house = (df_mkd_mo_not_f['max_population'] - df_mkd_mo_not_f['citizens_reg_bal']).idxmin()
+                    the_house = (df_mkd_mo_not_f['max_population'].apply(sqrt) - df_mkd_mo_not_f['citizens_reg_bal'].apply(sqrt)).idxmin()
                     # Вычитаем жителей из "сбалансированной численности" этого дома
                     df_mkd_mo.at[the_house, 'citizens_reg_bal'] = df_mkd_mo.at[
                                                                       the_house, 'citizens_reg_bal'] - accuracy

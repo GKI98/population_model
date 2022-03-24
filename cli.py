@@ -3,9 +3,6 @@ from scripts import main_file
 
 
 def main(main_file):
-
-    # Сюда вставить то что сокол предлагал про переменные из среды (чтобы в докере работало)
-
     parser = argparse.ArgumentParser(prog='CLI-parser', description='')
 
     # Group_1 "Connection to DB"

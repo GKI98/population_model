@@ -14,42 +14,43 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
     print(f'houses_soc memory usage:{round((houses_soc.memory_usage(index=True, deep=True).sum() / 10 ** 9), 2)} GB')
     print(f'mun_soc memory usage:{round((mun_soc.memory_usage(index=True, deep=True).sum() / 10 ** 9), 2)} GB')
 
-    soc_list = set(houses_soc['social_group_id'])
+    # soc_list = set(houses_soc['social_group_id'])
     mun_list = set(houses_soc['municipality_id'])
     len_mun_list = len(mun_list)
 
     for counter, mun in enumerate(mun_list):
+        # Разрез по муниципалитетам - чтобы кусочками работать с df и не есть много памяти за раз
         print(f'\nРасчет МУН: {counter} / {len_mun_list}\n')
-        df = pd.merge(houses_soc.loc[houses_soc['municipality_id'] == mun],
+
+        houses_soc_mun = houses_soc.loc[houses_soc['municipality_id'] == mun]
+
+        houses_id = houses_soc_mun['house_id']
+
+        df = pd.merge(houses_soc_mun,
                       mun_soc.loc[mun_soc['municipality_id'] == mun], on=['municipality_id', 'social_group_id'])
 
-        # df['total'] = df['total'] * df['mun_percent']
+        # Кол-во людей в соц.группе в возрасте по полу = кол-во людей в доме * вероятность (а.к.а процент)
         df['men'] = df['men'] * df['mun_percent']
         df['women'] = df['women'] * df['mun_percent']
 
-        # print(sum(df.query('social_group_id == 33')['men']))
-
-        # total_list_tmp = []
         men_list_tmp = []
         women_list_tmp = []
 
-        df = df.sort_values(by=['social_group_id'])
+        houses_id.sort()
+        df = df.sort_values(by=['house_id'])
 
-        print('Округление соц.группы до целых чисел №:')
-        for soc in soc_list:
-            print(soc)
-            df_slice = df.query(f'social_group_id == {soc}')
+        # Разбиение по домикам - чтобы балансировать людей по домикам
+        print('Округление жителей домов до целых чисел для мун')
+        for house in houses_id:
 
-            # total = iteround.saferound(df_slice['total'].values, 0)
+            df_slice = df.query(f'house_id == {house}')
+
             men = iteround.saferound(df_slice['men'].values, 0)
             women = iteround.saferound(df_slice['women'].values, 0)
-            # print(sum(men))
 
-            # total_list_tmp += total
             men_list_tmp += men
             women_list_tmp += women
 
-        # df['total'] = total_list_tmp
         df['men'] = men_list_tmp
         df['women'] = women_list_tmp
 
@@ -65,7 +66,6 @@ def drop_tables_if_exist(args):
 
     with conn, conn.cursor() as cur:
         cur.execute(f'drop table if exists social_stats.sex_age_social_houses')
-        # cur.execute(f'drop table if exists social_stats.municipality_sex_age_social')
 
 
 def main(houses_soc, mun_soc, args, path=''):
