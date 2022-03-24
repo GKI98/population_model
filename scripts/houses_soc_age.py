@@ -36,12 +36,19 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         men_list_tmp = []
         women_list_tmp = []
 
-        houses_id.sort()
+        houses_id = houses_id.sort_values(ascending=True)
         df = df.sort_values(by=['house_id'])
 
         # Разбиение по домикам - чтобы балансировать людей по домикам
         print('Округление жителей домов до целых чисел для мун')
+
+        total_h = len(houses_id)
+        counter = 0
+
         for house in houses_id:
+            counter += 1
+
+            print(f'округление для дома: {counter} / {total_h}')
 
             df_slice = df.query(f'house_id == {house}')
 
@@ -57,6 +64,9 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         print(f'DF SIZE:{df.memory_usage(index=True, deep=True).sum() / 10 ** 9} GB')
 
         df = df.drop('mun_percent', axis=1)
+
+        print(df.head())
+        print('pushing ...')
 
         push_to_db.main(args=args, houses_df=df)
 
