@@ -54,7 +54,7 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
     # 5
 
     # Точность балансировки, кол-во человек
-    accuracy = 1
+    accuracy = 5
     # 1
 
     counter = 0
@@ -85,9 +85,10 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
         # то разница должна быть распределена между неаварийными домами МО
         if citizens_mo_reg_bal > citizens_mo_bal:
             while citizens_mo_reg_bal > citizens_mo_bal:
-                df_mkd_mo_not_f = df_mkd_mo[df_mkd_mo['failure'] == 'False']
+                df_mkd_mo_not_f = df_mkd_mo[df_mkd_mo['failure'] == 0]
                 # Находим индекс неаварийного дома с максимальной разницей между ОМЧ и ВЧ
                 # the_house = (df_mkd_mo_not_f['citizens_reg_bal'] / df_mkd_mo_not_f['max_population']).idxmax()
+                
                 the_house = (df_mkd_mo_not_f['citizens_reg_bal'] / df_mkd_mo_not_f['max_population']).idxmin()
                 # Прибавляем жителей к "сбалансированной численности" этого дома
                 df_mkd_mo.at[the_house, 'citizens_reg_bal'] = df_mkd_mo.loc[the_house, 'citizens_reg_bal'] + accuracy
@@ -103,6 +104,7 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
 
                 try:
                     # the_house = (df_mkd_mo_not_f['citizens_reg_bal'] / df_mkd_mo_not_f['max_population']).idxmin()
+
                     the_house = (df_mkd_mo_not_f['citizens_reg_bal'] / df_mkd_mo_not_f['max_population']).idxmax()
                     # Вычитаем жителей из "сбалансированной численности" этого дома
                     df_mkd_mo.at[the_house, 'citizens_reg_bal'] = df_mkd_mo.loc[
