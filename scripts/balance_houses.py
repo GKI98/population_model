@@ -3,7 +3,7 @@
 import pandas as pd
 from scripts import get_data
 
-
+from math import sqrt
 
 '''
 В houses нет муниципалитета №101 !!!
@@ -14,7 +14,13 @@ from scripts import get_data
 def forecast_house_population(args):
     houses_df = get_data.main(args)[5]
     max_sq_liv = 9
+
+    '''
+    Вот тут кстати тоже интом округляется. Можно мб и пофиксить через iteround
+    '''
+
     houses_df['max_population'] = (houses_df['living_area'] / max_sq_liv).astype(int)
+
 
     def vch_calc(row):
         a_omch = 0.3  # коэффициент для ожидаемой максимальной численности жителей (ОМЧ)
@@ -40,7 +46,6 @@ def forecast_house_population(args):
 # Сбалансировать вероятное кол-во жителей в домике
 # и сохранить локально
 def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
-    # mun_age_sex_df = pd.read_csv(f'{path}/mun_age_sex_df.csv')
     mun_list = set(houses_df_upd['municipality_id'])
     houses_df_upd = houses_df_upd.assign(**{'citizens_reg_bal': houses_df_upd['prob_population']})
 
@@ -55,6 +60,7 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
     counter = 0
     df_mkd_balanced_mo = pd.DataFrame()
     sex = 'total'
+
     for mun in mun_list:
         citizens_mo_reg_bal = mun_age_sex_df.query(f'municipality_id == {mun}')[sex].sum()
 
@@ -63,25 +69,28 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
 
         # Сделать вероятные количества жителей в домах отправной точкой для расчета сбалансированных значений
         # df_mkd_mo.assign(citizens_reg_bal=df_mkd_mo['prob_population'])
+
+        # scalar
         citizens_mo_bal = df_mkd_mo['citizens_reg_bal'].sum()
 
         # Шаг балансировки
         print('Посчитано:', counter)
-        print('Начало балансировки для ',mun)
+        print('Начало балансировки для ', mun)
 
         # Шаг балансировки
         i = 0
 
         # Если количество жителей в МО после балансировки по району БОЛЬШЕ,
-        # чем расчитанное вероятное количество жителей для этого МО,
+        # чем расcчитанное вероятное количество жителей для этого МО,
         # то разница должна быть распределена между неаварийными домами МО
         if citizens_mo_reg_bal > citizens_mo_bal:
             while citizens_mo_reg_bal > citizens_mo_bal:
-                df_mkd_mo_not_f = df_mkd_mo[df_mkd_mo['failure'] == 0]
+                df_mkd_mo_not_f = df_mkd_mo[df_mkd_mo['failure'] == 'False']
                 # Находим индекс неаварийного дома с максимальной разницей между ОМЧ и ВЧ
-                the_house = (df_mkd_mo_not_f['citizens_reg_bal'] / df_mkd_mo_not_f['max_population']).idxmax()
+                # the_house = (df_mkd_mo_not_f['citizens_reg_bal'] / df_mkd_mo_not_f['max_population']).idxmax()
+                the_house = (df_mkd_mo_not_f['citizens_reg_bal'] / df_mkd_mo_not_f['max_population']).idxmin()
                 # Прибавляем жителей к "сбалансированной численности" этого дома
-                df_mkd_mo.at[the_house, 'citizens_reg_bal'] = df_mkd_mo.at[the_house, 'citizens_reg_bal'] + accuracy
+                df_mkd_mo.at[the_house, 'citizens_reg_bal'] = df_mkd_mo.loc[the_house, 'citizens_reg_bal'] + accuracy
                 # Ищем новое значение сбалансированной численности для МО
                 citizens_mo_bal = df_mkd_mo['citizens_reg_bal'].sum()
                 i = i + 1
@@ -93,9 +102,10 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
                 df_mkd_mo_not_f = df_mkd_mo[df_mkd_mo['citizens_reg_bal'] > balancing_min]
 
                 try:
-                    the_house = (df_mkd_mo_not_f['citizens_reg_bal'] / df_mkd_mo_not_f['max_population']).idxmin()
+                    # the_house = (df_mkd_mo_not_f['citizens_reg_bal'] / df_mkd_mo_not_f['max_population']).idxmin()
+                    the_house = (df_mkd_mo_not_f['citizens_reg_bal'] / df_mkd_mo_not_f['max_population']).idxmax()
                     # Вычитаем жителей из "сбалансированной численности" этого дома
-                    df_mkd_mo.at[the_house, 'citizens_reg_bal'] = df_mkd_mo.at[
+                    df_mkd_mo.at[the_house, 'citizens_reg_bal'] = df_mkd_mo.loc[
                                                                       the_house, 'citizens_reg_bal'] - accuracy
                 except ValueError as e:
                     print('Численность по МУН меньше, чем минимальное распределение по домикам в этом МУН')
@@ -106,6 +116,10 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
                 citizens_mo_bal = df_mkd_mo['citizens_reg_bal'].sum()
                 i = i + 1
 
+        '''
+        подозреваю concat ниже в создании дупликатов!
+        '''
+
         df_mkd_balanced_mo = pd.concat([df_mkd_balanced_mo, df_mkd_mo])
         counter += 1
         print('Конец балансировки для ', mun, ' \n')
@@ -113,7 +127,6 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
 
     # print(houses_df_upd.head())
 
-    # df_mkd_balanced_mo.to_csv(f'{path}/houses_bal.csv')
     return df_mkd_balanced_mo
 
 

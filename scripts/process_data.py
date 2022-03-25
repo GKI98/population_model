@@ -73,12 +73,6 @@ def calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list, path):
                     mun_age_sex_df[f'{sex}_mun_allages_percent'] = mun_sex_mun_id_slice / mun_sex_mun_id_sum
                     # print(f'Exception: {e}')
 
-    # print('\ntotal_mun_allages_percent', sum(mun_age_sex_df['total_mun_allages_percent']))
-
-    # path = '/home/gk/code/tmppycharm/ifmo_1/scripts/data/'
-    # mun_age_sex_df.to_csv(f'{path}/mun_age_sex_df.csv', index=False, header=True)
-    # adm_age_sex_df.to_csv(f'{path}/adm_age_sex_df.csv', index=False, header=True)
-
     return mun_age_sex_df, adm_age_sex_df
 
 
@@ -92,7 +86,6 @@ def calc_mun_soc_age(mun_age_sex_df, soc_adm_age_sex_df, path):
                        right_on=['admin_unit_parent_id', 'age']).sort_values(by=['age'])
 
     for sex in ['men', 'women', 'total']:
-
         mun_sex_soc_slice = mun_soc[sex]
         mun_sex_soc_percent_slice = mun_soc[f'{sex}_age_allmun_percent']
         mun_soc_sex = (mun_sex_soc_slice * mun_sex_soc_percent_slice).tolist()
@@ -102,7 +95,6 @@ def calc_mun_soc_age(mun_age_sex_df, soc_adm_age_sex_df, path):
 
     print('Выполнено: расчет кол-ва жителей по возрастам')
 
-    # mun_soc.to_csv(f'{path}/mun_soc.csv', index=False, header=True)
     return mun_soc
 
 
@@ -333,8 +325,6 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
     adm_list = set(adm_age_sex_df['administrative_unit_id'])
     soc_list = set(soc_adm_age_sex_df['social_group_id'])
 
-    # Прочитать CSV и добавить колонку с АДМ_id
-    # mun_age_sex_df = pd.read_csv(f'{path}/mun_age_sex_df.csv')
     mun_age_sex_df = pd.merge(mun_age_sex_df, mun_total_df[['municipality_id', 'admin_unit_parent_id']],
                               on='municipality_id')
 

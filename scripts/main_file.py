@@ -28,6 +28,11 @@ def make_calc(args, path='', year=2022, set_population=0):
 
     df = balance_houses.main(args, mun_age_sex_df, path=path)
 
+    # print(df.duplicated().value_counts())
+    # df.drop_duplicates(inplace=True)
+    # print('\n', df.duplicated().value_counts())
+
+
     # Уменьшение размерности столбцов для освобождения памяти
     df.municipality_id = df.municipality_id.astype('uint16')
     df.administrative_unit_id = df.administrative_unit_id.astype('uint16')
@@ -41,7 +46,7 @@ def make_calc(args, path='', year=2022, set_population=0):
 
     # Уменьшение размерности столбцов для освобождения памяти
     df.document_population = df.document_population.astype('uint16')
-    df.mun_percent = df.mun_percent.astype('float16')
+    df.mun_percent = df.mun_percent.astype('float32')
     df.social_group_id = df.social_group_id.astype('uint16')
     df.house_total_soc = df.house_total_soc.astype('uint16')
     df.house_men_soc = df.house_men_soc.astype('uint16')
