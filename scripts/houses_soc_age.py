@@ -4,7 +4,7 @@ import iteround
 import pandas as pd
 from scripts import push_to_db
 from scripts.connect_db import Properties
-import time
+# import time
 
 # Распределить жителей домов (по соц. группам) по возрастам (0-100)
 # и сохранить локально
@@ -34,7 +34,7 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         df = df.sort_values(by=['house_id'])
 
 
-        print(df.head())
+        # print(df.head())
 
 
         # А это было выше!
@@ -57,24 +57,23 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         for house in houses_id:
             counter += 1
 
-            print(f'округление для дома: {counter} / {total_h}')
+            # print(f'округление для дома: {counter} / {total_h}')
 
             df_slice = df.query(f'house_id == {house}')
 
-            print('resident_number: ', df_slice['resident_number'][:1])
+            # print('resident_number: ', df_slice['resident_number'][:1])
 
-            print('MEN: ',df_slice['men'].sum())
-            print('WOMEN: ',df_slice['women'].sum())
+            # print('MEN: ',df_slice['men'].sum())
+            # print('WOMEN: ',df_slice['women'].sum())
 
             men = iteround.saferound(df_slice['men'].values, 0)
             women = iteround.saferound(df_slice['women'].values, 0)
 
-            print('MEN: ', df_slice['men'].sum())
-            print('WOMEN: ', df_slice['women'].sum())
+            # print('MEN: ', df_slice['men'].sum())
+            # print('WOMEN: ', df_slice['women'].sum())
 
             men_list_tmp += men
             women_list_tmp += women
-
 
         df['men'] = men_list_tmp
         df['women'] = women_list_tmp
@@ -82,6 +81,9 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         print(f'DF SIZE:{df.memory_usage(index=True, deep=True).sum() / 10 ** 9} GB')
 
         df = df.drop('mun_percent', axis=1)
+
+        # print('\nCheckpoint 2\n')
+        # time.sleep(1000)
 
         push_to_db.main(args=args, houses_df=df)
 
@@ -102,7 +104,9 @@ def main(houses_soc, mun_soc, args, path=''):
     pd.set_option('display.max_columns', 20)
 
     houses_soc = houses_soc.drop(['house_total_soc', 'house_men_soc', 'house_women_soc',
-                                  'administrative_unit_id', 'prob_population', 'failure', 'living_area'], axis=1)
+                                  'administrative_unit_id', 'prob_population', 'failure', 'living_area',
+                                  'total_mun_soc_sum', 'men_mun_soc_sum', 'women_mun_soc_sum'], axis=1)
+
 
     # houses_soc = houses_soc.drop(['administrative_unit_id', 'prob_population', 'failure', 'living_area'], axis=1)
 

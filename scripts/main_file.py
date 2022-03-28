@@ -17,8 +17,8 @@ def make_calc(args, path='', year=2022, set_population=0):
                           city_population_forecast_df=city_forecast_df,
                           path=path, set_population=set_population, args=args)
 
-    push_to_db.main(args=args, mun_soc_df=mun_soc)
-    print('MUN_SOC обавлено в БД')
+    # push_to_db.main(args=args, mun_soc_df=mun_soc)
+    # print('MUN_SOC обавлено в БД')
 
     # Удаление использованных таблиц для освобождения памяти
     del city_forecast_df

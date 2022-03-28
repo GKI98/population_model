@@ -3,7 +3,7 @@
 import pandas as pd
 from scripts import get_data
 
-from math import sqrt
+# from math import sqrt
 
 '''
 В houses нет муниципалитета №101 !!!
@@ -54,7 +54,7 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
     # 5
 
     # Точность балансировки, кол-во человек
-    accuracy = 5
+    accuracy = 1
     # 1
 
     counter = 0
