@@ -12,16 +12,29 @@ def houses_to_soc(houses_bal, mun_soc_allages_sum, path):
     # mun_percent = []
     houses_bal['mun_percent'] = ''
     mun_list = set(houses_bal['municipality_id'])
+    print('mun_list: ', mun_list)
     houses_bal = houses_bal.sort_values(by='municipality_id')
 
     for mun in mun_list:
 
         # Всего людей в мун
-        mun_sum = houses_bal.query(f'municipality_id == {mun}')['citizens_reg_bal'].sum()
+        # mun_sum = houses_bal.query(f'municipality_id == {mun}')['citizens_reg_bal'].sum()
+
+
         # print(mun_sum)
 
         # значение людей по домикам в мун
-        mun_houses_ppl = houses_bal.query(f'municipality_id == {mun}')['citizens_reg_bal'].values
+        mun_houses_ppl = houses_bal.query(f'municipality_id == {mun}')['citizens_reg_bal']
+
+        # mun_houses_ppl.to_csv('mun_houses_ppl.csv')
+
+        mun_sum = mun_houses_ppl.sum()
+
+        print(f'mun_ {mun} _sum: ', mun_sum)
+
+        # houses_bal.query(f'municipality_id == {mun}').to_csv('mun_houses_ppl.csv')
+
+        # time.sleep(1000)
 
         # вероятность быть в домике в мун
         houses_bal.loc[houses_bal['municipality_id'] == mun, 'mun_percent'] = mun_houses_ppl / mun_sum

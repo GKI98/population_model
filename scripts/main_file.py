@@ -32,25 +32,7 @@ def make_calc(args, path='', year=2022, set_population=0):
     # df.drop_duplicates(inplace=True)
     # print('\n', df.duplicated().value_counts())
 
-
-    # Уменьшение размерности столбцов для освобождения памяти
-    df.municipality_id = df.municipality_id.astype('uint16')
-    df.administrative_unit_id = df.administrative_unit_id.astype('uint16')
-    df.living_area = df.living_area.astype('float16')
-    df.resident_number = df.resident_number.astype('uint16')
-    df.max_population = df.max_population.astype('uint16')
-    df.prob_population = df.prob_population.astype('uint16')
-    df.citizens_reg_bal = df.citizens_reg_bal.astype('uint16')
-
     df = houses_soc.main(df_mkd_balanced_mo=df, mun_soc_allages_sum=mun_soc_allages_sum, path=path)
-
-    # Уменьшение размерности столбцов для освобождения памяти
-    df.document_population = df.document_population.astype('uint16')
-    df.mun_percent = df.mun_percent.astype('float32')
-    df.social_group_id = df.social_group_id.astype('uint16')
-    df.house_total_soc = df.house_total_soc.astype('uint16')
-    df.house_men_soc = df.house_men_soc.astype('uint16')
-    df.house_women_soc = df.house_women_soc.astype('uint16')
 
     houses_soc_age.main(houses_soc=df, mun_soc=mun_soc, args=args, path=path)
 

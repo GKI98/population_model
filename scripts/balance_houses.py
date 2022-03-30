@@ -140,6 +140,8 @@ def main(args, mun_age_sex_df, path=''):
 
     print('Выполнено: балансировка населения по домикам\n')
 
+    # df_mkd_balanced_mo.to_csv('df_mkd_balanced_mo.csv')
+
     return df_mkd_balanced_mo
 
 

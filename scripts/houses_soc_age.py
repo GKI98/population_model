@@ -17,33 +17,30 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
     # soc_list = set(houses_soc['social_group_id'])
     mun_list = set(houses_soc['municipality_id'])
     len_mun_list = len(mun_list)
+    soc_list = set(houses_soc['social_group_id'])
+    print('soc_list: ', soc_list)
 
     for counter, mun in enumerate(mun_list):
         # Разрез по муниципалитетам - чтобы кусочками работать с df и не есть много памяти за раз
+
+
         print(f'\nРасчет МУН: {counter} / {len_mun_list}\n')
 
         houses_soc_mun = houses_soc.loc[houses_soc['municipality_id'] == mun]
+        mun_soc_mun = mun_soc.loc[mun_soc['municipality_id'] == mun]
 
-        houses_id = set(houses_soc_mun['house_id'])
+        # print('mp_sum: ', houses_soc_mun.mun_percent.sum())
+        # print('sc_men: ', mun_soc_mun.men.sum())
 
-        df = pd.merge(houses_soc_mun,
-                      mun_soc.loc[mun_soc['municipality_id'] == mun], on=['municipality_id', 'social_group_id'])
+        df = pd.merge(houses_soc_mun, mun_soc_mun, on=['municipality_id', 'social_group_id'])
 
+        df = df.sort_values(by=['house_id', 'social_group_id'])
 
-        # Это было ниже
-        df = df.sort_values(by=['house_id'])
+        # df[:6000].to_csv('df0.csv')
 
-
-        # print(df.head())
-
-
-        # А это было выше!
         # Кол-во людей в соц.группе в возрасте по полу = кол-во людей в доме * вероятность быть в возрасте в мун в соц группе
         df['men'] = df['men'] * df['mun_percent']
         df['women'] = df['women'] * df['mun_percent']
-
-
-
 
         men_list_tmp = []
         women_list_tmp = []
@@ -51,39 +48,35 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         # Разбиение по домикам - чтобы балансировать людей по домикам
         print('Округление жителей домов до целых чисел для мун')
 
-        total_h = len(houses_id)
-        counter = 0
+        # df[:6000].to_csv('df1.csv')
 
+        houses_id = set(df['house_id'])
         for house in houses_id:
-            counter += 1
 
-            # print(f'округление для дома: {counter} / {total_h}')
+            one_house = df.query(f'house_id == {house}')
+            one_house = one_house.sort_values(by=['social_group_id'])
 
-            df_slice = df.query(f'house_id == {house}')
+            # print('house slice men sum: ', sum(one_house['men'].values))
 
-            # print('resident_number: ', df_slice['resident_number'][:1])
+            for soc in soc_list:
 
-            # print('MEN: ',df_slice['men'].sum())
-            # print('WOMEN: ',df_slice['women'].sum())
+                # print('soc: ', soc)
+                one_house_soc = one_house.query(f'social_group_id == {soc}')
 
-            men = iteround.saferound(df_slice['men'].values, 0)
-            women = iteround.saferound(df_slice['women'].values, 0)
+                # print('soc slice sum: ', sum(one_house['men'].values))
 
-            # print('MEN: ', df_slice['men'].sum())
-            # print('WOMEN: ', df_slice['women'].sum())
+                men = iteround.saferound(one_house_soc['men'].values, 0)
+                women = iteround.saferound(one_house_soc['women'].values, 0)
 
-            men_list_tmp += men
-            women_list_tmp += women
+                men_list_tmp += men
+                women_list_tmp += women
 
         df['men'] = men_list_tmp
         df['women'] = women_list_tmp
 
-        print(f'DF SIZE:{df.memory_usage(index=True, deep=True).sum() / 10 ** 9} GB')
+        # print(f'DF SIZE:{df.memory_usage(index=True, deep=True).sum() / 10 ** 9} GB')
 
         df = df.drop('mun_percent', axis=1)
-
-        # print('\nCheckpoint 2\n')
-        # time.sleep(1000)
 
         push_to_db.main(args=args, houses_df=df)
 
@@ -107,7 +100,6 @@ def main(houses_soc, mun_soc, args, path=''):
                                   'administrative_unit_id', 'prob_population', 'failure', 'living_area',
                                   'total_mun_soc_sum', 'men_mun_soc_sum', 'women_mun_soc_sum'], axis=1)
 
-
     # houses_soc = houses_soc.drop(['administrative_unit_id', 'prob_population', 'failure', 'living_area'], axis=1)
 
     mun_soc.age = mun_soc.age.astype('uint8')
@@ -117,7 +109,7 @@ def main(houses_soc, mun_soc, args, path=''):
     # houses_soc.rename({'men': 'resident_number_men'}, axis=1, inplace=True)
     # houses_soc.rename({'women': 'resident_number_women'}, axis=1, inplace=True)
 
-    print(houses_soc.head())
+    # print(houses_soc.head())
 
     houses_soc_to_ages(args, houses_soc, mun_soc)
 

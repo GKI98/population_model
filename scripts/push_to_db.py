@@ -43,7 +43,7 @@ def create_municipality_sex_age_social(args, mun_soc_df, table_name='social_stat
 
 
 def chunking(df):
-    chunk_size = 100000
+    chunk_size = 10000
     index_slices = sliced(range(len(df)), chunk_size)
 
     return index_slices, chunk_size
@@ -63,6 +63,7 @@ def insert_df(cur, df, table_name):
     print('\nChunking df')
     index_slices, chunk_size = chunking(df)
     counter = 0
+
     for index_slice in index_slices:
         counter += 1
         print(f'Chunk: {counter} / {int(len_df / chunk_size)}')
