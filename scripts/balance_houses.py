@@ -54,7 +54,7 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
     # 5
 
     # Точность балансировки, кол-во человек
-    accuracy = 1000
+    accuracy = 1
     # 1
 
     counter = 0

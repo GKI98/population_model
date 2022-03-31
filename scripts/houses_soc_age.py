@@ -39,8 +39,6 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         df['men'] = df['men'] * df['mun_percent']
         df['women'] = df['women'] * df['mun_percent']
 
-        # df.to_csv('df1.csv')
-
         # Разбиение по домикам - чтобы балансировать людей по домикам
         print('Округление жителей домов до целых чисел для мун')
 
@@ -60,9 +58,6 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
 
         df = df.drop('mun_percent', axis=1)
 
-        # df.to_csv(f'df_las_mun.csv')
-        # print('sleep')
-        # time.sleep(1000)
 
         push_to_db.main(args=args, houses_df=df)
 
