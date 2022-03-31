@@ -4,7 +4,7 @@ import iteround
 import pandas as pd
 from scripts import push_to_db
 from scripts.connect_db import Properties
-# import time
+import time
 
 # Распределить жителей домов (по соц. группам) по возрастам (0-100)
 # и сохранить локально
@@ -18,11 +18,10 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
     mun_list = set(houses_soc['municipality_id'])
     len_mun_list = len(mun_list)
     soc_list = set(houses_soc['social_group_id'])
-    print('soc_list: ', soc_list)
+    # print('soc_list: ', soc_list)
 
     for counter, mun in enumerate(mun_list):
         # Разрез по муниципалитетам - чтобы кусочками работать с df и не есть много памяти за раз
-
 
         print(f'\nРасчет МУН: {counter} / {len_mun_list}\n')
 
@@ -36,47 +35,34 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
 
         df = df.sort_values(by=['house_id', 'social_group_id'])
 
-        # df[:6000].to_csv('df0.csv')
-
         # Кол-во людей в соц.группе в возрасте по полу = кол-во людей в доме * вероятность быть в возрасте в мун в соц группе
         df['men'] = df['men'] * df['mun_percent']
         df['women'] = df['women'] * df['mun_percent']
 
-        men_list_tmp = []
-        women_list_tmp = []
+        # df.to_csv('df1.csv')
 
         # Разбиение по домикам - чтобы балансировать людей по домикам
         print('Округление жителей домов до целых чисел для мун')
 
-        # df[:6000].to_csv('df1.csv')
-
         houses_id = set(df['house_id'])
+
         for house in houses_id:
-
-            one_house = df.query(f'house_id == {house}')
-            one_house = one_house.sort_values(by=['social_group_id'])
-
-            # print('house slice men sum: ', sum(one_house['men'].values))
-
             for soc in soc_list:
 
-                # print('soc: ', soc)
-                one_house_soc = one_house.query(f'social_group_id == {soc}')
+                men_lst = df.query(f'social_group_id == {soc} & house_id == {house}')['men'].values
+                women_lst = df.query(f'social_group_id == {soc} & house_id == {house}')['women'].values
 
-                # print('soc slice sum: ', sum(one_house['men'].values))
+                men_rnd = iteround.saferound(men_lst, 0)
+                women_rnd = iteround.saferound(women_lst, 0)
 
-                men = iteround.saferound(one_house_soc['men'].values, 0)
-                women = iteround.saferound(one_house_soc['women'].values, 0)
-
-                men_list_tmp += men
-                women_list_tmp += women
-
-        df['men'] = men_list_tmp
-        df['women'] = women_list_tmp
-
-        # print(f'DF SIZE:{df.memory_usage(index=True, deep=True).sum() / 10 ** 9} GB')
+                df.loc[(df['house_id'] == house) & (df['social_group_id'] == soc), 'men'] = men_rnd
+                df.loc[(df['house_id'] == house) & (df['social_group_id'] == soc), 'women'] = women_rnd
 
         df = df.drop('mun_percent', axis=1)
+
+        # df.to_csv(f'df_las_mun.csv')
+        # print('sleep')
+        # time.sleep(1000)
 
         push_to_db.main(args=args, houses_df=df)
 
@@ -106,10 +92,6 @@ def main(houses_soc, mun_soc, args, path=''):
     mun_soc = mun_soc[['municipality_id', 'social_group_id', 'age', 'men', 'women']]
 
     houses_soc.rename({'id': 'house_id'}, axis=1, inplace=True)
-    # houses_soc.rename({'men': 'resident_number_men'}, axis=1, inplace=True)
-    # houses_soc.rename({'women': 'resident_number_women'}, axis=1, inplace=True)
-
-    # print(houses_soc.head())
 
     houses_soc_to_ages(args, houses_soc, mun_soc)
 

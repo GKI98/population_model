@@ -12,7 +12,7 @@ def houses_to_soc(houses_bal, mun_soc_allages_sum, path):
     # mun_percent = []
     houses_bal['mun_percent'] = ''
     mun_list = set(houses_bal['municipality_id'])
-    print('mun_list: ', mun_list)
+    # print('mun_list: ', mun_list)
     houses_bal = houses_bal.sort_values(by='municipality_id')
 
     for mun in mun_list:
@@ -30,7 +30,7 @@ def houses_to_soc(houses_bal, mun_soc_allages_sum, path):
 
         mun_sum = mun_houses_ppl.sum()
 
-        print(f'mun_ {mun} _sum: ', mun_sum)
+        # print(f'mun_ {mun} _sum: ', mun_sum)
 
         # houses_bal.query(f'municipality_id == {mun}').to_csv('mun_houses_ppl.csv')
 
