@@ -18,7 +18,6 @@ def make_calc(args, path='', year=2022, set_population=0):
                           path=path, set_population=set_population, args=args)
 
     push_to_db.main(args=args, mun_soc_df=mun_soc)
-    print('MUN_SOC обавлено в БД')
 
     # Удаление использованных таблиц для освобождения памяти
     del city_forecast_df
@@ -28,11 +27,9 @@ def make_calc(args, path='', year=2022, set_population=0):
 
     df = balance_houses.main(args, mun_age_sex_df, path=path)
 
-    # print(df.duplicated().value_counts())
-    # df.drop_duplicates(inplace=True)
-    # print('\n', df.duplicated().value_counts())
+    del mun_age_sex_df
 
-    df = houses_soc.main(df_mkd_balanced_mo=df, mun_soc_allages_sum=mun_soc_allages_sum, path=path)
+    df = houses_soc.main(houses_bal=df, mun_soc_allages_sum=mun_soc_allages_sum, path=path)
 
     houses_soc_age.main(houses_soc=df, mun_soc=mun_soc, args=args, path=path)
 

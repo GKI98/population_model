@@ -25,7 +25,7 @@ def replace_nan(df):
 
 # Расчет коэф. дожития
 def calc_survival_coef(df):
-    print('\nВ процессе: расчет коэф. дожития')
+    print('В процессе: расчет коэф. дожития')
 
     prob_survival = [[0 for i in range(len(df.columns) - 1)] for j in range(len(df.index) - 1)]
 
@@ -39,7 +39,7 @@ def calc_survival_coef(df):
             prob_survival[i][j] = var2 / var1
     df2 = pd.DataFrame(prob_survival)
 
-    print('Выполнено: расчет коэф. дожития')
+    # print('Выполнено: расчет коэф. дожития')
 
     return df2
 
@@ -64,7 +64,7 @@ def rename_new_table_attributes(df, df2):
 
 
 def main(path):
-    print('\nВ процессе: прогноз изменения численности населения')
+    print('В процессе: прогноз изменения численности населения')
 
     pd.set_option('display.max_rows', 10)
     pd.set_option('display.max_columns', 20)
@@ -119,10 +119,7 @@ def main(path):
     df = df.astype(int)
     df = df.rename_axis('Age', axis='columns')
 
-    # Сохранить в csv
-    # df.to_csv(f'{path}/city_population_forecast.csv', index=True, header=True)
-
-    print('Выполнено: прогноз изменения численности населения\n')
+    # print('Выполнено: прогноз изменения численности населения\n')
 
     return df
 
