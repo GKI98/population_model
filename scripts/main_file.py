@@ -4,7 +4,8 @@ from scripts import process_data
 from scripts import houses_soc_age
 from scripts import houses_soc
 from scripts import balance_houses
-from scripts import push_to_db
+from scripts import save_db
+from scripts.save_csv import Saver
 
 
 def make_calc(args, path='', year=2022, set_population=0):
@@ -17,7 +18,20 @@ def make_calc(args, path='', year=2022, set_population=0):
                           city_population_forecast_df=city_forecast_df,
                           path=path, set_population=set_population, args=args)
 
-    push_to_db.main(args=args, mun_soc_df=mun_soc)
+    if args.save == 'db':
+        save_db.main(args=args, mun_soc_df=mun_soc)
+
+    elif args.save == 'loc':
+        mun_soc_df_new = mun_soc.copy()
+        mun_soc_df_new = mun_soc_df_new.drop(['admin_unit_parent_id', 'men_age_allmun_percent',
+                                              'women_age_allmun_percent', 'total_age_allmun_percent', 'total'], axis=1)
+
+        mun_soc_df_new.insert(0, 'city_id', args.city)
+        mun_soc_df_new.insert(1, 'year', args.year)
+        mun_soc_df_new.insert(2, 'set_population', args.population)
+
+        Saver.df_to_csv(df=mun_soc_df_new)
+        Saver.cat(name='mun_soc')
 
     # Удаление использованных таблиц для освобождения памяти
     del city_forecast_df
@@ -30,7 +44,6 @@ def make_calc(args, path='', year=2022, set_population=0):
     del mun_age_sex_df
 
     df = houses_soc.main(houses_bal=df, mun_soc_allages_sum=mun_soc_allages_sum, path=path)
-
     houses_soc_age.main(houses_soc=df, mun_soc=mun_soc, args=args, path=path)
 
 

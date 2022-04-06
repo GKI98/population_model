@@ -2,14 +2,15 @@
 
 import iteround
 import pandas as pd
-from scripts import push_to_db
-from scripts.connect_db import Properties
+from scripts import save_db
 from tqdm import tqdm
-import time
 
 
 # Распределить жителей домов (по соц. группам) по возрастам (0-100)
 # и сохранить локально
+from scripts.save_csv import Saver
+
+
 def houses_soc_to_ages(args, houses_soc, mun_soc):
 
     mun_list = set(houses_soc['municipality_id'])
@@ -53,20 +54,22 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         df['men'] = df['men'].astype(float).round(2)
         df['women'] = df['women'].astype(float).round(2)
 
-        push_to_db.main(args=args, houses_df=df)
-
-
-def drop_tables_if_exist(args):
-    conn = Properties.connect(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass)
-
-    with conn, conn.cursor() as cur:
-        cur.execute(f'drop table if exists social_stats.sex_age_social_houses')
+        df.insert(0, 'city_id', args.city)
+        df.insert(1, 'year', args.year)
+        df.insert(2, 'set_population', args.population)
+        
+        if args.save == 'db':
+            save_db.main(args=args, houses_df=df)
+        
+        elif args.save == 'loc':  
+            Saver.df_to_csv(df=df, id=mun)
+    
+    if args.save == 'loc':
+        Saver.cat()
 
 
 def main(houses_soc, mun_soc, args, path=''):
-    print('В процессе: распределение жителей домиков (по соц. группам) по возрастам')
-
-    drop_tables_if_exist(args)
+    print('В процессе: распределение жителей домов (по соц. группам) по возрастам')
 
     mun_soc = mun_soc[['municipality_id', 'social_group_id', 'age', 'men', 'women']]
 

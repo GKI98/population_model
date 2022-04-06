@@ -1,7 +1,7 @@
 # 3
 
 import pandas as pd
-from scripts import get_data
+from scripts import read_data
 import iteround
 from tqdm import tqdm
 
@@ -12,7 +12,7 @@ from tqdm import tqdm
 
 # Посчитать макс. и вероятное кол-во жителей в домике
 def forecast_house_population(args):
-    houses_df = get_data.main(args)[5]
+    houses_df = read_data.main(args)[5]
     max_sq_liv = 9
 
     max_population = (houses_df['living_area'] / max_sq_liv).values

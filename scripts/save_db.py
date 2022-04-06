@@ -12,13 +12,15 @@ def sex_age_social_houses(args, df, table_name='social_stats.sex_age_social_hous
     create_query = \
         f'''
         CREATE TABLE IF NOT EXISTS {table_name}(
+        city_id int NOT NULL,
+        year int NOT NULL,
+        set_population int NOT NULL,
         house_id int NOT NULL,
-        municipality_id int NOT NULL,
         document_population integer,
         max_population integer,
         resident_number integer,
         social_group_id int NOT NULL , 
-        age integer,
+        age int,
         men real,
         women real,
         men_rounded integer,
@@ -30,20 +32,21 @@ def sex_age_social_houses(args, df, table_name='social_stats.sex_age_social_hous
 
 
 def create_municipality_sex_age_social(args, mun_soc_df, table_name='social_stats.municipality_sex_age_social'):
-    print('create municipality_sex_age_social')
 
-    df = mun_soc_df
     create_query = \
         f'''
         CREATE TABLE IF NOT EXISTS {table_name}(
-        age integer,
-        municipality_id int NOT NULL , 
-        social_group_id int NOT NULL ,
+        city_id int NOT NULL,
+        year int NOT NULL,
+        set_population int NOT NULL,
+        municipality_id int NOT NULL,
+        age int, 
+        social_group_id int NOT NULL,
         men integer,
         women integer
         );
         '''
-    push_db(args, df, table_name, create_query)
+    push_db(args, mun_soc_df, table_name, create_query)
 
 
 def chunking(df):
@@ -54,12 +57,19 @@ def chunking(df):
 
 
 def insert_df(cur, df, table_name):
-    cols = ','.join(list(df.columns))
+    cols_lst = list(df.columns)
+    cols = ','.join(cols_lst)
     values_space = '%s,' * len(list(df.columns))
     values_space = values_space[:-1]
-    query = f"INSERT INTO {table_name} ({cols}) VALUES ({values_space})"
 
-    # print('\nChunking df')
+    set_cols_lst = cols_lst[3:]
+    set_cols = ','.join(set_cols_lst)
+    excluded_cols_space = ','.join(['EXCLUDED.' + col for col in cols_lst][3:])
+
+    query = f"INSERT INTO  ({cols}) VALUES ({values_space}) " \
+            f"ON CONFLICT (city_id, year, set_population) " \
+            f"DO UPDATE SET ({set_cols}) = ({excluded_cols_space});"
+
     index_slices, chunk_size = chunking(df)
 
     for index_slice in index_slices:
@@ -80,20 +90,17 @@ def insert_df(cur, df, table_name):
 def push_db(args, df, table_name, create_query):
 
     conn = Properties.connect(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass)
-
     with conn, conn.cursor() as cur:
 
         cur.execute(create_query)
         insert_df(cur, df, table_name)
 
-    # print(f'{table_name} успешно добавлена в бд')
 
-
-def drop_tables_if_exist(args):
-    conn = Properties.connect(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass)
-
-    with conn, conn.cursor() as cur:
-        cur.execute(f'drop table if exists social_stats.municipality_sex_age_social')
+# def drop_tables_if_exist(args, table_name:str):
+#     conn = Properties.connect(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass)
+#
+#     with conn, conn.cursor() as cur:
+#         cur.execute(f'drop table if exists social_stats.{table_name}')
 
 
 def main(args, houses_df=pd.DataFrame(), mun_soc_df=pd.DataFrame()):
@@ -101,11 +108,13 @@ def main(args, houses_df=pd.DataFrame(), mun_soc_df=pd.DataFrame()):
         sex_age_social_houses(args, houses_df)
 
     if not mun_soc_df.empty:
-        drop_tables_if_exist(args)
-
         mun_soc_df_new = mun_soc_df.copy()
         mun_soc_df_new = mun_soc_df_new.drop(['admin_unit_parent_id', 'men_age_allmun_percent',
                                               'women_age_allmun_percent', 'total_age_allmun_percent', 'total'], axis=1)
+
+        mun_soc_df_new.insert(0, 'city_id', args.city)
+        mun_soc_df_new.insert(1, 'year', args.year)
+        mun_soc_df_new.insert(2, 'set_population', args.population)
 
         create_municipality_sex_age_social(args, mun_soc_df=mun_soc_df_new)
 
