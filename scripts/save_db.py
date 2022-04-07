@@ -24,7 +24,9 @@ def sex_age_social_houses(args, df, table_name='social_stats.sex_age_social_hous
         men real,
         women real,
         men_rounded integer,
-        women_rounded integer
+        women_rounded integer,
+        primary key(
+        city_id, year, set_population, house_id, social_group_id, age)
         );
         '''
 
@@ -43,7 +45,9 @@ def create_municipality_sex_age_social(args, mun_soc_df, table_name='social_stat
         age int, 
         social_group_id int NOT NULL,
         men integer,
-        women integer
+        women integer,
+        primary key(
+        city_id, year, set_population, municipality_id, social_group_id, age)
         );
         '''
     push_db(args, mun_soc_df, table_name, create_query)
@@ -62,12 +66,18 @@ def insert_df(cur, df, table_name):
     values_space = '%s,' * len(list(df.columns))
     values_space = values_space[:-1]
 
-    set_cols_lst = cols_lst[3:]
-    set_cols = ','.join(set_cols_lst)
-    excluded_cols_space = ','.join(['EXCLUDED.' + col for col in cols_lst][3:])
+    not_set_cols = 6
+    houses_constraint = ''
+    if table_name == 'social_stats.sex_age_social_houses':
+        houses_constraint = 'house_id,'
+        not_set_cols = 7
 
-    query = f"INSERT INTO  ({cols}) VALUES ({values_space}) " \
-            f"ON CONFLICT (city_id, year, set_population) " \
+    set_cols_lst = cols_lst[not_set_cols:]
+    set_cols = ','.join(set_cols_lst)
+    excluded_cols_space = ','.join(['EXCLUDED.' + col for col in cols_lst][not_set_cols:])
+
+    query = f"INSERT INTO {table_name} ({cols}) VALUES ({values_space}) " \
+            f"ON CONFLICT (city_id, year, set_population, {houses_constraint} municipality_id, social_group_id, age) " \
             f"DO UPDATE SET ({set_cols}) = ({excluded_cols_space});"
 
     index_slices, chunk_size = chunking(df)
