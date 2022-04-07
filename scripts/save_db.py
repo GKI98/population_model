@@ -61,24 +61,29 @@ def chunking(df):
 
 
 def insert_df(cur, df, table_name):
-    cols_lst = list(df.columns)
-    cols = ','.join(cols_lst)
+    cols = ','.join(list(df.columns))
     values_space = '%s,' * len(list(df.columns))
     values_space = values_space[:-1]
 
-    not_set_cols = 6
-    houses_constraint = ''
     if table_name == 'social_stats.sex_age_social_houses':
-        houses_constraint = 'house_id,'
-        not_set_cols = 7
+        special_constraint = 'house_id,'
+        set_cols_lst = ['document_population','max_population','resident_number','men','women','men_rounded','women_rounded']
+        set_cols = ','.join(set_cols_lst)
+        excluded_cols_space = ','.join(['EXCLUDED.' + col for col in set_cols_lst])
 
-    set_cols_lst = cols_lst[not_set_cols:]
-    set_cols = ','.join(set_cols_lst)
-    excluded_cols_space = ','.join(['EXCLUDED.' + col for col in cols_lst][not_set_cols:])
+        query = f"INSERT INTO {table_name} ({cols}) VALUES ({values_space}) " \
+                f"ON CONFLICT (city_id, year, set_population, {special_constraint} social_group_id, age) " \
+                f"DO UPDATE SET ({set_cols}) = ({excluded_cols_space});"
 
-    query = f"INSERT INTO {table_name} ({cols}) VALUES ({values_space}) " \
-            f"ON CONFLICT (city_id, year, set_population, {houses_constraint} municipality_id, social_group_id, age) " \
-            f"DO UPDATE SET ({set_cols}) = ({excluded_cols_space});"
+    elif table_name == 'social_stats.municipality_sex_age_social':
+        special_constraint = 'municipality_id,'
+        set_cols_lst = ['men', 'women']
+        set_cols = ','.join(set_cols_lst)
+        excluded_cols_space = ','.join(['EXCLUDED.' + col for col in set_cols_lst])
+
+        query = f"INSERT INTO {table_name} ({cols}) VALUES ({values_space}) " \
+                f"ON CONFLICT (city_id, year, set_population, {special_constraint} social_group_id, age) " \
+                f"DO UPDATE SET ({set_cols}) = ({excluded_cols_space});"
 
     index_slices, chunk_size = chunking(df)
 
