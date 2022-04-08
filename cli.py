@@ -7,8 +7,8 @@ def main():
 
     # Group_1 "Connection to DB"
     parser_conn = parser.add_argument_group(title='Connection options')
-    parser_conn.add_argument('--db-addr', nargs='?', const=0, default='172.17.0.1', type=str.lower) # это докер
-    # parser_conn.add_argument('--db-addr', nargs='?', const=0, default='10.32.1.62', type=str.lower) # это просто база сервера
+    # parser_conn.add_argument('--db-addr', nargs='?', const=0, default='172.17.0.1', type=str.lower) # это докер
+    parser_conn.add_argument('--db-addr', nargs='?', const=0, default='10.32.1.62', type=str.lower) # это просто база сервера
     # parser_conn.add_argument('--db-addr', nargs='?', const=0, default='127.0.0.1', type=str.lower) # это локальная база
 
     parser_conn.add_argument('--db-port', nargs='?', const=0, default=5432, type=int)

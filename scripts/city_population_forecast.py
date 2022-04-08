@@ -39,8 +39,6 @@ def calc_survival_coef(df):
             prob_survival[i][j] = var2 / var1
     df2 = pd.DataFrame(prob_survival)
 
-    # print('Выполнено: расчет коэф. дожития')
-
     return df2
 
 
@@ -118,8 +116,6 @@ def main(path):
 
     df = df.astype(int)
     df = df.rename_axis('Age', axis='columns')
-
-    # print('Выполнено: прогноз изменения численности населения\n')
 
     return df
 

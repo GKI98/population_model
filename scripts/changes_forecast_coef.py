@@ -45,9 +45,6 @@ def calc_total_changes_percent(city_forecast):
 def main(city_forecast, path):
     print('В процессе: расчет прогноза изменения численности населения')
 
-    pd.set_option('display.max_rows', 10)
-    pd.set_option('display.max_columns', 20)
-
     city_forecast.drop(city_forecast.iloc[:, 0:23], inplace=True, axis=1)
 
     changes_forecast = calc_age_changes_coef(city_forecast)
