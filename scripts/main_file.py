@@ -35,7 +35,7 @@ def make_calc(args, path='', year=2022, set_population=0):
                           city_population_forecast_df=city_forecast_df,
                           path=path, set_population=set_population, args=args)
 
-    save_mun_soc(args, mun_soc)
+    # save_mun_soc(args, mun_soc)
 
     # Удаление использованных таблиц для освобождения памяти
     del city_forecast_df
