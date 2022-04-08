@@ -28,11 +28,12 @@ class DBReader:
 
         with conn, conn.cursor() as cur:
             # houses
-            houses_q = f'SELECT f.id, p.municipality_id, p.administrative_unit_id, b.living_area, ' \
-                      f'b.resident_number, b.failure FROM buildings b ' \
-                      f'JOIN functional_objects f ON b.physical_object_id = f.physical_object_id ' \
-                      f'JOIN physical_objects p ON b.physical_object_id = p.id ' \
-                      f'WHERE b.living_area IS NOT NULL AND p.city_id = {args.city}'
+            houses_q =f'SELECT f.id, p.municipality_id, p.administrative_unit_id, b.living_area, ' \
+                       f'b.resident_number, b.failure FROM buildings b ' \
+                       f'JOIN functional_objects f ON b.physical_object_id = f.physical_object_id ' \
+                       f'JOIN physical_objects p ON b.physical_object_id = p.id ' \
+                       f'WHERE b.living_area IS NOT NULL AND p.city_id = {args.city} AND f.city_service_type_id = ' \
+                       f'(SELECT id FROM city_service_types WHERE code = \'houses\')'
     
             cur.execute(houses_q)
             houses_df = pd.DataFrame(cur.fetchall(), columns=DBReader.get_columns(cur, query=houses_q))
