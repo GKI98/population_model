@@ -23,7 +23,7 @@ def main():
     parser_data_info = parser.add_argument_group(title='Data info')
     parser_data_info.add_argument('--year', nargs='?', const=0, default=2022, type=int, help='Год прогнозирования')
     parser_data_info.add_argument('--city-id', dest='city', nargs='?', const=0, default=1, type=int, help='Город')
-    parser_data_info.add_argument('--set-population', dest='population', nargs='?', const=0, default=9000000, type=int,
+    parser_data_info.add_argument('--set-population', dest='population', nargs='?', const=0, default=0, type=int,
                                   help='Задать число жителей в год прогнозирования (суммарно по городу)')
 
     # Group_3 "Reading/Saving data"
