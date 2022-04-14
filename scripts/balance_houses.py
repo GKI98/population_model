@@ -44,7 +44,7 @@ def forecast_house_population(args):
 # и сохранить локально
 def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
     mun_list = set(houses_df_upd['municipality_id'])
-    houses_df_upd = houses_df_upd.assign(**{'citizens_reg_bal': houses_df_upd['prob_population']})
+    houses_df_upd = houses_df_upd.assign(citizens_reg_bal=houses_df_upd['prob_population'])
 
     # Минимальное значение, до которого может сокращаться населения в доме при балансировке, кол-во человек
     balancing_min = 5

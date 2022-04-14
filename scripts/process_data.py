@@ -316,21 +316,22 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
             soc_adm_age_sex_df = set_population_num(soc_adm_age_sex_df)
             adm_age_sex_df = set_population_num(adm_age_sex_df)
             mun_age_sex_df = set_population_num(mun_age_sex_df)
-    #
-    # adm_age_sex_df['total'] = adm_age_sex_df['men'] + adm_age_sex_df['women']
-    # mun_age_sex_df['total'] = mun_age_sex_df['men'] + mun_age_sex_df['women']
-    # soc_adm_age_sex_df['total'] = soc_adm_age_sex_df['men'] + soc_adm_age_sex_df['women']
-    #
-    # adm_age_sex_df['men_percent'] = adm_age_sex_df['men'] / adm_age_sex_df['total']
-    # mun_age_sex_df['men_percent'] = mun_age_sex_df['men'] / mun_age_sex_df['total']
-    # soc_adm_age_sex_df['men_percent'] = soc_adm_age_sex_df['men'] / soc_adm_age_sex_df['total']
-    #
-    # adm_age_sex_df['women_percent'] = adm_age_sex_df['women'] / adm_age_sex_df['total']
-    # mun_age_sex_df['women_percent'] = mun_age_sex_df['women'] / mun_age_sex_df['total']
-    # soc_adm_age_sex_df['women_percent'] = soc_adm_age_sex_df['women'] / soc_adm_age_sex_df['total']
-    #
-    # adm_total_df['population_percent'] = adm_total_df['population'] / adm_total_df['population'].sum()
-    # mun_total_df['population_percent'] = mun_total_df['population'] / mun_total_df['population'].sum()
+
+    elif year == 2019:
+        adm_age_sex_df['total'] = adm_age_sex_df['men'] + adm_age_sex_df['women']
+        mun_age_sex_df['total'] = mun_age_sex_df['men'] + mun_age_sex_df['women']
+        soc_adm_age_sex_df['total'] = soc_adm_age_sex_df['men'] + soc_adm_age_sex_df['women']
+
+        adm_age_sex_df['men_percent'] = adm_age_sex_df['men'] / adm_age_sex_df['total']
+        mun_age_sex_df['men_percent'] = mun_age_sex_df['men'] / mun_age_sex_df['total']
+        soc_adm_age_sex_df['men_percent'] = soc_adm_age_sex_df['men'] / soc_adm_age_sex_df['total']
+
+        adm_age_sex_df['women_percent'] = adm_age_sex_df['women'] / adm_age_sex_df['total']
+        mun_age_sex_df['women_percent'] = mun_age_sex_df['women'] / mun_age_sex_df['total']
+        soc_adm_age_sex_df['women_percent'] = soc_adm_age_sex_df['women'] / soc_adm_age_sex_df['total']
+
+        adm_total_df['population_percent'] = adm_total_df['population'] / adm_total_df['population'].sum()
+        mun_total_df['population_percent'] = mun_total_df['population'] / mun_total_df['population'].sum()
 
     mun_total_df.rename(columns={"id": "municipality_id"}, inplace=True)
 

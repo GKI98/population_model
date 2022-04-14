@@ -25,6 +25,9 @@ def main():
     parser_data_info.add_argument('--city-id', dest='city', nargs='?', const=0, default=1, type=int, help='Город')
     parser_data_info.add_argument('--set-population', dest='population', nargs='?', const=0, default=0, type=int,
                                   help='Задать число жителей в год прогнозирования (суммарно по городу)')
+    parser_data_info.add_argument('-scenario', '-sc', dest='scenario', default='mod', choices=('pos', 'mod', 'neg'),
+                                  help='Сценарий изменения численности населения')
+
 
     # Group_3 "Reading/Saving data"
     parser_saver = parser.add_argument_group(title='Reading options')

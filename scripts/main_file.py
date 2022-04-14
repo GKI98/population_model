@@ -26,7 +26,7 @@ def save_mun_soc(args, mun_soc) -> None:
 
 
 def make_calc(args, path='', year=2022, set_population=0):
-    city_forecast_df = city_population_forecast.main(path=path)
+    city_forecast_df = city_population_forecast.main(city_id=args.city_id, scenario=args.scenario, year=args.year)
     changes_forecast_df, city_forecast_years_age_ratio_df = changes_forecast_coef.main(city_forecast=city_forecast_df,
                                                                                        path=path)
     mun_soc, mun_age_sex_df, adm_age_sex_df, mun_soc_allages_sum = \
