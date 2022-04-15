@@ -13,10 +13,7 @@ def main():
 
     parser_conn.add_argument('--db-port', nargs='?', const=0, default=5432, type=int)
     parser_conn.add_argument('--db-name', nargs='?', const=0, default='city_db_final', type=str.lower)
-
-    # parser_conn.add_argument('--db-user', nargs='?', const=0, default='postgres', type=str.lower)
     parser_conn.add_argument('--db-user', nargs='?', const=0, default='postgres', type=str.lower)
-
     parser_conn.add_argument('--db-pass', nargs='?', const=0, default='postgres', type=str.lower)
 
     # Group_2 "Data args"
