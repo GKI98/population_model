@@ -15,7 +15,6 @@ import iteround
 
 
 def coef_migration(city_id, scenario):
-
     if scenario == 'pos':
         func = 'max'
     elif scenario == 'mod':
@@ -157,15 +156,12 @@ def main(city_id, scenario, year):
 
         # Учесть миграцию
         value = value * coef_migration(city_id, scenario)
-        print(value)
 
         value = iteround.saferound(value.values, 0)
         df.insert(loc=col_num, column=column, value=value, allow_duplicates=True)
 
     df = df.astype(int)
     df = df.rename_axis('Age', axis='columns')
-
-    print(df)
 
     return df
 

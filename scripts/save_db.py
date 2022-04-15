@@ -3,30 +3,28 @@ import pandas as pd
 import psycopg2
 from scripts.connect_db import Properties
 from more_itertools import sliced
-# import time
 
 
 def sex_age_social_houses(args, df, table_name='social_stats.sex_age_social_houses'):
-    # print('push sex_age_social_houses')
-    # REFERENCES functional_objects(id)
+
     create_query = \
         f'''
         CREATE TABLE IF NOT EXISTS {table_name}(
-        city_id int NOT NULL,
         year int NOT NULL,
         set_population int NOT NULL,
-        house_id int NOT NULL,
+        scenario varchar NOT NULL,
+        house_id int NOT NULL REFERENCES functional_objects(id),
         document_population integer,
         max_population integer,
         resident_number integer,
-        social_group_id int NOT NULL , 
+        social_group_id int NOT NULL REFERENCES social_groups(id), 
         age int,
         men real,
         women real,
         men_rounded integer,
         women_rounded integer,
         primary key(
-        city_id, year, set_population, house_id, social_group_id, age)
+        year, set_population, scenario, house_id, social_group_id, age)
         );
         '''
 
@@ -38,16 +36,16 @@ def create_municipality_sex_age_social(args, mun_soc_df, table_name='social_stat
     create_query = \
         f'''
         CREATE TABLE IF NOT EXISTS {table_name}(
-        city_id int NOT NULL,
         year int NOT NULL,
         set_population int NOT NULL,
-        municipality_id int NOT NULL,
+        scenario varchar NOT NULL,
+        municipality_id int NOT NULL REFERENCES municipalities(id),
         age int, 
-        social_group_id int NOT NULL,
+        social_group_id int NOT NULL REFERENCES social_groups(id),
         men integer,
         women integer,
         primary key(
-        city_id, year, set_population, municipality_id, social_group_id, age)
+        year, set_population, scenario, municipality_id, social_group_id, age)
         );
         '''
     push_db(args, mun_soc_df, table_name, create_query)
@@ -67,12 +65,13 @@ def insert_df(cur, df, table_name):
 
     if table_name == 'social_stats.sex_age_social_houses':
         special_constraint = 'house_id,'
-        set_cols_lst = ['document_population','max_population','resident_number','men','women','men_rounded','women_rounded']
+        set_cols_lst = ['document_population', 'max_population', 'resident_number', 'men', 'women', 'men_rounded',
+                        'women_rounded']
         set_cols = ','.join(set_cols_lst)
         excluded_cols_space = ','.join(['EXCLUDED.' + col for col in set_cols_lst])
 
         query = f"INSERT INTO {table_name} ({cols}) VALUES ({values_space}) " \
-                f"ON CONFLICT (city_id, year, set_population, {special_constraint} social_group_id, age) " \
+                f"ON CONFLICT (year, set_population, scenario, {special_constraint} social_group_id, age) " \
                 f"DO UPDATE SET ({set_cols}) = ({excluded_cols_space});"
 
     elif table_name == 'social_stats.municipality_sex_age_social':
@@ -82,7 +81,7 @@ def insert_df(cur, df, table_name):
         excluded_cols_space = ','.join(['EXCLUDED.' + col for col in set_cols_lst])
 
         query = f"INSERT INTO {table_name} ({cols}) VALUES ({values_space}) " \
-                f"ON CONFLICT (city_id, year, set_population, {special_constraint} social_group_id, age) " \
+                f"ON CONFLICT (year, set_population, scenario, {special_constraint} social_group_id, age) " \
                 f"DO UPDATE SET ({set_cols}) = ({excluded_cols_space});"
 
     index_slices, chunk_size = chunking(df)
@@ -127,9 +126,9 @@ def main(args, houses_df=pd.DataFrame(), mun_soc_df=pd.DataFrame()):
         mun_soc_df_new = mun_soc_df_new.drop(['admin_unit_parent_id', 'men_age_allmun_percent',
                                               'women_age_allmun_percent', 'total_age_allmun_percent', 'total'], axis=1)
 
-        mun_soc_df_new.insert(0, 'city_id', args.city)
-        mun_soc_df_new.insert(1, 'year', args.year)
-        mun_soc_df_new.insert(2, 'set_population', args.population)
+        mun_soc_df_new.insert(0, 'year', args.year)
+        mun_soc_df_new.insert(1, 'set_population', args.population)
+        mun_soc_df_new.insert(2, 'scenario', args.scenario)
 
         create_municipality_sex_age_social(args, mun_soc_df=mun_soc_df_new)
 
