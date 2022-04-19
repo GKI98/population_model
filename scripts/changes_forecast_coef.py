@@ -41,8 +41,9 @@ def main(city_forecast, path=''):
 
 
 if __name__ == '__main__':
-    df = pd.read_csv('/home/gk/Desktop/to_SA/mod_forecast.csv')
-    df = df.drop('Unnamed: 0', axis=1)
-    df = df.astype(int)
-
-    main(city_forecast=df)
+    pass
+    # df = pd.read_csv('/home/gk/Desktop/to_SA/mod_forecast.csv')
+    # df = df.drop('Unnamed: 0', axis=1)
+    # df = df.astype(int)
+    #
+    # main(city_forecast=df)

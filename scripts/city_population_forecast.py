@@ -3,6 +3,7 @@
 import pandas as pd
 import numpy as np
 from statistics import mean
+import iteround
 
 """
 1. Пропуски в дф заполняется средними значниями
@@ -141,13 +142,16 @@ def main(city_id, scenario, year):
     # Прогноз на кол-во лет
     years_forecast = year - 2020
 
-
     for year in range(years_forecast):
         year += 1
         df.loc[1:101, 2020 + year] = df[2020 + year - 1][0:100].values * df_coef['coef'].values
 
         # Беру среднюю рождаемость за последние 5 лет
         df.at[0, 2020 + year] = df.iloc[0, -5:-1].median()
+
+        # Учесть миграцию
+        df.loc[:, 2020 + year] *= coef_migration(city_id, scenario)
+        df.loc[:, 2020 + year] = iteround.saferound(df.loc[:, 2020 + year].values, 0)
 
     df = df.astype(int)
     df = df.rename_axis('Age', axis='columns')
@@ -156,10 +160,11 @@ def main(city_id, scenario, year):
 
 
 if __name__ == '__main__':
-    pd.set_option('display.max_rows', 10)
-    pd.set_option('display.max_columns', 100)
-
-    f = main(1, 'pos', 2040)
-
-    print(f)
-    # f.to_csv('/home/gk/Desktop/to_SA/mod_forecast.csv')
+    pass
+    # pd.set_option('display.max_rows', 10)
+    # pd.set_option('display.max_columns', 100)
+    #
+    # f = main(1, 'mod', 2040)
+    #
+    # print(f)
+    #
