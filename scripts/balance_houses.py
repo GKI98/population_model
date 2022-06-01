@@ -11,13 +11,14 @@ from tqdm import tqdm
 
 
 # Посчитать макс. и вероятное кол-во жителей в домике
-def forecast_house_population(args):
+def calc_max_house_population(args):
     houses_df = read_data.main(args)[5]
     max_sq_liv = 9
 
-    max_population = (houses_df['living_area'] / max_sq_liv).values
-    max_population_rnd = iteround.saferound(max_population, 0)
-    houses_df['max_population'] = max_population_rnd
+    if args.round:
+        houses_df['max_population'] = iteround.saferound((houses_df['living_area'] / max_sq_liv).values, 0)
+    else:
+        houses_df['max_population'] = houses_df['living_area'] / max_sq_liv
 
     def vch_calc(row):
         a_omch = 0.3  # коэффициент для ожидаемой максимальной численности жителей (ОМЧ)
@@ -112,10 +113,9 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
 
 
 def main(args, mun_age_sex_df, path=''):
-    # print('В процессе: балансировка населения по домикам')
     print('Балансировка жителей домов для муниципалитетов:')
 
-    houses_df_upd = forecast_house_population(args)
+    houses_df_upd = calc_max_house_population(args)
     df_mkd_balanced_mo = balance_houses_population(houses_df_upd, mun_age_sex_df, path)
 
     return df_mkd_balanced_mo

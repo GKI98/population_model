@@ -7,8 +7,8 @@ def main():
 
     # Group_1 "Connection to DB"
     parser_conn = parser.add_argument_group(title='Connection options')
-    parser_conn.add_argument('--db-addr', nargs='?', const=0, default='172.17.0.1', type=str.lower) # это докер
-    # parser_conn.add_argument('--db-addr', nargs='?', const=0, default='10.32.1.62', type=str.lower) # это просто база сервера
+    # parser_conn.add_argument('--db-addr', nargs='?', const=0, default='172.17.0.1', type=str.lower) # это докер
+    parser_conn.add_argument('--db-addr', nargs='?', const=0, default='10.32.1.101', type=str.lower) # это просто база сервера
     # parser_conn.add_argument('--db-addr', nargs='?', const=0, default='127.0.0.1', type=str.lower) # это локальная база
 
     parser_conn.add_argument('--db-port', nargs='?', const=0, default=5432, type=int)
@@ -24,7 +24,7 @@ def main():
                                   help='Задать число жителей в год прогнозирования (суммарно по городу)')
     parser_data_info.add_argument('--scenario', '-sc', dest='scenario', default='mod', choices=('pos', 'mod', 'neg'),
                                   help='Сценарий изменения численности населения')
-
+    parser_data_info.add_argument('--round', '-rnd', default=True, action='store_true', help='True, False')
 
     # Group_3 "Reading/Saving data"
     parser_saver = parser.add_argument_group(title='Reading options')

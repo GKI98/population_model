@@ -1,10 +1,7 @@
 # 4
 
-# import iteround
 import pandas as pd
 from tqdm import tqdm
-
-# import time
 
 
 # Распределить жителей домов по соц.группам
@@ -37,13 +34,10 @@ def houses_to_soc(houses_bal, mun_soc_allages_sum, path):
 
 
 def main(houses_bal, mun_soc_allages_sum, path=''):
-    # print('В процессе: распределение жителей домов по соц.группам')
 
     houses_soc = houses_to_soc(houses_bal, mun_soc_allages_sum, path)
     houses_soc = houses_soc.drop(['administrative_unit_id', 'prob_population', 'failure', 'living_area',
                                   'total_mun_soc_sum', 'men_mun_soc_sum', 'women_mun_soc_sum'], axis=1)
-
-    # print('Выполнено: распределение жителей домов по соц.группам\n')
 
     return houses_soc
 

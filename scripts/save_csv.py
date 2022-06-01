@@ -12,7 +12,7 @@ class Saver:
     @staticmethod
     def chunking(df) -> Iterator[Sequence[Any]]:
         """Разбиение df на много маленьких df"""
-        chunk_size = 100
+        chunk_size = 10000
         index_slices = sliced(range(len(df)), chunk_size)
 
         return index_slices
