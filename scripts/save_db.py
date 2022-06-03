@@ -1,5 +1,5 @@
 # 0
-import pandas as pd
+# import pandas as pd
 import psycopg2
 from scripts.connect_db import Properties
 from more_itertools import sliced

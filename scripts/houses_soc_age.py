@@ -40,14 +40,14 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
             for house in houses_id:
                 for soc in soc_list:
 
-                    men_lst = df.query(f'social_group_id == {soc} & house_id == {house}')['soc_men'].values
-                    women_lst = df.query(f'social_group_id == {soc} & house_id == {house}')['soc_women'].values
+                    men_lst = df.query(f'social_group_id == {soc} & house_id == {house}')['men'].values
+                    women_lst = df.query(f'social_group_id == {soc} & house_id == {house}')['women'].values
 
                     men_rnd = iteround.saferound(men_lst, 0)
                     women_rnd = iteround.saferound(women_lst, 0)
 
-                    df.loc[(df['house_id'] == house) & (df['social_group_id'] == soc), 'soc_men_rounded'] = men_rnd
-                    df.loc[(df['house_id'] == house) & (df['social_group_id'] == soc), 'soc_women_rounded'] = women_rnd
+                    df.loc[(df['house_id'] == house) & (df['social_group_id'] == soc), 'men_rounded'] = men_rnd
+                    df.loc[(df['house_id'] == house) & (df['social_group_id'] == soc), 'women_rounded'] = women_rnd
         else:
             df.men_rounded = 0
             df.women_rounded = 0
