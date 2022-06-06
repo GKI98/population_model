@@ -21,7 +21,7 @@ def coef_migration(city_id, scenario):
     elif scenario == 'neg':
         func = 'min'
 
-    period_city_total = pd.read_excel(io='../scripts/Input_data/coef_migrations.xlsx', sheet_name='coef')
+    period_city_total = pd.read_excel(io='./scripts/Input_data/coef_migrations.xlsx', sheet_name='coef')
     df = period_city_total.drop('id', axis=1)
 
     spb = df.loc[df.region == 'г.Санкт-Петербург ']
@@ -125,7 +125,7 @@ def rename_new_table_attributes(df, df2):
 def main(city_id, scenario, year):
     print('В процессе: прогноз изменения численности населения')
 
-    period_city_total = pd.read_excel(io='../scripts/Input_data/changes_population.xls',
+    period_city_total = pd.read_excel(io='./scripts/Input_data/changes_population.xls',
                                       skiprows=5, usecols='A,B,R:CR,CT:DN')
     df = period_city_total
 
