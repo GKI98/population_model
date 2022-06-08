@@ -30,20 +30,11 @@ def main(city_forecast, path=''):
     print('В процессе: расчет прогноза изменения численности населения')
 
     city_forecast.drop(city_forecast.iloc[:, 0:24], inplace=True, axis=1)
-
     changes_forecast = calc_age_changes_coef(city_forecast)
     city_years_age_ratio = calc_total_changes_percent(city_forecast)
-
-    # print('Выполнено: расчет прогноза изменения численности населения')
-
 
     return changes_forecast, city_years_age_ratio
 
 
 if __name__ == '__main__':
     pass
-    # df = pd.read_csv('/home/gk/Desktop/to_SA/mod_forecast.csv')
-    # df = df.drop('Unnamed: 0', axis=1)
-    # df = df.astype(int)
-    #
-    # main(city_forecast=df)

@@ -59,7 +59,7 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         df.insert(2, 'scenario', args.scenario)
         
         if args.save == 'db':
-            save_db.main(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass, df)
+            save_db.main(args=args, houses_df=df)
         
         elif args.save == 'loc':  
             Saver.df_to_csv(df=df, id=mun)

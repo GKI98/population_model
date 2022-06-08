@@ -112,7 +112,6 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
 
 
 def main(args, mun_age_sex_df, path=''):
-    # print('В процессе: балансировка населения по домикам')
     print('Балансировка жителей домов для муниципалитетов:')
 
     houses_df_upd = forecast_house_population(args)

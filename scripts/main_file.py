@@ -8,21 +8,21 @@ from scripts import save_db
 from scripts.save_csv import Saver
 
 
-# def save_mun_soc(args, mun_soc) -> None:
-#     if args.save == 'db':
-#         save_db.main(args=args, mun_soc_df=mun_soc)
-#
-#     elif args.save == 'loc':
-#         mun_soc_df_new = mun_soc.copy()
-#         mun_soc_df_new = mun_soc_df_new.drop(['admin_unit_parent_id', 'men_age_allmun_percent',
-#                                               'women_age_allmun_percent', 'total_age_allmun_percent', 'total'], axis=1)
-#
-#         mun_soc_df_new.insert(0, 'city_id', args.city)
-#         mun_soc_df_new.insert(1, 'year', args.year)
-#         mun_soc_df_new.insert(2, 'set_population', args.population)
-#
-#         Saver.df_to_csv(df=mun_soc_df_new)
-#         Saver.cat(name='mun_soc')
+def save_mun_soc(args, mun_soc) -> None:
+    if args.save == 'db':
+        save_db.main(args=args, mun_soc_df=mun_soc)
+
+    elif args.save == 'loc':
+        mun_soc_df_new = mun_soc.copy()
+        mun_soc_df_new = mun_soc_df_new.drop(['admin_unit_parent_id', 'men_age_allmun_percent',
+                                              'women_age_allmun_percent', 'total_age_allmun_percent', 'total'], axis=1)
+
+        mun_soc_df_new.insert(0, 'city_id', args.city)
+        mun_soc_df_new.insert(1, 'year', args.year)
+        mun_soc_df_new.insert(2, 'set_population', args.population)
+
+        Saver.df_to_csv(df=mun_soc_df_new)
+        Saver.cat(name='mun_soc')
 
 
 def make_calc(args, path='', year=2022, set_population=0):
@@ -35,7 +35,7 @@ def make_calc(args, path='', year=2022, set_population=0):
                           city_population_forecast_df=city_forecast_df,
                           path=path, set_population=set_population, args=args)
 
-    # save_mun_soc(args, mun_soc)
+    save_mun_soc(args, mun_soc)
 
     # Удаление использованных таблиц для освобождения памяти
     del city_forecast_df

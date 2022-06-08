@@ -9,13 +9,8 @@ def main(changes_forecast_df, city_forecast_years_age_ratio_df, city_population_
 
     # Состав населения в % в прогнозируемом году
     year_ratio = city_forecast_years_age_ratio_df[year]
-
-    # city_population_forecast = pd.read_csv(f'{path}/city_population_forecast.csv').drop(columns=['Unnamed: 0'])
     population_sum = city_population_forecast_df.sum()
-
     change_coef = population_sum[year] / population_sum[2019]
-
-    # print('Выполнено: расчет коэффициентов изменения численности населения')
 
     return coef_ages, year_ratio, change_coef
 

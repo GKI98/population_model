@@ -231,7 +231,7 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
 
     if year > 2019:
         print(f'В процессе: пересчет населения на {year} год')
-        coef_changes, year_ratio, change_coef = changes_coef.main(changes_forecast_df, city_forecast_years_age_ratio_df,
+        coef_ages, year_ratio, change_coef = changes_coef.main(changes_forecast_df, city_forecast_years_age_ratio_df,
                                                                   city_population_forecast_df, year, path)
 
         def update_total_population(df):
@@ -248,7 +248,7 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
 
             for age in range(0, 101):
                 age_slice = df.query(f'age == {age}')
-                total_age_value = age_slice['total'] * coef_changes[age]
+                total_age_value = age_slice['total'] * coef_ages[age]
                 new_total_age_list += list(total_age_value)
 
             df['new_total'] = new_total_age_list

@@ -28,7 +28,7 @@ class DBReader:
 
         with conn, conn.cursor() as cur:
             # houses
-            houses_q =f'SELECT f.id, p.municipality_id, p.administrative_unit_id, b.living_area, ' \
+            houses_q = f'SELECT f.id, p.municipality_id, p.administrative_unit_id, b.living_area, ' \
                        f'b.resident_number, b.failure FROM buildings b ' \
                        f'JOIN functional_objects f ON b.physical_object_id = f.physical_object_id ' \
                        f'JOIN physical_objects p ON b.physical_object_id = p.id ' \
