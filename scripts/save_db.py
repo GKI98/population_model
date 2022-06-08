@@ -1,137 +1,128 @@
 # 0
-import pandas as pd
+# import pandas as pd
 import psycopg2
 from scripts.connect_db import Properties
 from more_itertools import sliced
 
 
-def sex_age_social_houses(args, df, table_name='social_stats.sex_age_social_houses'):
+def insert_sex_age_social_houses(db_addr, db_port, db_name, db_user, db_pass, df):
+    df1 = df[['year', 'scenario', 'house_id', 'social_group_id', 'age', 'men', 'women',
+              'men_rounded', 'women_rounded']]
 
     create_query = \
         f'''
-        CREATE TABLE IF NOT EXISTS {table_name}(
+        CREATE TABLE IF NOT EXISTS social_stats.sex_age_social_houses (
         year int NOT NULL,
-        set_population int NOT NULL,
         scenario varchar NOT NULL,
         house_id int NOT NULL REFERENCES functional_objects(id),
-        document_population integer,
-        max_population integer,
-        resident_number integer,
         social_group_id int NOT NULL REFERENCES social_groups(id), 
         age int,
         men real,
         women real,
-        men_rounded integer,
-        women_rounded integer,
-        primary key(
-        year, set_population, scenario, house_id, social_group_id, age)
+        men_rounded int,
+        women_rounded int,
+        primary key(year, scenario, house_id, social_group_id, age)
         );
         '''
 
-    push_db(args, df, table_name, create_query)
+    conn = Properties.connect(db_addr, db_port, db_name, db_user, db_pass)
+    with conn, conn.cursor() as cur:
+        cur.execute(create_query)
+
+        query_update = "UPDATE social_stats.sex_age_social_houses SET men = %s, women=%s, men_rounded=%s, " \
+                       "women_rounded=%s WHERE year=%s and scenario=%s " \
+                       "and house_id=%s and social_group_id=%s and age=%s " \
+
+        query_insert = f"INSERT INTO social_stats.sex_age_social_houses (year, scenario, house_id, social_group_id," \
+                       f" age, men, women, men_rounded, women_rounded) VALUES  (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+
+        # query = f"INSERT INTO social_stats.sex_age_social_houses (year, scenario, house_id, social_group_id, age, " \
+        #         f"men, women, men_rounded, women_rounded) " \
+        #         f"VALUES  (%s, %s, %s, %s, %s, %s, %s, %s, %s) " \
+        #         f"ON CONFLICT (year, scenario, house_id, social_group_id, age) " \
+        #         f"DO UPDATE SET (men, women, men_rounded, women_rounded) = " \
+        #         f"(EXCLUDED.men, EXCLUDED.women, EXCLUDED.men_rounded, EXCLUDED.women_rounded);"
+
+        chunk_size = 10000
+        index_slices = sliced(range(len(df1)), chunk_size)
+
+        for index_slice in index_slices:
+            chunk = df1.iloc[index_slice]
+            tuples = [tuple(x) for x in chunk.to_numpy()]
+            for t in tuples:
+                try:
+                    cur.execute(query_update, (t[6], t[5], t[8], t[7], t[0], t[1], t[2], t[3], t[4]))
+                    if cur.rowcount == 0:
+                        # print(f'sex_age_social_houses: {t[6], t[5], t[8], t[7], t[0], t[1], t[2], t[3], t[4]}'
+                        #       f' \n rowcount: {cur.rowcount}')
+                        cur.execute(query_insert, t)
+                except (Exception, psycopg2.DatabaseError) as e:
+                    print("Error: %s" % e)
+                    raise e
+
+    del index_slices, tuples, chunk, df1
 
 
-def create_municipality_sex_age_social(args, mun_soc_df, table_name='social_stats.municipality_sex_age_social'):
+def insert_population_houses(db_addr, db_port, db_name, db_user, db_pass, df):
+    df2 = df[['year', 'scenario', 'house_id', 'document_population', 'max_population', 'resident_number']]
 
     create_query = \
         f'''
-        CREATE TABLE IF NOT EXISTS {table_name}(
+        CREATE TABLE IF NOT EXISTS social_stats.sex_age_social_houses (
         year int NOT NULL,
-        set_population int NOT NULL,
         scenario varchar NOT NULL,
-        municipality_id int NOT NULL REFERENCES municipalities(id),
-        age int, 
-        social_group_id int NOT NULL REFERENCES social_groups(id),
-        men integer,
-        women integer,
-        primary key(
-        year, set_population, scenario, municipality_id, social_group_id, age)
+        house_id int NOT NULL REFERENCES functional_objects(id),
+        document_population int,
+        max_population int,
+        population int,     
+        primary key(year, scenario, house_id)
         );
         '''
-    push_db(args, mun_soc_df, table_name, create_query)
 
-
-def chunking(df):
-    chunk_size = 10000
-    index_slices = sliced(range(len(df)), chunk_size)
-
-    return index_slices, chunk_size
-
-
-def insert_df(cur, df, table_name):
-    cols = ','.join(list(df.columns))
-    values_space = '%s,' * len(list(df.columns))
-    values_space = values_space[:-1]
-
-    if table_name == 'social_stats.sex_age_social_houses':
-        special_constraint = 'house_id,'
-        set_cols_lst = ['document_population', 'max_population', 'resident_number', 'men', 'women', 'men_rounded',
-                        'women_rounded']
-        set_cols = ','.join(set_cols_lst)
-        excluded_cols_space = ','.join(['EXCLUDED.' + col for col in set_cols_lst])
-
-        query = f"INSERT INTO {table_name} ({cols}) VALUES ({values_space}) " \
-                f"ON CONFLICT (year, set_population, scenario, {special_constraint} social_group_id, age) " \
-                f"DO UPDATE SET ({set_cols}) = ({excluded_cols_space});"
-
-    elif table_name == 'social_stats.municipality_sex_age_social':
-        special_constraint = 'municipality_id,'
-        set_cols_lst = ['men', 'women']
-        set_cols = ','.join(set_cols_lst)
-        excluded_cols_space = ','.join(['EXCLUDED.' + col for col in set_cols_lst])
-
-        query = f"INSERT INTO {table_name} ({cols}) VALUES ({values_space}) " \
-                f"ON CONFLICT (year, set_population, scenario, {special_constraint} social_group_id, age) " \
-                f"DO UPDATE SET ({set_cols}) = ({excluded_cols_space});"
-
-    index_slices, chunk_size = chunking(df)
-
-    for index_slice in index_slices:
-        chunk = df.iloc[index_slice]
-        tuples = [tuple(x) for x in chunk.to_numpy()]
-        try:
-            cur.executemany(query, tuples)
-        except (Exception, psycopg2.DatabaseError) as e:
-            print("Error: %s" % e)
-            raise e
-
-    del index_slices
-    del tuples
-    del chunk
-    del df
-
-
-def push_db(args, df, table_name, create_query):
-
-    conn = Properties.connect(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass)
+    conn = Properties.connect(db_addr, db_port, db_name, db_user, db_pass)
     with conn, conn.cursor() as cur:
-
         cur.execute(create_query)
-        insert_df(cur, df, table_name)
+
+        query_update = "UPDATE social_stats.population_houses SET document_population = %s, max_population=%s, " \
+                       "population=%s WHERE year=%s and scenario=%s and house_id=%s"
+
+        query_insert = f"INSERT INTO social_stats.population_houses (year, scenario, house_id, document_population, " \
+                       f"max_population, population) VALUES  (%s, %s, %s, %s, %s, %s)"
+
+        # query = f"INSERT INTO social_stats.population_houses (year, scenario, house_id, document_population, " \
+        #         f"max_population, population " \
+        #         f"VALUES  (%s, %s, %s, %s, %s, %s) " \
+        #         f"ON CONFLICT (year, scenario, house_id) " \
+        #         f"DO UPDATE SET (document_population, max_population, population) = " \
+        #         f"(EXCLUDED.document_population, EXCLUDED.max_population, EXCLUDED.population);"
+
+        chunk_size = 10000
+        index_slices = sliced(range(len(df2)), chunk_size)
+
+        for index_slice in index_slices:
+            chunk = df2.iloc[index_slice]
+            tuples = [tuple(x) for x in chunk.to_numpy()]
+            for t in tuples:
+                try:
+                    cur.execute(query_update, (t[3], t[4], t[5], t[0], t[1], t[2]))
+                    if cur.rowcount == 0:
+                        # print(f'population_houses: {t[3], t[4], t[5], t[0], t[1], t[2]} \n rowcount: {cur.rowcount}')
+                        cur.execute(query_insert, t)
+                except (Exception, psycopg2.DatabaseError) as e:
+                    print("Error: %s" % e)
+                    raise e
+
+    del index_slices, tuples, chunk, df2
 
 
-# def drop_tables_if_exist(args, table_name:str):
-#     conn = Properties.connect(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass)
-#
-#     with conn, conn.cursor() as cur:
-#         cur.execute(f'drop table if exists social_stats.{table_name}')
-
-
-def main(args, houses_df=pd.DataFrame(), mun_soc_df=pd.DataFrame()):
-    if not houses_df.empty:
-        sex_age_social_houses(args, houses_df)
-
-    if not mun_soc_df.empty:
-        mun_soc_df_new = mun_soc_df.copy()
-        mun_soc_df_new = mun_soc_df_new.drop(['admin_unit_parent_id', 'men_age_allmun_percent',
-                                              'women_age_allmun_percent', 'total_age_allmun_percent', 'total'], axis=1)
-
-        mun_soc_df_new.insert(0, 'year', args.year)
-        mun_soc_df_new.insert(1, 'set_population', args.population)
-        mun_soc_df_new.insert(2, 'scenario', args.scenario)
-
-        create_municipality_sex_age_social(args, mun_soc_df=mun_soc_df_new)
+def main(db_addr, db_port, db_name, db_user, db_pass, houses_df):
+    insert_sex_age_social_houses(db_addr, db_port, db_name, db_user, db_pass, houses_df)
+    insert_population_houses(db_addr, db_port, db_name, db_user, db_pass, houses_df)
 
 
 if __name__ == '__main__':
     pass
+    # test_df = pd.read_csv('/home/gk/Desktop/output_data/data.csv', nrows=10)
+    # main(db_addr='10.32.1.101', db_port=5432, db_name='city_db_final', db_user='postgres', db_pass='postgres',
+    #      houses_df=test_df)
+    # print('done')
