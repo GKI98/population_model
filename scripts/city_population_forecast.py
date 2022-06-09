@@ -160,11 +160,11 @@ def main(city_id, scenario, year):
 
 
 if __name__ == '__main__':
-    # pass
+    pass
     # pd.set_option('display.max_rows', 10)
     # pd.set_option('display.max_columns', 100)
-
-    f = main(1, 'mod', 2040)
-    f.to_csv('/home/gk/Desktop/to_SA/mod_forecast.csv')
-    print('done!')
+    #
+    # f = main(1, 'mod', 2040)
+    # f.to_csv('/home/gk/Desktop/to_SA/mod_forecast.csv')
+    # print('done!')
 

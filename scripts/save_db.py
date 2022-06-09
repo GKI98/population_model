@@ -51,7 +51,8 @@ def insert_sex_age_social_houses(db_addr, db_port, db_name, db_user, db_pass, df
             tuples = [tuple(x) for x in chunk.to_numpy()]
             for t in tuples:
                 try:
-                    cur.execute(query_update, (t[6], t[5], t[8], t[7], t[0], t[1], t[2], t[3], t[4]))
+
+                    cur.execute(query_update, (t[5], t[6], t[7], t[8], t[0], t[1], t[2], t[3], t[4]))
                     if cur.rowcount == 0:
                         # print(f'sex_age_social_houses: {t[6], t[5], t[8], t[7], t[0], t[1], t[2], t[3], t[4]}'
                         #       f' \n rowcount: {cur.rowcount}')

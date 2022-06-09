@@ -57,7 +57,7 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         df.insert(0, 'year', args.year)
         df.insert(1, 'set_population', args.population)
         df.insert(2, 'scenario', args.scenario)
-        
+
         if args.save == 'db':
             save_db.main(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass, df)
         
