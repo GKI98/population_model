@@ -2,7 +2,7 @@
 
 import pandas as pd
 from scripts import read_data
-import iteround
+# import iteround
 from tqdm import tqdm
 
 '''
@@ -16,8 +16,8 @@ def forecast_house_population(args):
     max_sq_liv = 9
 
     max_population = (houses_df['living_area'] / max_sq_liv).values
-    max_population_rnd = iteround.saferound(max_population, 0)
-    houses_df['max_population'] = max_population_rnd
+    # max_population_rnd = iteround.saferound(max_population, 0)
+    houses_df['max_population'] = max_population
 
     def vch_calc(row):
         a_omch = 0.3  # коэффициент для ожидаемой максимальной численности жителей (ОМЧ)
@@ -42,7 +42,7 @@ def forecast_house_population(args):
 
 # Сбалансировать вероятное кол-во жителей в домике
 # и сохранить локально
-def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
+def balance_houses_population(houses_df_upd, mun_age_sex_df):
     mun_list = set(houses_df_upd['municipality_id'])
     houses_df_upd = houses_df_upd.assign(citizens_reg_bal=houses_df_upd['prob_population'])
 
@@ -111,12 +111,12 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, path):
     return df_mkd_balanced_mo
 
 
-def main(args, mun_age_sex_df, path=''):
+def main(args, mun_age_sex_df):
     # print('В процессе: балансировка населения по домикам')
     print('Балансировка жителей домов для муниципалитетов:')
 
     houses_df_upd = forecast_house_population(args)
-    df_mkd_balanced_mo = balance_houses_population(houses_df_upd, mun_age_sex_df, path)
+    df_mkd_balanced_mo = balance_houses_population(houses_df_upd, mun_age_sex_df)
 
     return df_mkd_balanced_mo
 

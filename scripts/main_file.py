@@ -25,17 +25,19 @@ from scripts.save_csv import Saver
 #         Saver.cat(name='mun_soc')
 
 
-def make_calc(args, path='', year=2022, set_population=0):
+def make_calc(args, year, set_population):
     city_forecast_df = city_population_forecast.main(city_id=args.city, scenario=args.scenario, year=args.year)
-    changes_forecast_df, city_forecast_years_age_ratio_df = changes_forecast_coef.main(city_forecast=city_forecast_df,
-                                                                                       path=path)
+
+    changes_forecast_df, city_forecast_years_age_ratio_df = changes_forecast_coef.main(city_forecast=city_forecast_df)
+
     mun_soc, mun_age_sex_df, adm_age_sex_df, mun_soc_allages_sum = \
         process_data.main(year=year, changes_forecast_df=changes_forecast_df,
                           city_forecast_years_age_ratio_df=city_forecast_years_age_ratio_df,
                           city_population_forecast_df=city_forecast_df,
-                          path=path, set_population=set_population, args=args)
+                          set_population=set_population, args=args)
 
     # save_mun_soc(args, mun_soc)
+
 
     # Удаление использованных таблиц для освобождения памяти
     del city_forecast_df
@@ -43,12 +45,15 @@ def make_calc(args, path='', year=2022, set_population=0):
     del city_forecast_years_age_ratio_df
     del adm_age_sex_df
 
-    df = balance_houses.main(args, mun_age_sex_df, path=path)
+    df = balance_houses.main(args, mun_age_sex_df)
 
     del mun_age_sex_df
 
-    df = houses_soc.main(houses_bal=df, mun_soc_allages_sum=mun_soc_allages_sum, path=path)
-    houses_soc_age.main(houses_soc=df, mun_soc=mun_soc, args=args, path=path)
+    df = houses_soc.main(houses_bal=df, mun_soc_allages_sum=mun_soc_allages_sum)
+
+    houses_soc_age.main(houses_soc=df, mun_soc=mun_soc, args=args)
+
+    print('done!')
 
 
 def main(args):

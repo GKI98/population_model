@@ -26,7 +26,7 @@ def calc_total_changes_percent(city_forecast):
     return city_years_age_ratio
 
 
-def main(city_forecast, path=''):
+def main(city_forecast):
     print('В процессе: расчет прогноза изменения численности населения')
 
     city_forecast.drop(city_forecast.iloc[:, 0:24], inplace=True, axis=1)

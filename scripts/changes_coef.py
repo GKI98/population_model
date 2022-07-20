@@ -1,7 +1,7 @@
 # 0.2
 
 
-def main(changes_forecast_df, city_forecast_years_age_ratio_df, city_population_forecast_df, year=2020, path=''):
+def main(changes_forecast_df, city_forecast_years_age_ratio_df, city_population_forecast_df, year):
     print('В процессе: расчет коэффициентов изменения численности населения')
 
     # Изменение в прогнозируемой численности в сравнении с 2019 годом (отношение к численности в 2019 по возрастам)

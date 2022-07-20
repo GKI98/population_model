@@ -1,3 +1,4 @@
+import sys
 from typing import Any, Iterator, Sequence
 
 import pandas as pd
@@ -12,7 +13,7 @@ class Saver:
     @staticmethod
     def chunking(df) -> Iterator[Sequence[Any]]:
         """Разбиение df на много маленьких df"""
-        chunk_size = 100
+        chunk_size = 10000
         index_slices = sliced(range(len(df)), chunk_size)
 
         return index_slices
@@ -20,13 +21,14 @@ class Saver:
     @staticmethod
     def cat(name: str = 'data'):
         os.chdir('./tmp_data_files')
-        os.system(f'cat * > {name}.csv & mv {name}.csv ../output_data')
-        time.sleep(3)
+        os.system(f'cat * > {name}.csv')
+        time.sleep(10)
+        os.system(f'mv {name}.csv ../output_data')
         os.chdir('../')
         shutil.rmtree(f'./tmp_data_files')
 
     @staticmethod
-    def df_to_csv(df, id=0) -> None:
+    def df_to_csv(df, id) -> None:
         folder_path = 'tmp_data_files'
 
         if not os.path.exists('./' + folder_path):

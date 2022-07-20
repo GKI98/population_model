@@ -1,20 +1,19 @@
 # 5
 
-import iteround
+# import iteround
 import pandas as pd
 from scripts import save_db
 from tqdm import tqdm
-
-
-# Распределить жителей домов (по соц. группам) по возрастам (0-100)
-# и сохранить локально
 from scripts.save_csv import Saver
 
 
 def houses_soc_to_ages(args, houses_soc, mun_soc):
+    '''
+    Распределить жителей домов (по соц. группам) по возрастам (0-100)
+    '''
 
     mun_list = set(houses_soc['municipality_id'])
-    soc_list = set(houses_soc['social_group_id'])
+    # soc_list = set(houses_soc['social_group_id'])
 
     print('Расчет жителей домов по возрастам среди соц.групп:')
     for mun in tqdm(mun_list):
@@ -25,34 +24,34 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         df = pd.merge(houses_soc_mun, mun_soc_mun, on=['municipality_id', 'social_group_id'])
         df = df.sort_values(by=['house_id', 'social_group_id'])
 
-        df['men_rounded'] = ''
-        df['women_rounded'] = ''
-
         # Кол-во людей в соц.группе в возрасте по полу = кол-во людей в доме * вероятность быть
         # в возрасте в мун в соц группе
         df['men'] = df['men'] * df['mun_percent']
         df['women'] = df['women'] * df['mun_percent']
 
         # Разбиение по домикам - чтобы балансировать людей по домикам
-        houses_id = set(df['house_id'])
+        # houses_id = set(df['house_id'])
 
         # Округление со сходящейся суммой по возрастам для соц.групп в доме
-        for house in houses_id:
-            for soc in soc_list:
+        # for house in houses_id:
+        #     for soc in soc_list:
 
-                men_lst = df.query(f'social_group_id == {soc} & house_id == {house}')['men'].values
-                women_lst = df.query(f'social_group_id == {soc} & house_id == {house}')['women'].values
+        #         men_lst = df.query(f'social_group_id == {soc} & house_id == {house}')['men'].values
+        #         women_lst = df.query(f'social_group_id == {soc} & house_id == {house}')['women'].values
 
-                men_rnd = iteround.saferound(men_lst, 0)
-                women_rnd = iteround.saferound(women_lst, 0)
+        #         men_rnd = iteround.saferound(men_lst, 0)
+        #         women_rnd = iteround.saferound(women_lst, 0)
 
-                df.loc[(df['house_id'] == house) & (df['social_group_id'] == soc), 'men_rounded'] = men_rnd
-                df.loc[(df['house_id'] == house) & (df['social_group_id'] == soc), 'women_rounded'] = women_rnd
+        #         df.loc[(df['house_id'] == house) & (df['social_group_id'] == soc), 'men_rounded'] = men_rnd
+        #         df.loc[(df['house_id'] == house) & (df['social_group_id'] == soc), 'women_rounded'] = women_rnd
 
         df = df.drop(['mun_percent', 'municipality_id'], axis=1)
 
         df['men'] = df['men'].astype(float).round(2)
         df['women'] = df['women'].astype(float).round(2)
+
+        df['men_rounded'] = df['men'].astype(int)
+        df['women_rounded'] = df['women'].astype(int)
 
         df.insert(0, 'year', args.year)
         df.insert(1, 'set_population', args.population)
@@ -68,7 +67,7 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         Saver.cat()
 
 
-def main(houses_soc, mun_soc, args, path=''):
+def main(houses_soc, mun_soc, args):
     print('В процессе: распределение жителей домов (по соц. группам) по возрастам')
 
     mun_soc = mun_soc[['municipality_id', 'social_group_id', 'age', 'men', 'women']]

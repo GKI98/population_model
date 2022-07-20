@@ -6,7 +6,8 @@ RUN pip3 install -r requirements.txt
 
 COPY scripts/ /scripts
 COPY cli.py /
+COPY runner.py /
 
 WORKDIR /
 
-CMD [ "python", "cli.py" ]
+CMD [ "python", "runner.py" ]

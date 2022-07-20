@@ -1,64 +1,44 @@
-# Требования к входным данным:
+# Requirements for input data:  
 
-В базе данных должны присутствовать следующие таблицы:
+The following tables must be present in the database:
 
-**Для домов:**
+**For houses:**
 - buildings
 - functional_objects
 - physical_objects
 
-**Для населения:**
+**For the population:**
 - administrative_units
 - municipalities
 - age_sex_administrative_units
 - age_sex_municipalities
 - age_sex_social_administrative_units
 
-Для прогноза изменения населения используется файлы из scripts/input_data  
-там информация о численности населения в городе (пока только Санкт-Петербург) по возрастам.
+The files from scripts/input_data are used for the population change forecast there is information about the population in the city (so far only St. Petersburg) by age.
 
-Все данные по населению за 2019г.  
+All the population data for 2019 year.  
 
-# Алгоритм обработки данных:
+# The data processing algorithm:
 
-**1. Прогноз изменения численности населения по возрастам до 2030г. на основе данных за предыдущие года.**
-- **1.1.** Данные неполные и с пропусками, поэтому также восстанавливаются пропуски и пробелы в данных.
-- **1.2.** При заданном годе прогнозирования (>2019) данные о численности берутся из прогноза на этот год.
-- **1.3.** При заданной суммарной численности данные прогноза корректируются под заданную суммарную численность.
-- **1.4.** Данные по населению по возрастам корректируются в соответствии с прогнозной численностью.
+**1. Forecast of population change by age until 2030 based on data from previous years.**
+- **1.1.** Data is incomplete and with gaps, so data gaps and omissions are also restored.
+- **1.2.** For a given forecast year (>2019), the population data is taken from the forecast for that year.
+- **1.3.** When the total number is given, the forecast data is adjusted to the given total number.
+- **1.4.** Population data by age are adjusted according to the projected number of population.
 
-**2. Расчет данных по соц.группам по возрастам для муниципалитетов.**
-- **2.1.** На основании % людей в муниципалитете относительно административного округа и % людей в соц. группе в административном округе
-           получаем оценку численности соц. групп в муниципальном округе.
+**2. Calculation of data on social groups by age for municipalities.**
+- **2.1.** Based on the % of people in the municipality relative to the administrative district and the % of people in the social group in the                        administrative district we get an estimate of the number of social groups in the municipality.
 
-**3. Расчет населения по домам.**
-- **3.1.** Расчет максимальной и вероятной численности населения в домах относительно населения в городе  
-           (по округам и муниципалитетам).
-- **3.1.1.** Используемые параметры:  
-             - Минимальное число квадратных метров на человека: 9;  
-             - Точность балансировки: 1.
-- **3.2.** Расчет соц. групп по домам (суммарно по возрастам).
-- **3.3.** Расчет соц. групп по домам по возрастам.
+**3. Calculation of the population by house.**
+- **3.1.** Calculation of the maximum and probable number of people in houses relative to the population in the city (by county and municipality).
+- **3.1.1.** Used parameters:  
+             - Minimum number of square meters per person: 9;  
+             - Balance accuracy: 1.
+- **3.2.** Calculation of social groups by house (total by age).
+- **3.3.** Calculation of social groups by house by age.
 
-**4. Созранение в БД.**
-###### В БД сохраняется две таблицы:
-- Соц. группы по возрастам для муниципалитетов в: social_stats.municipality_sex_age_social;  
-- Соц. группы по возрастам для домов в: social_stats.sex_age_social_houses.  
+###### Parameters:  
 
-# CLI:
-
-`-h` -> help, вывод описания взаимодействия с файлом и работы с командами.  
-
-###### Подключение к БД:  
-
-`--db-addr` - адрес обращения. По умолчанию: '172.17.0.1'.  
-`--db-port` - порт. По умолчанию: 5432.  
-`--db-name` - название базы данных. По умолчанию: 'city_db_final'.  
-`--db-user` - имя пользователя. По умолчанию: 'postgres'.  
-`--db-pass` - пароль, также задано значение по умолчанию.  
-
-###### Аргументы:  
-
-`--year` - год, на который нужно спрогнозировать изменение населения. По умолчанию: 2022.  
-`--city-id` - id города, для которого нужно сделать расчет. По умолчанию: 1 (Санкт-Петербург).  
-`--set-population` - задать суммарное значеие численности населения в городе (например, 10000000). По умолчанию не задано.  
+`--year` - the year for which you want to forecast the population change. Default: 2022.  
+`--city-id` - The id of the city for which you want to make the calculation. Default: 1 (St. Petersburg).  
+`--set-population` - Set the total value of the population in the city (e.g. 10,000,000). By default it is not set.  

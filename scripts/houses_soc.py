@@ -4,12 +4,11 @@
 import pandas as pd
 from tqdm import tqdm
 
-# import time
 
-
-# Распределить жителей домов по соц.группам
-# и сохранить локально
-def houses_to_soc(houses_bal, mun_soc_allages_sum, path):
+def houses_to_soc(houses_bal, mun_soc_allages_sum):
+    '''
+    Распределить жителей домов по соц.группам
+    '''
 
     houses_bal['mun_percent'] = ''
     mun_list = set(houses_bal['municipality_id'])
@@ -29,18 +28,17 @@ def houses_to_soc(houses_bal, mun_soc_allages_sum, path):
 
     houses_soc = houses_soc.sort_values(by='social_group_id')
 
-    houses_soc.rename(columns={'id': 'house_id',
-                               'resident_number': 'document_population',
+    houses_soc.rename(columns={'id': 'house_id', 'resident_number': 'document_population',
                                'citizens_reg_bal': 'resident_number'}, inplace=True)
 
     return houses_soc
 
 
-def main(houses_bal, mun_soc_allages_sum, path=''):
+def main(houses_bal, mun_soc_allages_sum):
     # print('В процессе: распределение жителей домов по соц.группам')
 
-    houses_soc = houses_to_soc(houses_bal, mun_soc_allages_sum, path)
-    houses_soc = houses_soc.drop(['administrative_unit_id', 'prob_population', 'failure', 'living_area',
+    houses_soc = houses_to_soc(houses_bal, mun_soc_allages_sum)
+    houses_soc = houses_soc.drop(['administrative_unit_id', 'failure', 'living_area', 'prob_population',
                                   'total_mun_soc_sum', 'men_mun_soc_sum', 'women_mun_soc_sum'], axis=1)
 
     # print('Выполнено: распределение жителей домов по соц.группам\n')
