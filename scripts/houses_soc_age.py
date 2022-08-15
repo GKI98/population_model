@@ -1,10 +1,90 @@
 # 5
 
-# import iteround
 import pandas as pd
 from scripts import save_db
 from tqdm import tqdm
 from scripts.save_csv import Saver
+import random
+
+
+class Sequence:
+    val = 0
+
+    def get_range_ends(self, length: int) -> tuple:
+        '''Returns ends as [left, right)'''
+        old_val = self.val
+        self.val += length
+        
+        return old_val, self.val
+
+
+def generate_rounds(df) -> None:
+    
+    df['men_rounded'] = 0
+    df['women_rounded'] = 0
+
+    for soc in df['social_group_id'].unique():
+        df_ = df.loc[df['social_group_id']==soc].copy()
+        missing_val = 0
+        # print('\n', soc, '\n')
+
+        for house in tqdm(df['house_id'].unique()):
+            # print(house)
+            df__ = df_.loc[df_['house_id']==house].copy()
+                
+        
+            for sex in ['men', 'women']:
+                # print(sex)
+                base_num = df__[df__[f'{sex}'] > 0][f'{sex}'].min()
+                
+                try:
+                    df__[f'ratio_{sex}'] = df__[f'{sex}'].apply(lambda x: x / base_num)
+                    df__ = df__.sort_values(by=f'ratio_{sex}')
+                    
+                    s = Sequence()
+
+                    df__[f'seq_{sex}'] = df__[f'ratio_{sex}'].apply(s.get_range_ends)
+                    right_borader = df__[f'seq_{sex}'].iat[-1][1]
+
+
+                    # total_soc = round(df__[f'{sex}'].sum())
+
+                    data_was = df__[f'{sex}'].values
+                    data_now = []
+
+                    for _, data in enumerate(data_was, 1):
+                        data_now.append(round(data + missing_val))
+                        missing_val = round(data + missing_val - data_now[-1], 2)
+
+                    total_soc = sum(data_now)
+                    # print('missing: ', missing_val)
+                    # print('total sum: ', total_soc)
+                    # print('total_was: ', sum(data_was))
+
+
+                    # initial_total_soc = df__[f'{sex}'].sum()
+                    # print(initial_total_soc)
+                    # total_soc = round(initial_total_soc + missing_val)
+                    # print(total_soc)
+
+                    # missing_val += round((total_soc - initial_total_soc), 2)
+                    # print(missing_val)
+
+                    lst = list()
+                    for i in range(total_soc):
+                        lst.append(random.uniform(0, right_borader-1))            
+                    
+                    for dice in lst:           
+                        idx = df__.loc[df__[f'seq_{sex}'].apply(lambda rng: dice >= rng[0] and dice < rng[1])].iloc[0].name
+                        df.loc[idx, f'{sex}_rounded'] += 1
+                        
+                
+                except ValueError:
+                    # print(soc, sex)
+                    df.loc[df['social_group_id']==soc, f'{sex}_rounded'] = 0
+
+        # idxs = (df['social_group_id']==soc) & (df['house_id']==house)
+        # df.loc[idxs] = df.loc[idxs].join(pd.Series(, name=''))
 
 
 def houses_soc_to_ages(args, houses_soc, mun_soc):
@@ -29,29 +109,12 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         df['men'] = df['men'] * df['mun_percent']
         df['women'] = df['women'] * df['mun_percent']
 
-        # Разбиение по домикам - чтобы балансировать людей по домикам
-        # houses_id = set(df['house_id'])
-
-        # Округление со сходящейся суммой по возрастам для соц.групп в доме
-        # for house in houses_id:
-        #     for soc in soc_list:
-
-        #         men_lst = df.query(f'social_group_id == {soc} & house_id == {house}')['men'].values
-        #         women_lst = df.query(f'social_group_id == {soc} & house_id == {house}')['women'].values
-
-        #         men_rnd = iteround.saferound(men_lst, 0)
-        #         women_rnd = iteround.saferound(women_lst, 0)
-
-        #         df.loc[(df['house_id'] == house) & (df['social_group_id'] == soc), 'men_rounded'] = men_rnd
-        #         df.loc[(df['house_id'] == house) & (df['social_group_id'] == soc), 'women_rounded'] = women_rnd
-
         df = df.drop(['mun_percent', 'municipality_id'], axis=1)
 
         df['men'] = df['men'].astype(float).round(2)
         df['women'] = df['women'].astype(float).round(2)
 
-        df['men_rounded'] = df['men'].astype(int)
-        df['women_rounded'] = df['women'].astype(int)
+        # generate_rounds(df)
 
         df.insert(0, 'year', args.year)
         df.insert(1, 'set_population', args.population)
@@ -61,10 +124,10 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
             save_db.main(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass, df)
         
         elif args.save == 'loc':  
-            Saver.df_to_csv(df=df, id=mun)
+            Saver.df_to_csv(df=df, id=mun, folder_name=f'{args.year}.{args.scenario}')
     
     if args.save == 'loc':
-        Saver.cat()
+        Saver.cat(folder_name=f'{args.year}_{args.scenario}')
 
 
 def main(houses_soc, mun_soc, args):
@@ -78,4 +141,7 @@ def main(houses_soc, mun_soc, args):
 
 
 if __name__ == '__main__':
-    pass
+    df = pd.read_csv('../2019.mod/data.csv')
+    df = df.query('social_group_id==40')
+    generate_rounds(df)
+    df.to_csv('../2019.mod/data_2.csv')

@@ -13,22 +13,22 @@ class Saver:
     @staticmethod
     def chunking(df) -> Iterator[Sequence[Any]]:
         """Разбиение df на много маленьких df"""
-        chunk_size = 10000
+        chunk_size = 20000
         index_slices = sliced(range(len(df)), chunk_size)
 
         return index_slices
 
     @staticmethod
-    def cat(name: str = 'data'):
+    def cat(folder_name, name: str = 'data'):
         os.chdir('./tmp_data_files')
         os.system(f'cat * > {name}.csv')
-        time.sleep(10)
-        os.system(f'mv {name}.csv ../output_data')
+        time.sleep(60)
+        os.system(f'mv {name}.csv ../{folder_name}')
         os.chdir('../')
         shutil.rmtree(f'./tmp_data_files')
 
     @staticmethod
-    def df_to_csv(df, id) -> None:
+    def df_to_csv(df, id, folder_name) -> None:
         folder_path = 'tmp_data_files'
 
         if not os.path.exists('./' + folder_path):
@@ -48,8 +48,8 @@ class Saver:
             chunk.to_csv(tmp_data_path, header=False, index=False)
 
         os.chdir(f'{os.getcwd()}/{folder_path}')
-        if not os.path.exists('../output_data'):
-            os.mkdir('../output_data')
+        if not os.path.exists(f'../{folder_name}'):
+            os.mkdir(f'../{folder_name}')
         os.chdir('../')
 
 

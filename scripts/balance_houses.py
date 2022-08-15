@@ -19,6 +19,8 @@ def forecast_house_population(args):
     # max_population_rnd = iteround.saferound(max_population, 0)
     houses_df['max_population'] = max_population
 
+    # print(houses_df)
+
     def vch_calc(row):
         a_omch = 0.3  # коэффициент для ожидаемой максимальной численности жителей (ОМЧ)
         a_ich = 0.7  # коэффициент для известной численности жителей (ИЧ)
@@ -47,7 +49,7 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df):
     houses_df_upd = houses_df_upd.assign(citizens_reg_bal=houses_df_upd['prob_population'])
 
     # Минимальное значение, до которого может сокращаться населения в доме при балансировке, кол-во человек
-    balancing_min = 5
+    balancing_min = 0
     # 5
 
     # Точность балансировки, кол-во человек
