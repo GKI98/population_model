@@ -124,7 +124,7 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
             save_db.main(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass, df)
         
         elif args.save == 'loc':  
-            Saver.df_to_csv(df=df, id=mun, folder_name=f'{args.year}.{args.scenario}')
+            Saver.df_to_csv(df=df, id=mun, folder_name=f'{args.year}_{args.scenario}')
     
     if args.save == 'loc':
         Saver.cat(folder_name=f'{args.year}_{args.scenario}')
