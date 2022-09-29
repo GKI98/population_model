@@ -35,9 +35,11 @@ def forecast_house_population(args):
             val = row['max_population']
         else:
             val = a_omch * row['max_population'] + a_ich * row['resident_number']
+
+        
         return val
 
-    houses_df['prob_population'] = houses_df.apply(vch_calc, axis=1).round().astype(int)
+    houses_df['prob_population'] = houses_df.apply(vch_calc, axis=1).round().fillna(0).astype(int)
 
     return houses_df
 

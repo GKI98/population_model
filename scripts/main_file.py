@@ -26,9 +26,14 @@ from scripts.save_csv import Saver
 
 
 def make_calc(args, year, set_population):
-    city_forecast_df = city_population_forecast.main(city_id=args.city, scenario=args.scenario, year=args.year)
 
-    changes_forecast_df, city_forecast_years_age_ratio_df = changes_forecast_coef.main(city_forecast=city_forecast_df)
+    if args.city == 5:
+        city_forecast_df, changes_forecast_df, city_forecast_years_age_ratio_df = 0, 0 , 0
+    else:
+        city_forecast_df = city_population_forecast.main(city_id=args.city, scenario=args.scenario, year=args.year)
+
+        changes_forecast_df, city_forecast_years_age_ratio_df = changes_forecast_coef.main(city_forecast=city_forecast_df)
+
 
     mun_soc, mun_age_sex_df, adm_age_sex_df, mun_soc_allages_sum = \
         process_data.main(year=year, changes_forecast_df=changes_forecast_df,
