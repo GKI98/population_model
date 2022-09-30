@@ -1,49 +1,42 @@
-# 0.1
+from typing import Tuple
 
 import pandas as pd
+from loguru import logger
 
 
-def calc_age_changes_coef(city_forecast):
-    # Посчитать изменения населения в прогнозируемых годах относительно 2019 г. по возрастам
+def calc_age_changes_coef(city_forecast: pd.DataFrame, base_year: int) -> pd.DataFrame:
+    '''Подсчет изменения населения в прогнозируемых годах относительно базового года по возрастам'''
     changes_forecast = pd.DataFrame()
     columns = list(city_forecast.columns)
 
+    if base_year not in columns:
+        logger.error('Заданый базовый год для подсчета изменения населения ({}) отсутствует во входных данных ({})',
+                base_year, ', '.join(map(str, sorted(columns))))
     for col in columns:
-        changes_forecast[col] = city_forecast[col].div(city_forecast[2019])
+        changes_forecast[col] = city_forecast[col].div(city_forecast[base_year])
 
     return changes_forecast
 
 
-def calc_total_changes_percent(city_forecast):
+def calc_total_changes_percent(city_forecast: pd.DataFrame, base_year: int) -> pd.DataFrame:
     changes_forecast = pd.DataFrame()
     columns = list(city_forecast.columns)
     for col in columns:
-        changes_forecast[col] = city_forecast[col].div(city_forecast[2019])
+        changes_forecast[col] = city_forecast[col].div(city_forecast[base_year])
 
     city_years_age_sum = changes_forecast.sum()
-    city_years_age_ratio = changes_forecast.div(city_years_age_sum.iloc[:], axis='columns')
+    city_years_age_ratio = changes_forecast.div(city_years_age_sum.iloc[:], axis=1)
 
     return city_years_age_ratio
 
 
-def main(city_forecast):
-    print('В процессе: расчет прогноза изменения численности населения')
+def main(city_forecast: pd.DataFrame, base_year: int) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    '''Dataframes are returned in order `changes_forecast`, `city_years_age_ratio`'''
+    logger.info('Начался расчет прогноза изменения численности населения')
 
     city_forecast.drop(city_forecast.iloc[:, 0:24], inplace=True, axis=1)
 
-    changes_forecast = calc_age_changes_coef(city_forecast)
-    city_years_age_ratio = calc_total_changes_percent(city_forecast)
-
-    # print('Выполнено: расчет прогноза изменения численности населения')
-
+    changes_forecast = calc_age_changes_coef(city_forecast, base_year)
+    city_years_age_ratio = calc_total_changes_percent(city_forecast, base_year)
 
     return changes_forecast, city_years_age_ratio
-
-
-if __name__ == '__main__':
-    pass
-    # df = pd.read_csv('/home/gk/Desktop/to_SA/mod_forecast.csv')
-    # df = df.drop('Unnamed: 0', axis=1)
-    # df = df.astype(int)
-    #
-    # main(city_forecast=df)

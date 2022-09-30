@@ -4,8 +4,8 @@ COPY requirements.txt /
 
 RUN pip3 install -r requirements.txt
 
-COPY scripts/ /scripts
-COPY cli.py /
+COPY scripts/ /
+COPY balance_social_stats.py /
 COPY runner.py /
 
 WORKDIR /

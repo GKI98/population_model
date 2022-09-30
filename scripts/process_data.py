@@ -1,14 +1,14 @@
-# 2
 
 import iteround
 import pandas as pd
-from scripts import changes_coef
-from scripts import read_data
+from loguru import logger
+
+from scripts import data_reader
 
 
-# Посчитать % коэф. жителей в возрасте и МУН
 def calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list):
-    print('В процессе: расчет кол-ва жителей по возрастам')
+    '''Подсчет % коэф. жителей в возрасте и МУН'''
+    logger.info('Начался расчет количества жителей по возрастам')
 
     for age in range(0, 101):
         for sex in ['men', 'women', 'total']:
@@ -50,15 +50,6 @@ def calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list):
                 except KeyError as e:
                     mun_age_sex_df[f'{sex}_age_allmun_percent'] = mun_age_sex_slice / mun_age_sex_sum
 
-            # mun_age_sex_slice = mun_age_sex_df.loc[mun_age_sex_df['age'] == age][sex]
-            # mun_age_sex_sum = mun_age_sex_df.loc[mun_age_sex_df['age'] == age][sex].sum()
-            #
-            # try:
-            #     mun_age_sex_df.loc[mun_age_sex_df['age'] == age, f'{sex}_age_allmun_percent'] = \
-            #         mun_age_sex_slice / mun_age_sex_sum
-            # except KeyError as e:
-            #     mun_age_sex_df[f'{sex}_age_allmun_percent'] = mun_age_sex_slice / mun_age_sex_sum
-
             # По мун среди всех возрастов
             for mun_id in mun_list:
                 mun_sex_mun_id_slice = mun_age_sex_df.query(f"municipality_id == {mun_id}")[sex]
@@ -67,16 +58,14 @@ def calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list):
                 try:
                     mun_age_sex_df.loc[mun_age_sex_df['municipality_id'] == mun_id, f'{sex}_mun_allages_percent'] = \
                         mun_sex_mun_id_slice / mun_sex_mun_id_sum
-                except KeyError as e:
+                except KeyError as ex:
                     mun_age_sex_df[f'{sex}_mun_allages_percent'] = mun_sex_mun_id_slice / mun_sex_mun_id_sum
-                    # print(f'Exception: {e}')
 
     return mun_age_sex_df, adm_age_sex_df
 
 
-# Посчитать население по соц.группам по возрасту для МУН
-# и сохранить локально
 def calc_mun_soc_age(mun_age_sex_df, soc_adm_age_sex_df):
+    '''Подсчет населения по соц-группам по возрасту для МУН'''
     mun_soc = pd.merge(mun_age_sex_df[['admin_unit_parent_id', 'municipality_id', 'age', 'men_age_allmun_percent',
                                        'women_age_allmun_percent', 'total_age_allmun_percent']],
                        soc_adm_age_sex_df[['admin_unit_parent_id', 'social_group_id', 'age', 'men', 'women', 'total']],
@@ -91,13 +80,11 @@ def calc_mun_soc_age(mun_age_sex_df, soc_adm_age_sex_df):
         mun_soc_sex = [0.0 if pd.isna(x) else x for x in mun_soc_sex]
         mun_soc[sex] = iteround.saferound(mun_soc_sex, 0)
 
-    # print('Выполнено: расчет кол-ва жителей по возрастам')
-
     return mun_soc
 
 
-# Посчитать суммарное кол-во по людей по соц.группам по АДМ
 def calc_adm_soc_sum(soc_list, adm_list, soc_adm_age_sex_df, year):
+    '''Подсчет суммарное количества людей по соц.группам по АДМ'''
     adm_soc_sum = pd.DataFrame(columns=['year', 'admin_unit_parent_id', 'social_group_id',
                                         'total_sum', 'men_ratio', 'women_ratio'])
     for soc in soc_list:
@@ -119,8 +106,8 @@ def calc_adm_soc_sum(soc_list, adm_list, soc_adm_age_sex_df, year):
     return adm_soc_sum
 
 
-# Посчитать суммарное кол-во жителей по МУН и % жителей МУН в АДМ
 def calc_mun_sum(mun_list, mun_age_sex_df, adm_list, year):
+    '''Подсчет суммарного количества жителей по МУН и % жителей МУН в АДМ'''
     # Посчитать общее число во всех соц.группах для МУН
     mun_allages_sum = pd.DataFrame(columns=['year', 'admin_unit_parent_id', 'municipality_id',
                                            'men_sum', 'women_sum', 'total_sum'])
@@ -174,8 +161,8 @@ def calc_mun_sum(mun_list, mun_age_sex_df, adm_list, year):
     return mun_allages_percent
 
 
-# Посчитать суммарное кол-во жителей в МУН по соц.группам
 def calc_mun_soc_sum(adm_list, soc_list, mun_allages_percent, adm_soc_sum, year):
+    '''Подсчет суммарного количества жителей в МУН по соц-группам'''
     mun_soc_allages_sum = pd.DataFrame(columns=['year', 'admin_unit_parent_id', 'municipality_id', 'social_group_id',
                                                 'total_mun_soc_sum', 'men_mun_soc_sum', 'women_mun_soc_sum'])
     for adm in adm_list:
@@ -209,7 +196,7 @@ def calc_mun_soc_sum(adm_list, soc_list, mun_allages_percent, adm_soc_sum, year)
     for soc in soc_list:
         df_slice = mun_soc_allages_sum.query(f'social_group_id == {soc}')
 
-        total = iteround.saferound(df_slice['total_mun_soc_sum'], 0)
+        total = iteround.saferound(df_slice['total_mun_soc_sum'], 0) # TODO: remove iteround?
         men = iteround.saferound(df_slice['men_mun_soc_sum'], 0)
         women = iteround.saferound(df_slice['women_mun_soc_sum'], 0)
 
@@ -222,18 +209,22 @@ def calc_mun_soc_sum(adm_list, soc_list, mun_allages_percent, adm_soc_sum, year)
     return mun_soc_allages_sum
 
 
-def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_population_forecast_df,
-         year, set_population):
-    adm_total_df, mun_total_df, adm_age_sex_df, mun_age_sex_df, soc_adm_age_sex_df, _ = read_data.main(args)
+def main(reader: data_reader.DataReader, changes_forecast_df: pd.DataFrame, city_population_forecast_df: pd.DataFrame,
+        year: int, set_population: int, base_year: int):
+    '''DataFrames are returned in order `mun_soc`, `mun_age_sex_df`, `adm_age_sex_df`, `mun_soc_allages_sum`'''
+    adm_total_df, mun_total_df, adm_age_sex_df, mun_age_sex_df, soc_adm_age_sex_df, _ = reader.get_data()
 
-    if year > 2019:
-        print(f'В процессе: пересчет населения на {year} год')
-        coef_changes, year_ratio, change_coef = changes_coef.main(changes_forecast_df, city_forecast_years_age_ratio_df,
-                                                                  city_population_forecast_df, year)
+    if year > base_year:
+        logger.info(f'Начался пересчет населения на {year} год')
+
+        # Изменение в прогнозируемой численности в сравнении с базовым годом (отношение к численности в базовом году по возрастам)
+        coef_changes = changes_forecast_df[year]
+        population_sum = city_population_forecast_df.sum()
+        change_coef = population_sum[year] / population_sum[base_year]
 
         def update_total_population(df):
             new_population = df['population'] * change_coef
-            new_population = iteround.saferound(new_population, 0)
+            new_population = iteround.saferound(new_population, 0) # TODO remove iteround?
             df['population'] = new_population
 
             return df
@@ -249,19 +240,16 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
                 new_total_age_list += list(total_age_value)
 
             df['new_total'] = new_total_age_list
-            # df['new_total'] = iteround.saferound(df['new_total'], 0)
 
             new_men = list(df['men'] / df['total'] * df['new_total'])
             new_men = [0.0 if pd.isna(x) else x for x in new_men]
 
             df['men'] = new_men
-            # df['men'] = iteround.saferound(df['men'], 0)
 
             new_women = list(df['women'] / df['total'] * df['new_total'])
             new_women = [0.0 if pd.isna(x) else x for x in new_women]
 
             df['women'] = new_women
-            # df['women'] = iteround.saferound(df['women'], 0)
             df['year'] = year
 
             df.drop('total', axis=1, inplace=True)
@@ -275,7 +263,7 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
                 df.sort_values(by=['age', 'administrative_unit_id', 'social_group_id'])
                 adm_age_sex_df.sort_values(by=['age', 'administrative_unit_id'])
 
-                soc_list = set(df.social_group_id)
+                soc_list = set(df['social_group_id'])
 
                 for soc in soc_list:
                     df.loc[df['social_group_id'] == soc, 'men'] = df.query(f'social_group_id == {soc}')['men'] \
@@ -286,7 +274,7 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
 
                     df.loc[df['social_group_id'] == soc, 'total'] = df.query(f'social_group_id == {soc}')['men'] + df.query(f'social_group_id == {soc}')['women']
 
-                    df.loc[df['social_group_id'] == soc, 'total'] = iteround.saferound(list(df.query(f'social_group_id == {soc}')['total']), 0)
+                    df.loc[df['social_group_id'] == soc, 'total'] = iteround.saferound(list(df.query(f'social_group_id == {soc}')['total']), 0) # TODO: remove iteround?
                     df.loc[df['social_group_id'] == soc, 'women'] = iteround.saferound(list(df.query(f'social_group_id == {soc}')['women']), 0)
                     df.loc[df['social_group_id'] == soc, 'men'] = iteround.saferound(list(df.query(f'social_group_id == {soc}')['men']), 0)
 
@@ -294,7 +282,7 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
                 df['women'] = df['women'] / df['total'].sum() * set_population
                 df['men'] = df['men'] / df['total'].sum() * set_population
 
-                df['women'] = iteround.saferound(list(df['women']), 0)
+                df['women'] = iteround.saferound(list(df['women']), 0) # TODO: remove iteround?
                 df['men'] = iteround.saferound(list(df['men']), 0)
 
                 df['total'] = df['women'] + df['men']
@@ -314,7 +302,7 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
             adm_age_sex_df = set_population_num(adm_age_sex_df)
             mun_age_sex_df = set_population_num(mun_age_sex_df)
 
-    elif year == 2019:
+    elif year == base_year:
         adm_age_sex_df['total'] = adm_age_sex_df['men'] + adm_age_sex_df['women']
         mun_age_sex_df['total'] = mun_age_sex_df['men'] + mun_age_sex_df['women']
         soc_adm_age_sex_df['total'] = soc_adm_age_sex_df['men'] + soc_adm_age_sex_df['women']
@@ -347,22 +335,16 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
 
     mun_age_sex_df, adm_age_sex_df = calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list)
 
-    print('В процессе: расчет соц.групп по возрастам')
+    logger.info('Начался расчет соц.групп по возрастам')
     mun_soc = calc_mun_soc_age(mun_age_sex_df, soc_adm_age_sex_df)
 
-    print('В процессе: расчет соц.групп суммарно по АДМ')
+    logger.info('Начался расчет соц.групп суммарно по АДМ')
     adm_soc_sum = calc_adm_soc_sum(soc_list, adm_list, soc_adm_age_sex_df, year)
 
-    print('В процессе: расчет % жителей МУН в АДМ')
+    logger.info('Начался расчет % жителей МУН в АДМ')
     mun_allages_percent = calc_mun_sum(mun_list, mun_age_sex_df, adm_list, year)
 
-    print('В процессе: расчет соц.групп по МУН')
+    logger.info('Начался расчет соц.групп по МУН')
     mun_soc_allages_sum = calc_mun_soc_sum(adm_list, soc_list, mun_allages_percent, adm_soc_sum, year)
 
     return mun_soc, mun_age_sex_df, adm_age_sex_df, mun_soc_allages_sum
-
-
-if __name__ == '__main__':
-    pass
-    # pd.set_option('display.max_rows', 10)
-    # pd.set_option('display.max_columns', 20)

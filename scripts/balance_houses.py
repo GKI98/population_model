@@ -1,22 +1,15 @@
-# 3
-
 import pandas as pd
-from scripts import read_data
-# import iteround
+from loguru import logger
 from tqdm import tqdm
 
-'''
-В houses нет муниципалитета №101 !!!
-'''
-
+from scripts import data_reader
 
 # Посчитать макс. и вероятное кол-во жителей в домике
-def forecast_house_population(args):
-    houses_df = read_data.main(args)[5]
+def forecast_house_population(reader: data_reader.DataReader) -> pd.DataFrame:
+    houses_df = reader.get_data()[5]
     max_sq_liv = 9
 
     max_population = (houses_df['living_area'] / max_sq_liv).values
-    # max_population_rnd = iteround.saferound(max_population, 0)
     houses_df['max_population'] = max_population
 
     def vch_calc(row):
@@ -41,24 +34,21 @@ def forecast_house_population(args):
 
 
 # Сбалансировать вероятное кол-во жителей в домике
-# и сохранить локально
-def balance_houses_population(houses_df_upd, mun_age_sex_df):
+def balance_houses_population(houses_df_upd: pd.DataFrame, mun_age_sex_df: pd.DataFrame) -> pd.DataFrame:
     mun_list = set(houses_df_upd['municipality_id'])
     houses_df_upd = houses_df_upd.assign(citizens_reg_bal=houses_df_upd['prob_population'])
 
     # Минимальное значение, до которого может сокращаться населения в доме при балансировке, кол-во человек
     balancing_min = 5
-    # 5
 
     # Точность балансировки, кол-во человек
     accuracy = 1
-    # 1
 
     counter = 0
     df_mkd_balanced_mo = pd.DataFrame()
     sex = 'total'
 
-    for mun in tqdm(mun_list):
+    for mun in tqdm(mun_list, desc='Балансировка по МУН'):
         citizens_mo_reg_bal = mun_age_sex_df.query(f'municipality_id == {mun}')[sex].sum()
 
         # Выбрать дома, относящиеся к выбранному МО
@@ -97,8 +87,8 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df):
                     df_mkd_mo.at[the_house, 'citizens_reg_bal'] = df_mkd_mo.loc[
                                                                       the_house, 'citizens_reg_bal'] - accuracy
                 except ValueError as e:
-                    print('Численность по МУН меньше, чем минимальное распределение по домикам в этом МУН')
-                    print('\nError:Необходимо уменьшить минимальную численность населения для каждого домика\n')
+                    logger.error('Численность по МУН меньше, чем минимальное распределение по домикам в этом МУН')
+                    logger.error('\nError:Необходимо уменьшить минимальную численность населения для каждого домика\n')
                     raise e
 
                 # Ищем новое значение сбалансированной численности для МО
@@ -111,15 +101,10 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df):
     return df_mkd_balanced_mo
 
 
-def main(args, mun_age_sex_df):
-    # print('В процессе: балансировка населения по домикам')
-    print('Балансировка жителей домов для муниципалитетов:')
+def main(reader: data_reader.DataReader, mun_age_sex_df: pd.DataFrame) -> pd.DataFrame:
+    logger.info('Балансировка жителей домов для муниципалитетов:')
 
-    houses_df_upd = forecast_house_population(args)
+    houses_df_upd = forecast_house_population(reader)
     df_mkd_balanced_mo = balance_houses_population(houses_df_upd, mun_age_sex_df)
 
     return df_mkd_balanced_mo
-
-
-if __name__ == '__main__':
-    pass

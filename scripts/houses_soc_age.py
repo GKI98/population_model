@@ -1,22 +1,21 @@
-# 5
-
-# import iteround
+from typing import Dict, Literal
 import pandas as pd
-from scripts import save_db
+from loguru import logger
 from tqdm import tqdm
+
+from scripts import save_db
 from scripts.save_csv import Saver
 
 
-def houses_soc_to_ages(args, houses_soc, mun_soc):
-    '''
-    Распределить жителей домов (по соц. группам) по возрастам (0-100)
-    '''
+def houses_soc_to_ages(year: int, set_population: int, scenario: Literal['pos', 'mod', 'neg'],
+        houses_soc: pd.DataFrame, mun_soc: pd.DataFrame) -> Dict[str, pd.DataFrame]:
+    '''Распределение жителей домов (по соц. группам) по возрастам (0-100)'''
 
     mun_list = set(houses_soc['municipality_id'])
-    # soc_list = set(houses_soc['social_group_id'])
 
-    print('Расчет жителей домов по возрастам среди соц.групп:')
-    for mun in tqdm(mun_list):
+    logger.info('Начался расчет жителей домов по возрастам среди соц.групп')
+    res = {}
+    for mun in tqdm(mun_list, desc='Балансировка соц-групп по возрастам'):
         # Разрез по муниципалитетам - чтобы кусочками работать с df и не есть много памяти за раз
         houses_soc_mun = houses_soc.loc[houses_soc['municipality_id'] == mun]
         mun_soc_mun = mun_soc.loc[mun_soc['municipality_id'] == mun]
@@ -30,21 +29,8 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         df['women'] = df['women'] * df['mun_percent']
 
         # Разбиение по домикам - чтобы балансировать людей по домикам
-        # houses_id = set(df['house_id'])
 
         # Округление со сходящейся суммой по возрастам для соц.групп в доме
-        # for house in houses_id:
-        #     for soc in soc_list:
-
-        #         men_lst = df.query(f'social_group_id == {soc} & house_id == {house}')['men'].values
-        #         women_lst = df.query(f'social_group_id == {soc} & house_id == {house}')['women'].values
-
-        #         men_rnd = iteround.saferound(men_lst, 0)
-        #         women_rnd = iteround.saferound(women_lst, 0)
-
-        #         df.loc[(df['house_id'] == house) & (df['social_group_id'] == soc), 'men_rounded'] = men_rnd
-        #         df.loc[(df['house_id'] == house) & (df['social_group_id'] == soc), 'women_rounded'] = women_rnd
-
         df = df.drop(['mun_percent', 'municipality_id'], axis=1)
 
         df['men'] = df['men'].astype(float).round(2)
@@ -53,29 +39,18 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         df['men_rounded'] = df['men'].astype(int)
         df['women_rounded'] = df['women'].astype(int)
 
-        df.insert(0, 'year', args.year)
-        df.insert(1, 'set_population', args.population)
-        df.insert(2, 'scenario', args.scenario)
-        
-        if args.save == 'db':
-            save_db.main(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass, df)
-        
-        elif args.save == 'loc':  
-            Saver.df_to_csv(df=df, id=mun)
-    
-    if args.save == 'loc':
-        Saver.cat()
+        df.insert(0, 'year', year)
+        df.insert(1, 'set_population', set_population)
+        df.insert(2, 'scenario', scenario)
+
+        res[mun] = df
+
+    return res
 
 
-def main(houses_soc, mun_soc, args):
-    print('В процессе: распределение жителей домов (по соц. группам) по возрастам')
+def main(year: int, set_population: int, scenario: Literal['pos', 'mod', 'neg'], houses_soc: pd.DataFrame, mun_soc: pd.DataFrame):
+    logger.info('Началось распределение жителей домов (по соц. группам) по возрастам')
 
     mun_soc = mun_soc[['municipality_id', 'social_group_id', 'age', 'men', 'women']]
 
-    houses_soc_to_ages(args, houses_soc, mun_soc)
-
-    print('Выполнено: распределение жителей домиков (по соц. группам) по возрастам\n')
-
-
-if __name__ == '__main__':
-    pass
+    return houses_soc_to_ages(year, set_population, scenario, houses_soc, mun_soc)
