@@ -21,7 +21,8 @@ def coef_migration(city_id, scenario):
     elif scenario == 'neg':
         func = 'min'
 
-    period_city_total = pd.read_excel(io='./scripts/Input_data/coef_migrations.xlsx', sheet_name='coef')
+    period_city_total = pd.read_excel(io='./scripts/Input_data/coef_migrations.xlsx', 
+                                      sheet_name='coef', engine='openpyxl')
     df = period_city_total.drop('id', axis=1)
 
     spb = df.loc[df.region == 'г.Санкт-Петербург ']
