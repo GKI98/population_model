@@ -18,6 +18,7 @@ def forecast_house_population(args):
     max_population = (houses_df['living_area'] / max_sq_liv).values
     # max_population_rnd = iteround.saferound(max_population, 0)
     houses_df['max_population'] = max_population
+    houses_df['max_population'].round()
 
     # print(houses_df)
 
