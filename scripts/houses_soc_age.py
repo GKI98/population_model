@@ -114,7 +114,7 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         df['men'] = df['men'].astype(float).round(2)
         df['women'] = df['women'].astype(float).round(2)
 
-        # generate_rounds(df)
+        generate_rounds(df)
 
         df.insert(0, 'year', args.year)
         df.insert(1, 'set_population', args.population)
