@@ -25,12 +25,12 @@ def generate_rounds(df) -> None:
     df['men_rounded'] = 0
     df['women_rounded'] = 0
 
-    for soc in df['social_group_id'].unique():
+    for soc in tqdm(df['social_group_id'].unique()):
         df_ = df.loc[df['social_group_id']==soc].copy()
         missing_val = 0
         # print('\n', soc, '\n')
 
-        for house in tqdm(df['house_id'].unique()):
+        for house in df['house_id'].unique():
             # print(house)
             df__ = df_.loc[df_['house_id']==house].copy()
                 
@@ -103,9 +103,9 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         houses_soc_mun = houses_soc.loc[houses_soc['municipality_id'] == mun]
         mun_soc_mun = mun_soc.loc[mun_soc['municipality_id'] == mun]
 
-        if mun == 118:
-            mun_soc_mun.reset_index().to_feather(f'118_mun_soc_mun.feather')
-            houses_soc_mun.reset_index().to_feather(f'118_houses_soc_mun.feather')
+        # if mun == 118:
+        #     mun_soc_mun.reset_index().to_feather(f'118_mun_soc_mun.feather')
+        #     houses_soc_mun.reset_index().to_feather(f'118_houses_soc_mun.feather')
 
         # 1/0
         
@@ -137,7 +137,7 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
 
         print('saving', mun)
         
-        df.reset_index().to_feather(f'{mun}_data.feather')
+        df.reset_index(drop=True).to_feather(f'{mun}_data.feather')
 
     #     print('saving...', mun)
     #     if args.save == 'db':
@@ -155,6 +155,11 @@ def main(houses_soc, mun_soc, args):
     print('В процессе: распределение жителей домов (по соц. группам) по возрастам')
 
     mun_soc = mun_soc[['municipality_id', 'social_group_id', 'age', 'men', 'women']]
+
+    mun_soc.reset_index().to_feather('mun_soc')
+    houses_soc.reset_index().to_feather('houses_soc')
+
+    # 1/0
 
     houses_soc_to_ages(args, houses_soc, mun_soc)
 
