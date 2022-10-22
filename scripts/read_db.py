@@ -61,15 +61,15 @@ class DBReader:
             # mun_age_sex_q = 'SELECT * FROM age_sex_municipalities'
             # mun_age_sex_df = DBReader.get_table(cur, mun_age_sex_q).sort_values(by=['age']).sort_values(by=['age'])
 
-            # # age_sex_social_administrative_units
-            # soc_adm_age_sex_q = 'SELECT * FROM age_sex_social_administrative_units'
-            # soc_adm_age_sex_df = DBReader.get_table(cur, soc_adm_age_sex_q).sort_values(by=['age'])
+            # age_sex_social_administrative_units
+            soc_adm_age_sex_q = f'SELECT * FROM age_sex_social_administrative_units where administrative_unit_id in (85,86,87,88)'
+            soc_adm_age_sex_df = DBReader.get_table(cur, soc_adm_age_sex_q).sort_values(by=['age'])
 
             adm_age_sex_df = pd.read_csv('./scripts/Input_data/sev/sev_age_sex_administrative_units.csv')
             mun_age_sex_df = pd.read_csv('./scripts/Input_data/sev/sev_age_sex_municipalities.csv')
 
-            soc_adm_age_sex_df = pd.read_csv('./scripts/Input_data/sev/sevastopol_soc.csv')
-            soc_adm_age_sex_df = soc_adm_age_sex_df.sort_values(by=['age'])
+            # soc_adm_age_sex_df = pd.read_csv('./scripts/Input_data/sev/sevastopol_soc.csv')
+            # soc_adm_age_sex_df = soc_adm_age_sex_df.sort_values(by=['age'])
 
             city_division_type = DBReader.get_table(cur, f'SELECT city_division_type FROM cities WHERE id={args.city}').values[0][0]
 

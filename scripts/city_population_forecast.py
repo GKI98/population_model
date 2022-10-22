@@ -14,41 +14,32 @@ import iteround
 
 
 def coef_migration(city_id, scenario):
-    if scenario == 'pos':
-        func = 'max'
-    elif scenario == 'mod':
-        func = 'median'
-    elif scenario == 'neg':
-        func = 'min'
 
-    period_city_total = pd.read_excel(io='./scripts/Input_data/coef_migrations.xlsx', sheet_name='coef', engine='openpyxl')
-    df = period_city_total.drop('id', axis=1)
-
-    spb = df.loc[df.region == 'г.Санкт-Петербург ']
-    krd = df.loc[df.region == 'Краснодарский край']
-    vrn = df.loc[df.region == 'Воронежская область']
-    srt = df.loc[df.region == 'Саратовская область']
-    sev = df.loc[df.region == 'г. Севастополь']
-    vnvg = df.loc[df.region == 'Новгородская область']
-    omsk = df.loc[df.region == 'Омская область']
-    kzn = df.loc[df.region == 'Республика Татарстан']
-    nnvg = df.loc[df.region == 'Нижегородская область']
-    vol = df.loc[df.region == 'Волгоградская область']
-
-    city_coef = {
-        1: spb,
-        2: krd,
-        3: vrn,
-        4: srt,
-        5: sev,
-        6: vnvg,
-        7: omsk,
-        8: kzn,
-        9: nnvg,
-        10: vol
+    scenarios = {
+        'pos': 'max',
+        'mod': 'median',
+        'neg': 'min'
     }
 
-    return 1 + city_coef.get(city_id)[func].values[0]
+    cities_id = {
+        1: 'г.Санкт-Петербург ',
+        2: 'Краснодарский край',
+        3: 'Воронежская область',
+        4: 'Саратовская область',
+        5: 'г. Севастополь',
+        6: 'Новгородская область',
+        7: 'Омская область',
+        8: 'Республика Татарстан',
+        9: 'Нижегородская область',
+        10: 'Волгоградская область'
+    }
+
+    cities_coef = pd.read_excel(io='./scripts/Input_data/coef_migrations.xlsx', 
+                                      sheet_name='coef', engine='openpyxl').drop('id', axis=1)
+
+    city_coef = cities_coef.loc[cities_coef.region == cities_id.get(city_id)]
+
+    return 1 + city_coef[scenarios.get(scenario)].values[0]
 
 
 def replace_nan(df):

@@ -12,6 +12,7 @@ class Sequence:
 
     def get_range_ends(self, length: int) -> tuple:
         '''Returns ends as [left, right)'''
+        
         old_val = self.val
         self.val += length
         
@@ -19,6 +20,7 @@ class Sequence:
 
 
 def generate_rounds(df) -> None:
+    print('rounding....')
     
     df['men_rounded'] = 0
     df['women_rounded'] = 0
@@ -101,8 +103,20 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         houses_soc_mun = houses_soc.loc[houses_soc['municipality_id'] == mun]
         mun_soc_mun = mun_soc.loc[mun_soc['municipality_id'] == mun]
 
+        if mun == 118:
+            mun_soc_mun.reset_index().to_feather(f'118_mun_soc_mun.feather')
+            houses_soc_mun.reset_index().to_feather(f'118_houses_soc_mun.feather')
+
+        # 1/0
+        
+
         df = pd.merge(houses_soc_mun, mun_soc_mun, on=['municipality_id', 'social_group_id'])
         df = df.sort_values(by=['house_id', 'social_group_id'])
+
+        del houses_soc_mun
+        del mun_soc_mun
+
+        print('check', mun)
 
         # Кол-во людей в соц.группе в возрасте по полу = кол-во людей в доме * вероятность быть
         # в возрасте в мун в соц группе
@@ -116,19 +130,25 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
 
         generate_rounds(df)
 
-        df.insert(0, 'year', args.year)
-        df.insert(1, 'set_population', args.population)
-        df.insert(2, 'scenario', args.scenario)
+        # df.insert(0, 'year', args.year)
+        # df.insert(1, 'set_population', args.population)
+        # df.insert(2, 'scenario', args.scenario)
         df['resident_number'].round()
 
-        if args.save == 'db':
-            save_db.main(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass, df)
+        print('saving', mun)
         
-        elif args.save == 'loc':  
-            Saver.df_to_csv(df=df, id=mun, folder_name=f'{args.year}_{args.scenario}')
+        df.reset_index().to_feather(f'{mun}_data.feather')
+
+    #     print('saving...', mun)
+    #     if args.save == 'db':
+    #         save_db.main(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass, df)
+        
+    #     elif args.save == 'loc':  
+    #         Saver.df_to_csv(df=df, id=mun, folder_name=f'{args.year}_{args.scenario}')
     
-    if args.save == 'loc':
-        Saver.cat(folder_name=f'{args.year}_{args.scenario}')
+    # print('saving_2...')
+    # if args.save == 'loc':
+    #     Saver.cat(folder_name=f'{args.year}_{args.scenario}')
 
 
 def main(houses_soc, mun_soc, args):

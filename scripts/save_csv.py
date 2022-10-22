@@ -7,6 +7,7 @@ from more_itertools import sliced
 import os
 import shutil
 import time
+from tqdm import tqdm
 
 
 class Saver:
@@ -20,6 +21,8 @@ class Saver:
 
     @staticmethod
     def cat(folder_name, name: str = 'data'):
+        """Собрать кучу маленьких файлов в один"""
+        
         os.chdir('./tmp_data_files')
         os.system(f'cat * > {name}.csv')
         time.sleep(60)
@@ -42,7 +45,7 @@ class Saver:
 
         index_slices = Saver.chunking(df)
 
-        for counter, index_slice in enumerate(index_slices):
+        for counter, index_slice in enumerate(tqdm(index_slices)):
             tmp_data_path = f'./{folder_path}/data_{id}_{counter}.csv'
             chunk = df.iloc[index_slice]
             chunk.to_csv(tmp_data_path, header=False, index=False)

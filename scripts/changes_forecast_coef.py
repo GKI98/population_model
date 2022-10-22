@@ -9,7 +9,7 @@ def calc_age_changes_coef(city_forecast):
     columns = list(city_forecast.columns)
 
     for col in columns:
-        changes_forecast[col] = city_forecast[col].div(city_forecast[2019])
+        changes_forecast[col] = city_forecast[col].div(city_forecast[2021])
 
     return changes_forecast
 
@@ -18,7 +18,7 @@ def calc_total_changes_percent(city_forecast):
     changes_forecast = pd.DataFrame()
     columns = list(city_forecast.columns)
     for col in columns:
-        changes_forecast[col] = city_forecast[col].div(city_forecast[2019])
+        changes_forecast[col] = city_forecast[col].div(city_forecast[2021])
 
     city_years_age_sum = changes_forecast.sum()
     city_years_age_ratio = changes_forecast.div(city_years_age_sum.iloc[:], axis='columns')

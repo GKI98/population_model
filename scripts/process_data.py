@@ -373,6 +373,10 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
     print('В процессе: расчет соц.групп по МУН')
     mun_soc_allages_sum = calc_mun_soc_sum(adm_list, soc_list, mun_allages_percent, adm_soc_sum, year)
 
+    # print('mun_soc_allages_sum', mun_soc_allages_sum.sum())
+    
+
+
     return mun_soc, mun_age_sex_df, adm_age_sex_df, mun_soc_allages_sum
 
 

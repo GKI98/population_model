@@ -19,14 +19,14 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
 
     # Состав населения в % в прогнозируемом году
     # year_ratio = city_forecast_years_age_ratio_df[year]
-
     # city_population_forecast = pd.read_csv(f'{path}/city_population_forecast.csv').drop(columns=['Unnamed: 0'])
     
 
     if args.city != 5:
         population_sum = city_population_forecast_df.sum()
-        change_coef = population_sum[year] / population_sum[2019]
-    else:
+        change_coef = population_sum[year] / population_sum[2020]
+
+    elif args.city == 5:
         population_sum = forecast.sum()
         change_coef = population_sum[f'total_{year}'] / population_sum['total_2022']
 
