@@ -48,9 +48,13 @@ def forecast_house_population(args):
             val = row['max_population']
         else:
             val = a_omch * row['max_population'] + a_ich * row['resident_number']
+
+        if val < 0:
+            print(row)
+
         return val
 
-    houses_df['prob_population'] = houses_df.apply(vch_calc, axis=1).round().astype(int)
+    houses_df['prob_population'] = houses_df.apply(vch_calc, axis=1).round()
 
     return houses_df
 
@@ -66,7 +70,7 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df):
     # 5
 
     # Точность балансировки, кол-во человек
-    accuracy = 1
+    accuracy = 100
     # 1
 
     

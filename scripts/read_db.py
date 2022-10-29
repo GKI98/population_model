@@ -35,6 +35,7 @@ class DBReader:
                 extra_condition = ''
                 
             # houses
+            print('houses')
             houses_q =f'SELECT f.id, p.municipality_id, p.administrative_unit_id, ' \
                        f'b.resident_number, b.storeys_count, b.failure, ' \
                        f'CASE WHEN b.living_area IS NOT NULL THEN b.living_area ' \
@@ -50,24 +51,31 @@ class DBReader:
             houses_df = pd.DataFrame(cur.fetchall(), columns=DBReader.get_columns(cur, query=houses_q))
             houses_df = houses_df[houses_df['living_area'] > 0]
             houses_df['failure'].fillna(False, inplace=True)
+
+            print(houses_df)
             
             # administrative_units
+            print('adm')
             adm_total_q = f'SELECT id, name, population FROM administrative_units WHERE city_id = {args.city}'
             adm_total_df = DBReader.get_table(cur, adm_total_q)
 
             # municipalities
+            print('mun')
             mun_total_q = f'SELECT id, admin_unit_parent_id, name, population FROM municipalities WHERE city_id={args.city}'
             mun_total_df = DBReader.get_table(cur, mun_total_q)
 
             # age_sex_administrative_units
+            print('age_sex_administrative_units')
             adm_age_sex_q = 'SELECT * FROM age_sex_administrative_units'
             adm_age_sex_df = DBReader.get_table(cur, adm_age_sex_q).sort_values(by=['age'])
 
             # age_sex_municipalities
+            print('age_sex_municipalities')
             mun_age_sex_q = 'SELECT * FROM age_sex_municipalities'
             mun_age_sex_df = DBReader.get_table(cur, mun_age_sex_q).sort_values(by=['age']).sort_values(by=['age'])
 
             # age_sex_social_administrative_units
+            print('age_sex_social_administrative_units')
             soc_adm_age_sex_q = 'SELECT * FROM age_sex_social_administrative_units'
             soc_adm_age_sex_df = DBReader.get_table(cur, soc_adm_age_sex_q).sort_values(by=['age'])
 

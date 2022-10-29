@@ -4,13 +4,16 @@ import iteround
 import pandas as pd
 from scripts import changes_coef
 from scripts import read_data
+from tqdm import tqdm
+tqdm.pandas()
 
 
 # Посчитать % коэф. жителей в возрасте и МУН
 def calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list):
     print('В процессе: расчет кол-ва жителей по возрастам')
 
-    for age in range(0, 101):
+    for age in tqdm(range(0, 101)):
+        # print(age)
         for sex in ['men', 'women', 'total']:
 
             # Расчет для АДМ
@@ -302,6 +305,7 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
             return df
 
         # Пересчитать численность (суммарно)
+        print('Updating population')
         adm_total_df = update_total_population(adm_total_df)
         mun_total_df = update_total_population(mun_total_df)
 
@@ -342,6 +346,7 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
                               on='municipality_id')
 
     # Изменить порядок столбцов
+    print('Doing main stuff')
     col = mun_age_sex_df.pop("admin_unit_parent_id")
     mun_age_sex_df.insert(1, col.name, col)
 
