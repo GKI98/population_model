@@ -4,8 +4,6 @@ import pandas as pd
 
 def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_population_forecast_df, year):
     print('В процессе: расчет коэффициентов изменения численности населения')
-    # changes_forecast_df.to_csv('for.csv')
-    # print('DONEEEEE')
 
     if args.city == 5:
 
