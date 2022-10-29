@@ -27,16 +27,23 @@ class DBReader:
         conn = Properties.connect(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass)
 
         with conn, conn.cursor() as cur:
+            if args.city == 5:
+                adms = (85,86,87,88)
+                extra_condition = f'and administrative_unit_id in {adms}'
+            else:
+                extra_condition = ''
+                
             # houses
             houses_q =f'SELECT f.id, p.municipality_id, p.administrative_unit_id, ' \
                        f'b.resident_number, b.storeys_count, b.failure, ' \
-                       f'CASE WHEN b.living_area IS NOT NULL THEN b.living_area ELSE ST_Area(geometry::geography) * 0.61212 * b.storeys_count END AS living_area ' \
+                       f'CASE WHEN b.living_area IS NOT NULL THEN b.living_area ' \
+                       f'ELSE ST_Area(geometry::geography) * 0.61212 * b.storeys_count END AS living_area ' \
                        f'FROM buildings b ' \
                        f'JOIN functional_objects f ON b.physical_object_id = f.physical_object_id ' \
                        f'JOIN physical_objects p ON b.physical_object_id = p.id ' \
                        f'WHERE p.city_id = 5 AND f.city_service_type_id = ' \
                        f'(SELECT id FROM city_service_types WHERE code = \'houses\') ' \
-                       f'and administrative_unit_id in (85,86,87,88) '
+                       f'{extra_condition}'
             
     
             cur.execute(houses_q)
@@ -62,7 +69,8 @@ class DBReader:
             # mun_age_sex_df = DBReader.get_table(cur, mun_age_sex_q).sort_values(by=['age']).sort_values(by=['age'])
 
             # age_sex_social_administrative_units
-            soc_adm_age_sex_q = f'SELECT * FROM age_sex_social_administrative_units where administrative_unit_id in (85,86,87,88)'
+            
+            soc_adm_age_sex_q = f'SELECT * FROM age_sex_social_administrative_units where administrative_unit_id in {adms}'
             soc_adm_age_sex_df = DBReader.get_table(cur, soc_adm_age_sex_q).sort_values(by=['age'])
 
             adm_age_sex_df = pd.read_csv('./scripts/Input_data/sev/sev_age_sex_administrative_units.csv')
@@ -74,14 +82,8 @@ class DBReader:
             city_division_type = DBReader.get_table(cur, f'SELECT city_division_type FROM cities WHERE id={args.city}').values[0][0]
 
             if city_division_type != 'ADMIN_UNIT_PARENT':
-                adm_total_df_ = mun_total_df.copy()
-                mun_total_df_ = adm_total_df.copy()
-                adm_total_df = adm_total_df_
-                mun_total_df = mun_total_df_
+                adm_total_df, mun_total_df = mun_total_df, adm_total_df
+                adm_age_sex_df, mun_age_sex_df = mun_age_sex_df, adm_age_sex_df
 
-                adm_age_sex_df_ = mun_age_sex_df.copy()
-                mun_age_sex_df_ = adm_age_sex_df.copy()
-                adm_age_sex_df = adm_age_sex_df_
-                mun_age_sex_df = mun_age_sex_df_
 
             return adm_total_df, mun_total_df, adm_age_sex_df, mun_age_sex_df, soc_adm_age_sex_df, houses_df
