@@ -2,7 +2,6 @@
 
 import pandas as pd
 from scripts import read_data
-# import iteround
 from tqdm import tqdm
 
 '''
@@ -13,9 +12,26 @@ from tqdm import tqdm
 # Посчитать макс. и вероятное кол-во жителей в домике
 def forecast_house_population(args):
     houses_df = read_data.main(args)[5]
-    max_sq_liv = 9
 
-    max_population = (houses_df['living_area'] / max_sq_liv).values
+    min_sq_liv = {
+        1: 9,
+        2: 10,
+        3: 11,
+        4: 10,
+        5: 12,
+        6: 14,
+        7: 15,
+        8: 12,
+        9: 10,
+        10: 11,
+        11: 13,
+        12: 13,
+        14: 15,
+        15: 12
+    }
+
+
+    max_population = (houses_df['living_area'] / min_sq_liv[args.city]).values
     # max_population_rnd = iteround.saferound(max_population, 0)
     houses_df['max_population'] = max_population
 
@@ -23,8 +39,11 @@ def forecast_house_population(args):
         a_omch = 0.3  # коэффициент для ожидаемой максимальной численности жителей (ОМЧ)
         a_ich = 0.7  # коэффициент для известной численности жителей (ИЧ)
 
+        if not row['resident_number']:
+            row['resident_number'] = row['max_population']
+
         if row['failure'] is True:
-            val = row['resident_number']
+            val = row['resident_number']            
 
         elif (row['resident_number'] == 0) and (row['failure'] is False):
             val = row['max_population']

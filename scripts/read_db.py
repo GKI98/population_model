@@ -48,7 +48,9 @@ class DBReader:
     
             cur.execute(houses_q)
             houses_df = pd.DataFrame(cur.fetchall(), columns=DBReader.get_columns(cur, query=houses_q))
-
+            houses_df = houses_df[houses_df['living_area'] > 0]
+            houses_df['failure'].fillna(False, inplace=True)
+            
             # administrative_units
             adm_total_q = f'SELECT id, name, population FROM administrative_units WHERE city_id = {args.city}'
             adm_total_df = DBReader.get_table(cur, adm_total_q)
