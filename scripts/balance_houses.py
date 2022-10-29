@@ -4,10 +4,6 @@ import pandas as pd
 from scripts import read_data
 from tqdm import tqdm
 
-'''
-В houses нет муниципалитета №101 !!!
-'''
-
 
 # Посчитать макс. и вероятное кол-во жителей в домике
 def forecast_house_population(args):
@@ -73,21 +69,17 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df):
     accuracy = 1
     # 1
 
-    counter = 0
+    
     df_mkd_balanced_mo = pd.DataFrame()
-    sex = 'total'
 
     for mun in tqdm(mun_list):
-        citizens_mo_reg_bal = mun_age_sex_df.query(f'municipality_id == {mun}')[sex].sum()
+        citizens_mo_reg_bal = mun_age_sex_df.query(f'municipality_id == {mun}')['total'].sum()
 
         # Выбрать дома, относящиеся к выбранному МО
         df_mkd_mo = houses_df_upd.query(f'municipality_id == {mun}')
 
         # Сделать вероятные количества жителей в домах отправной точкой для расчета сбалансированных значений
         citizens_mo_bal = df_mkd_mo['citizens_reg_bal'].sum()
-
-        # Шаг балансировки
-        i = 0
 
         # Если количество жителей в МО после балансировки по району БОЛЬШЕ,
         # чем рассчитанное вероятное количество жителей для этого МО, то разница должна быть распределена
@@ -101,7 +93,7 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df):
                 df_mkd_mo.at[the_house, 'citizens_reg_bal'] = df_mkd_mo.loc[the_house, 'citizens_reg_bal'] + accuracy
                 # Ищем новое значение сбалансированной численности для МО
                 citizens_mo_bal = df_mkd_mo['citizens_reg_bal'].sum()
-                i = i + 1
+                
 
         # Если количество жителей в МО после балансировки по району МЕНЬШЕ,
         # чем рассчитанное вероятное количество жителей для этого МО, то разница должна быть вычтена
@@ -122,10 +114,10 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df):
 
                 # Ищем новое значение сбалансированной численности для МО
                 citizens_mo_bal = df_mkd_mo['citizens_reg_bal'].sum()
-                i = i + 1
+                
 
         df_mkd_balanced_mo = pd.concat([df_mkd_balanced_mo, df_mkd_mo])
-        counter += 1
+        
 
     return df_mkd_balanced_mo
 
