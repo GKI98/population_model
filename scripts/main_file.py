@@ -27,14 +27,25 @@ from scripts import balance_houses
 
 def make_calc(args, year, set_population):
     city_forecast_df = city_population_forecast.main(city_id=args.city, scenario=args.scenario, year=args.year)
+    # print(city_forecast_df)
+    # city_forecast_df.to_csv('city_forecast_df.csv')
+    # print(city_forecast_df.sum(axis=0)[-5:])
+    # print('PPPPP', city_forecast_df.sum(axis=0)[2025] / city_forecast_df.sum(axis=0)[2021])
+    # 1/0
 
     changes_forecast_df, city_forecast_years_age_ratio_df = changes_forecast_coef.main(city_forecast=city_forecast_df)
+    
+
+    # print(changes_forecast_df, '\n')
+    # print(city_forecast_years_age_ratio_df)
+    # 1/0
+
 
     mun_soc, mun_age_sex_df, adm_age_sex_df, mun_soc_allages_sum = \
-        process_data.main(year=year, changes_forecast_df=changes_forecast_df,
-                          city_forecast_years_age_ratio_df=city_forecast_years_age_ratio_df,
+        process_data.main(args=args, year=year, changes_forecast_df=changes_forecast_df,
+                          city_forecast_years_age_ratio_df = city_forecast_years_age_ratio_df,
                           city_population_forecast_df=city_forecast_df,
-                          set_population=set_population, args=args)
+                          set_population=set_population)
 
     # save_mun_soc(args, mun_soc)
 
@@ -42,7 +53,6 @@ def make_calc(args, year, set_population):
     # Удаление использованных таблиц для освобождения памяти
     del city_forecast_df
     del changes_forecast_df
-    del city_forecast_years_age_ratio_df
     del adm_age_sex_df
 
     df = balance_houses.main(args, mun_age_sex_df)

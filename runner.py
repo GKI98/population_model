@@ -1,8 +1,10 @@
 import os
 
 scenarios = ['pos','mod','neg']
+cities = [2,5]
 
-for year in range(2022, 2031, 1):
-    for scenario in scenarios:
-        print(f'\n year: {year}, scenario: {scenario} \n')
-        os.system(f'python3 cli.py --year={year} --scenario={scenario}')
+for city in cities:
+    for year in range(2022, 2031, 1):
+        for scenario in scenarios:
+            print(f'\n year: {year}, scenario: {scenario} \n')
+            os.system(f'python3 cli.py --year={year} --scenario={scenario} --city_id={city}')

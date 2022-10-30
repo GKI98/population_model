@@ -1,7 +1,6 @@
 import pandas as pd
 from scripts import save_db
 from multiprocessing import Pool
-from tqdm import tqdm
 from scripts.save_csv import Saver
 import random
 import random
@@ -71,33 +70,38 @@ def parallel_feature_calculation(df, processes):
     # calculate features in parallel by splitting the dataframe into partitions and using parallel processes
     
     # houses_list = df.house_id.unique()
+
+    df__ = df.copy()
     
-    df['men_rounded'] = 0
-    df['women_rounded'] = 0
+    df__['men_rounded'] = 0
+    df__['women_rounded'] = 0
 
     # counter = 0
 
-    for soc in df['social_group_id'].unique():
+    for soc in df__['social_group_id'].unique():
         print (soc)
-        df_ = df.loc[df['social_group_id']==soc].copy()
+        df_ = df__.loc[df__['social_group_id']==soc].copy()
         # missing_val = 0
 
         
-        print('running\n')
+        # print('running\n')
 
         try:
             features = []
             pool = Pool(processes)
 
-            print('collecting features')
-            for house in tqdm(df_['house_id'].unique()):
+            # print('collecting features')
+            for house in df_['house_id'].unique():
                 features.append(pool.apply_async(generate_rounds, (df_[df_['house_id']==house],)))
 
-            print('doing calcs')
-            for feature in tqdm(features):
+            # print('doing calcs')
+            for feature in features:
                 house_df = feature.get()
+                # print('house_df', house_df.sum())
 
                 df_.loc[house_df.index, ['men_rounded', 'women_rounded']] = house_df
+
+                # print('df_', df_.sum())
                 
         except:
             pool.terminate()
@@ -107,9 +111,9 @@ def parallel_feature_calculation(df, processes):
             pool.close()
             pool.join()
             
-        print('done')
+        # print('done')
 
-    return df
+    return df_
 
 
 
@@ -133,7 +137,7 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         del houses_soc_mun
         del mun_soc_mun
 
-        print('check', mun)
+        # print('check', mun)
 
         # Кол-во людей в соц.группе в возрасте по полу = кол-во людей в доме * вероятность быть
         # в возрасте в мун в соц группе
@@ -153,9 +157,9 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         df.insert(2, 'scenario', args.scenario)
         df['resident_number'].round()
 
-        print('saving', mun)
+        # print('saving', mun)
 
-        df.reset_index(drop=True).to_feather(f'output_data_{args.city}/{mun}_data.feather')
+        df.reset_index(drop=True).to_feather(f'output_data_{args.city}_{args.year}_{args.scenario}/{mun}_data.feather')
 
     #     print('saving...', mun)
     #     if args.save == 'db':
@@ -174,8 +178,10 @@ def main(houses_soc, mun_soc, args):
 
     mun_soc = mun_soc[['municipality_id', 'social_group_id', 'age', 'men', 'women']]
 
+    print(houses_soc, '\n', mun_soc)
+
     import os
-    os.mkdir(f'output_data_{args.city}')
+    os.mkdir(f'output_data_{args.city}_{args.year}_{args.scenario}')
     houses_soc_to_ages(args, houses_soc, mun_soc)
 
     print('Выполнено: распределение жителей домиков (по соц. группам) по возрастам\n')
