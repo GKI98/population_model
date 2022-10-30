@@ -78,8 +78,8 @@ def parallel_feature_calculation(df, processes):
 
     # counter = 0
 
-    for soc in df__['social_group_id'].unique():
-        print (soc)
+    for soc in tqdm(df__['social_group_id'].unique()):
+        # print (soc)
         df_ = df__.loc[df__['social_group_id']==soc].copy()
         # missing_val = 0
 
@@ -159,18 +159,19 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
 
         # print('saving', mun)
 
-        df.reset_index(drop=True).to_feather(f'output_data_{args.city}_{args.year}_{args.scenario}/{mun}_data.feather')
+        # df.reset_index(drop=True).to_feather(f'output_data_{args.city}_{args.year}_{args.scenario}/{mun}_data.feather')
 
-    #     print('saving...', mun)
-    #     if args.save == 'db':
-    #         save_db.main(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass, df)
+        print('saving...', mun)
+        if args.save == 'db':
+            save_db.main(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass, df)
         
-    #     elif args.save == 'loc':  
-    #         Saver.df_to_csv(df=df, id=mun, folder_name=f'{args.year}_{args.scenario}')
+        elif args.save == 'loc':  
+            Saver.df_to_csv(df=df, id=mun, folder_name=f'{args.year}_{args.scenario}')
     
-    # print('saving_2...')
-    # if args.save == 'loc':
-    #     Saver.cat(folder_name=f'{args.year}_{args.scenario}')
+    
+    if args.save == 'loc':
+        print('saving_2...')
+        Saver.cat(folder_name=f'{args.year}_{args.scenario}')
 
 
 def main(houses_soc, mun_soc, args):

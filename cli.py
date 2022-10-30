@@ -31,7 +31,7 @@ def main():
                               help='Откуда брать данные? (локально / бд) dafault: бд')
     parser_saver.add_argument('--folder-path', '--p', dest='path', nargs='?', const=0, default='./outputs', help='Путь до файлов')
     parser_saver = parser.add_argument_group(title='Saving options')
-    parser_saver.add_argument('-save', '-s', dest='save', default='loc', choices=('db', 'loc'),
+    parser_saver.add_argument('-save', '-s', dest='save', default='db', choices=('db', 'loc'),
                               help='Куда сохранять результат? (локально / бд) dafault: бд')
 
     args = parser.parse_args()
