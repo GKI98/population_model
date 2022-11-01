@@ -55,9 +55,9 @@ def make_calc(args, year, set_population):
     del changes_forecast_df
     
 
-    df = balance_houses.main(args, mun_age_sex_df)
+    df = balance_houses.main(args, mun_soc_allages_sum)
 
-    del mun_age_sex_df
+    # del mun_age_sex_df
 
     df = houses_soc.main(houses_bal=df, mun_soc_allages_sum=mun_soc_allages_sum)
 

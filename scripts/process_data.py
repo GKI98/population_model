@@ -82,7 +82,7 @@ def calc_percent(adm_list, mun_age_sex_df, mun_list):
 # и сохранить локально
 def calc_mun_soc_age(mun_age_sex_df, soc_adm_age_sex_df):
 
-    mun_age_sex_df.reset_index(drop=True).to_feather(f'mun_age_sex_df.feather')
+    # mun_age_sex_df.reset_index(drop=True).to_feather(f'mun_age_sex_df.feather')
 
     mun_soc = pd.merge(mun_age_sex_df[['admin_unit_parent_id', 'municipality_id', 'age', 'men_age_allmun_percent',
                                        'women_age_allmun_percent', 'total_age_allmun_percent']],
@@ -100,8 +100,8 @@ def calc_mun_soc_age(mun_age_sex_df, soc_adm_age_sex_df):
 
     # print('Выполнено: расчет кол-ва жителей по возрастам')
 
-    mun_soc.reset_index(drop=True).to_feather(f'mun_soc.feather')
-    soc_adm_age_sex_df.reset_index(drop=True).to_feather(f'soc_adm_age_sex_df.feather')
+    # mun_soc.reset_index(drop=True).to_feather(f'mun_soc.feather')
+    # soc_adm_age_sex_df.reset_index(drop=True).to_feather(f'soc_adm_age_sex_df.feather')
     
 
     return mun_soc
@@ -231,7 +231,7 @@ def calc_mun_soc_sum(adm_list, soc_list, mun_allages_percent, adm_soc_sum, year)
 
     mun_soc_allages_sum = mun_soc_allages_sum.astype(int)
 
-    mun_soc_allages_sum.reset_index(drop=True).to_feather(f'mun_soc_allages_sum.feather')
+    # mun_soc_allages_sum.reset_index(drop=True).to_feather(f'mun_soc_allages_sum.feather')
 
     return mun_soc_allages_sum
 

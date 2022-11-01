@@ -152,7 +152,7 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df):
     return df_mkd_balanced_mo
 
 
-def main(args, mun_age_sex_df):
+def main(args, mun_soc_allages_sum):
     # print(mun_age_sex_df.municipality_id.unique())
     # print('В процессе: балансировка населения по домикам')
     print('Балансировка жителей домов для муниципалитетов:')
@@ -161,6 +161,7 @@ def main(args, mun_age_sex_df):
     houses_df_upd = forecast_house_population(args)
     # print(houses_df_upd.municipality_id.unique())
     
+    mun_age_sex_df = mun_soc_allages_sum.query('social_group_id >= 21 and social_group_id <= 32')
 
     df_mkd_balanced_mo = balance_houses_population(houses_df_upd, mun_age_sex_df)
 
