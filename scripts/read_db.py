@@ -62,6 +62,18 @@ class DBReader:
             
             # 1/0
 
+
+
+
+            
+            
+            
+
+
+
+
+
+
             if args.city in (2, 5):
                 adm_age_sex_df = pd.read_csv(f'./scripts/Input_data/{args.city}/{args.city}_age_sex_administrative_units.csv', index_col=0)
                 mun_age_sex_df = pd.read_csv(f'./scripts/Input_data/{args.city}/{args.city}_age_sex_municipalities.csv', index_col=0)
@@ -106,15 +118,7 @@ class DBReader:
                 # 1/0
 
 
-                units = adm_total_df["id"].unique()
-                if len(units) == 1:
-                    soc_adm_age_sex_q = f'SELECT * FROM age_sex_social_municipalities where municipality_id in ({units[0]})'
-                    
-                else:
-                    soc_adm_age_sex_q = f'SELECT * FROM age_sex_social_municipalities where municipality_id in ({tuple(units)})'
-
-                soc_adm_age_sex_df = DBReader.get_table(cur, soc_adm_age_sex_q).sort_values(by=['age'])
-                soc_adm_age_sex_df.rename(columns={'municipality_id':'administrative_unit_id'}, inplace=True)
+                
                 
 
                 
@@ -180,14 +184,41 @@ class DBReader:
                 
                 
 
-                if args.city == 5:
-                    # print('soc_adm_age_sex_q')
-                    soc_adm_age_sex_q = f'SELECT * FROM age_sex_social_administrative_units where administrative_unit_id in {adms}'
-                    soc_adm_age_sex_df = DBReader.get_table(cur, soc_adm_age_sex_q).sort_values(by=['age'])
+            
+            # spb_socs = query('SELECT * FROM age_sex_social_administrative_units ' \
+            #     'where administrative_unit_id in (select id from administrative_units where city_id=1)')
+
+            spb_adm_q = f'select id, name, population from administrative_units where city_id=1'
+            spb_adm = DBReader.get_table(cur, spb_adm_q)
+
+            spb_socs_q = f'SELECT * FROM age_sex_social_administrative_units ' \
+                             'where administrative_unit_id in (select id from administrative_units where city_id=1)'
+            spb_socs = DBReader.get_table(cur, spb_socs_q)
+
+            adm_total_df['proportion'] = (adm_total_df.population / adm_total_df.population.sum()) * (adm_total_df.population.sum() / spb_adm.population.sum())
+            spb_socs = spb_socs[['social_group_id', 'age', 'men', 'women']].groupby(['social_group_id', 'age']).sum().reset_index()
+
+            soc_adm_age_sex_df  = pd.DataFrame()
+            # socs = socs.groupby(['social_group_id', 'age']).sum()
+            for adm in adm_total_df.id.unique():
+                tmp_socs = spb_socs.copy()
+                tmp_socs['men'] = round(tmp_socs['men'] * adm_total_df[adm_total_df.id == adm].proportion.squeeze(), 0)
+                tmp_socs['women'] = round(tmp_socs['women'] * adm_total_df[adm_total_df.id == adm].proportion.squeeze(), 0)
+                tmp_socs['administrative_unit_id'] = adm
+    
+            soc_adm_age_sex_df = soc_adm_age_sex_df.append(tmp_socs, ignore_index = True)
+            
+            # adm_spb = (f'select id, name, population from administrative_units where city_id=1')
+            # adm_spb_df = DBReader.get_table(cur, soc_adm_age_sex_q).sort_values(by=['age'])
+
+                # if args.city == 5:
+                #     # print('soc_adm_age_sex_q')
+                #     soc_adm_age_sex_q = f'SELECT * FROM age_sex_social_administrative_units where administrative_unit_id in {adms}'
+                #     soc_adm_age_sex_df = DBReader.get_table(cur, soc_adm_age_sex_q).sort_values(by=['age'])
                 
-                else: 
-                    soc_adm_age_sex_q = f'SELECT * FROM age_sex_social_administrative_units where administrative_unit_id in {tuple(adm_total_df["id"].unique())}'
-                    soc_adm_age_sex_df = DBReader.get_table(cur, soc_adm_age_sex_q).sort_values(by=['age'])
+                # else: 
+                #     soc_adm_age_sex_q = f'SELECT * FROM age_sex_social_administrative_units where administrative_unit_id in {tuple(adm_total_df["id"].unique())}'
+                #     soc_adm_age_sex_df = DBReader.get_table(cur, soc_adm_age_sex_q).sort_values(by=['age'])
             
             # print(adm_total_df, mun_total_df, adm_age_sex_df, mun_age_sex_df, soc_adm_age_sex_df)
 

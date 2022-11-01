@@ -10,35 +10,35 @@ tqdm.pandas()
 pd.set_option('display.max_columns', 50)
 
 # Посчитать % коэф. жителей в возрасте и МУН
-def calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list):
+def calc_percent(adm_list, mun_age_sex_df, mun_list):
     print('В процессе: расчет кол-ва жителей по возрастам')
 
     for age in tqdm(range(0, 101)):
         # print(age)
         for sex in ['men', 'women', 'total']:
 
-            # Расчет для АДМ
+            # # Расчет для АДМ
 
-            # По возрасту среди всех адм
-            adm_age_sex_slice = adm_age_sex_df[adm_age_sex_df['age'] == age][sex]
-            adm_age_sex_sum = adm_age_sex_df[adm_age_sex_df['age'] == age][sex].sum()
+            # # По возрасту среди всех адм
+            # adm_age_sex_slice = adm_age_sex_df[adm_age_sex_df['age'] == age][sex]
+            # adm_age_sex_sum = adm_age_sex_df[adm_age_sex_df['age'] == age][sex].sum()
 
-            try:
-                adm_age_sex_df.loc[adm_age_sex_df['age'] == age, f'{sex}_age_adm_percent'] = \
-                    adm_age_sex_slice / adm_age_sex_sum
-            except KeyError as e:
-                adm_age_sex_df[f'{sex}_age_adm_percent'] = adm_age_sex_slice / adm_age_sex_sum
+            # try:
+            #     adm_age_sex_df.loc[adm_age_sex_df['age'] == age, f'{sex}_age_adm_percent'] = \
+            #         adm_age_sex_slice / adm_age_sex_sum
+            # except KeyError as e:
+            #     adm_age_sex_df[f'{sex}_age_adm_percent'] = adm_age_sex_slice / adm_age_sex_sum
 
-            # По адм среди всех возрастов
-            for adm_id in adm_list:
-                adm_age_sex_mun_id_slice = adm_age_sex_df.query(f"administrative_unit_id == {adm_id}")[sex]
-                adm_age_sex_mun_id_sum = adm_age_sex_df.query(f"administrative_unit_id == {adm_id}")[sex].sum()
+            # # По адм среди всех возрастов
+            # for adm_id in adm_list:
+            #     adm_age_sex_mun_id_slice = adm_age_sex_df.query(f"administrative_unit_id == {adm_id}")[sex]
+            #     adm_age_sex_mun_id_sum = adm_age_sex_df.query(f"administrative_unit_id == {adm_id}")[sex].sum()
 
-                try:
-                    adm_age_sex_df.loc[adm_age_sex_df['administrative_unit_id', f'{sex}_age_adm_percent'] == adm_id] = \
-                        adm_age_sex_mun_id_slice / adm_age_sex_mun_id_sum
-                except KeyError as e:
-                    adm_age_sex_df[f'{sex}_age_adm_percent'] = adm_age_sex_mun_id_slice / adm_age_sex_mun_id_sum
+            #     try:
+            #         adm_age_sex_df.loc[adm_age_sex_df['administrative_unit_id', f'{sex}_age_adm_percent'] == adm_id] = \
+            #             adm_age_sex_mun_id_slice / adm_age_sex_mun_id_sum
+            #     except KeyError as e:
+            #         adm_age_sex_df[f'{sex}_age_adm_percent'] = adm_age_sex_mun_id_slice / adm_age_sex_mun_id_sum
 
             # Расчет для МО
 
@@ -75,12 +75,15 @@ def calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list):
                     mun_age_sex_df[f'{sex}_mun_allages_percent'] = mun_sex_mun_id_slice / mun_sex_mun_id_sum
                     # print(f'Exception: {e}')
 
-    return mun_age_sex_df, adm_age_sex_df
+    return mun_age_sex_df
 
 
 # Посчитать население по соц.группам по возрасту для МУН
 # и сохранить локально
 def calc_mun_soc_age(mun_age_sex_df, soc_adm_age_sex_df):
+
+    mun_age_sex_df.reset_index(drop=True).to_feather(f'mun_age_sex_df.feather')
+
     mun_soc = pd.merge(mun_age_sex_df[['admin_unit_parent_id', 'municipality_id', 'age', 'men_age_allmun_percent',
                                        'women_age_allmun_percent', 'total_age_allmun_percent']],
                        soc_adm_age_sex_df[['admin_unit_parent_id', 'social_group_id', 'age', 'men', 'women', 'total']],
@@ -96,6 +99,10 @@ def calc_mun_soc_age(mun_age_sex_df, soc_adm_age_sex_df):
         mun_soc[sex] = iteround.saferound(mun_soc_sex, 0)
 
     # print('Выполнено: расчет кол-ва жителей по возрастам')
+
+    mun_soc.reset_index(drop=True).to_feather(f'mun_soc.feather')
+    soc_adm_age_sex_df.reset_index(drop=True).to_feather(f'soc_adm_age_sex_df.feather')
+    
 
     return mun_soc
 
@@ -223,6 +230,8 @@ def calc_mun_soc_sum(adm_list, soc_list, mun_allages_percent, adm_soc_sum, year)
         mun_soc_allages_sum.loc[mun_soc_allages_sum['social_group_id'] == soc, 'women_mun_soc_sum'] = women
 
     mun_soc_allages_sum = mun_soc_allages_sum.astype(int)
+
+    mun_soc_allages_sum.reset_index(drop=True).to_feather(f'mun_soc_allages_sum.feather')
 
     return mun_soc_allages_sum
 
@@ -379,9 +388,14 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
         # print(mun_age_sex_df[['total', 'municipality_id']].groupby('municipality_id').sum())
         # print(mun_age_sex_df[['total', 'municipality_id']].groupby('municipality_id').sum().sum())
 
-        adm_age_sex_df = update_population_year(adm_age_sex_df, year)
+        # adm_age_sex_df = update_population_year(adm_age_sex_df, year)
+        
         mun_age_sex_df = update_population_year(mun_age_sex_df, year)
+
+        # ????
         soc_adm_age_sex_df = update_population_year(soc_adm_age_sex_df, year)
+
+        # soc_adm_age_sex_df['total'] = soc_adm_age_sex_df['men'] + soc_adm_age_sex_df['women']
 
         # print(mun_age_sex_df[['total', 'municipality_id']].groupby('municipality_id').sum())
         # print(mun_age_sex_df[['total', 'municipality_id']].groupby('municipality_id').sum().sum())
@@ -410,6 +424,7 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
 
     mun_total_df.rename(columns={"id": "municipality_id"}, inplace=True)
 
+
     soc_adm_age_sex_df.rename(columns={"administrative_unit_id": "admin_unit_parent_id"}, inplace=True)
 
     mun_list = set(mun_age_sex_df['municipality_id'])
@@ -431,7 +446,10 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
     col = mun_age_sex_df.pop("admin_unit_parent_id")
     mun_age_sex_df.insert(1, col.name, col)
 
-    mun_age_sex_df, adm_age_sex_df = calc_percent(adm_age_sex_df, adm_list, mun_age_sex_df, mun_list)
+    
+
+    mun_age_sex_df = calc_percent(adm_list, mun_age_sex_df, mun_list)
+    
 
     # print(mun_age_sex_df[['total', 'municipality_id']].groupby('municipality_id').sum())
     # print(adm_age_sex_df[['total', 'administrative_unit_id']].groupby('administrative_unit_id').sum())
@@ -458,7 +476,7 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
     # print(adm_age_sex_df[['total', 'administrative_unit_id']].groupby('administrative_unit_id').sum())
     # 1/0
 
-    return mun_soc, mun_age_sex_df, adm_age_sex_df, mun_soc_allages_sum
+    return mun_soc, mun_age_sex_df, mun_soc_allages_sum
 
 
 if __name__ == '__main__':

@@ -41,7 +41,7 @@ def make_calc(args, year, set_population):
     # 1/0
 
 
-    mun_soc, mun_age_sex_df, adm_age_sex_df, mun_soc_allages_sum = \
+    mun_soc, mun_age_sex_df, mun_soc_allages_sum = \
         process_data.main(args=args, year=year, changes_forecast_df=changes_forecast_df,
                           city_forecast_years_age_ratio_df = city_forecast_years_age_ratio_df,
                           city_population_forecast_df=city_forecast_df,
@@ -53,7 +53,7 @@ def make_calc(args, year, set_population):
     # Удаление использованных таблиц для освобождения памяти
     del city_forecast_df
     del changes_forecast_df
-    del adm_age_sex_df
+    
 
     df = balance_houses.main(args, mun_age_sex_df)
 

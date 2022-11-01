@@ -131,6 +131,9 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         houses_soc_mun = houses_soc.loc[houses_soc['municipality_id'] == mun]
         mun_soc_mun = mun_soc.loc[mun_soc['municipality_id'] == mun]
 
+        houses_soc_mun.reset_index(drop=True).to_feather(f'output_data_{args.city}_{args.year}_{args.scenario}/houses_soc_mun.feather')
+        mun_soc_mun.reset_index(drop=True).to_feather(f'output_data_{args.city}_{args.year}_{args.scenario}/mun_soc_mun.feather')
+
         df = pd.merge(houses_soc_mun, mun_soc_mun, on=['municipality_id', 'social_group_id'])
         df = df.sort_values(by=['house_id', 'social_group_id'])
 
