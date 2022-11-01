@@ -25,7 +25,7 @@ def houses_to_soc(houses_bal, mun_soc_allages_sum):
     houses_soc = pd.merge(houses_bal, mun_soc_allages_sum[['municipality_id', 'social_group_id',
                                                            'total_mun_soc_sum', 'men_mun_soc_sum',
                                                            'women_mun_soc_sum']], on='municipality_id')
-
+    
     houses_soc = houses_soc.sort_values(by='social_group_id')
 
     houses_soc.rename(columns={'id': 'house_id', 'resident_number': 'document_population',
