@@ -123,7 +123,7 @@ class DBReader:
                 
                 if args.city == 2:
                     # houses_df = pd.read_csv('/home/gk/Desktop/krd_houses.csv')
-                houses_q =f'SELECT f.id, p.municipality_id as administrative_unit_id, p.administrative_unit_id as municipality_id, ' \
+                    houses_q =f'SELECT f.id, p.municipality_id as administrative_unit_id, p.administrative_unit_id as municipality_id, ' \
                         f'b.resident_number, b.storeys_count, b.failure, ' \
                         f'CASE WHEN b.living_area IS NOT NULL THEN b.living_area ' \
                         f'ELSE ST_Area(geometry::geography) * 0.61212 * b.storeys_count END AS living_area ' \
