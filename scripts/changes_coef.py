@@ -26,7 +26,7 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
 
         # print('Выполнено: расчет коэффициентов изменения численности населения')
 
-    print(coef_ages, '\n\n', year_ratio, '\n\n', change_coef)
+    # print(coef_ages, '\n\n', year_ratio, '\n\n', change_coef)
     # 1/0
 
     return coef_ages, year_ratio, change_coef

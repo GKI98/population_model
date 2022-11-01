@@ -38,7 +38,7 @@ def forecast_house_population(args):
         a_omch = 0.3  # коэффициент для ожидаемой максимальной численности жителей (ОМЧ)
         a_ich = 0.7  # коэффициент для известной численности жителей (ИЧ)
 
-        if isnan(row['resident_number']):
+        if row['resident_number'] is None:
             row['resident_number'] = row['max_population']
             # print(row)
 

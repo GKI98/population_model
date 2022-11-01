@@ -24,22 +24,22 @@ class MissSoc:
     missing_val = 0
 
 
-def generate_rounds(df) -> None:
-    df__ = df.copy()
+def generate_rounds(house_df) -> None:
+    house_df_ = house_df.copy()
 
     for sex in ['men', 'women']:
-        base_num = df__[df__[f'{sex}'] > 0][f'{sex}'].min()
+        base_num = house_df_[house_df_[f'{sex}'] > 0][f'{sex}'].min()
         
         try:
-            df__[f'ratio_{sex}'] = df__[f'{sex}'].apply(lambda x: x / base_num)
-            df__ = df__.sort_values(by=f'ratio_{sex}')
+            house_df_[f'ratio_{sex}'] = house_df_[f'{sex}'].apply(lambda x: x / base_num)
+            house_df_ = house_df_.sort_values(by=f'ratio_{sex}')
             
             s = Sequence()
 
-            df__[f'seq_{sex}'] = df__[f'ratio_{sex}'].apply(s.get_range_ends)
-            right_borader = df__[f'seq_{sex}'].iat[-1][1]
+            house_df_[f'seq_{sex}'] = house_df_[f'ratio_{sex}'].apply(s.get_range_ends)
+            right_borader = house_df_[f'seq_{sex}'].iat[-1][1]
 
-            data_was = df__[f'{sex}'].values
+            data_was = house_df_[f'{sex}'].values
             data_now = []
 
             for _, data in enumerate(data_was, 1):
@@ -55,15 +55,15 @@ def generate_rounds(df) -> None:
                 lst.append(random.uniform(0, right_borader-1))            
             
             for dice in lst:           
-                idx = df__.loc[df__[f'seq_{sex}'].apply(lambda rng: dice >= rng[0] and dice < rng[1])].iloc[0].name
-                df.loc[idx, f'{sex}_rounded'] += 1
+                idx = house_df_.loc[house_df_[f'seq_{sex}'].apply(lambda rng: dice >= rng[0] and dice < rng[1])].iloc[0].name
+                house_df.loc[idx, f'{sex}_rounded'] += 1
                 
         except ValueError as ex:
             print(ex)
-            df.loc[:, f'{sex}_rounded'] = 0
+            house_df.loc[:, f'{sex}_rounded'] = 0
 
     
-    return df
+    return house_df
 
 
 def parallel_feature_calculation(df, processes):
@@ -71,16 +71,16 @@ def parallel_feature_calculation(df, processes):
     
     # houses_list = df.house_id.unique()
 
-    df__ = df.copy()
+    # df__ = df.copy()
     
-    df__['men_rounded'] = 0
-    df__['women_rounded'] = 0
+    df['men_rounded'] = 0
+    df['women_rounded'] = 0
 
     # counter = 0
 
-    for soc in tqdm(df__['social_group_id'].unique()):
+    for soc in tqdm(df['social_group_id'].unique()):
         # print (soc)
-        df_ = df__.loc[df__['social_group_id']==soc].copy()
+        df_ = df.loc[df['social_group_id']==soc].copy()
         # missing_val = 0
 
         
@@ -99,7 +99,7 @@ def parallel_feature_calculation(df, processes):
                 house_df = feature.get()
                 # print('house_df', house_df.sum())
 
-                df_.loc[house_df.index, ['men_rounded', 'women_rounded']] = house_df
+                df.loc[house_df.index, ['men_rounded', 'women_rounded']] = house_df
 
                 # print('df_', df_.sum())
                 
@@ -113,7 +113,7 @@ def parallel_feature_calculation(df, processes):
             
         # print('done')
 
-    return df_
+    return df
 
 
 
@@ -159,19 +159,19 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
 
         # print('saving', mun)
 
-        # df.reset_index(drop=True).to_feather(f'output_data_{args.city}_{args.year}_{args.scenario}/{mun}_data.feather')
+        df.reset_index(drop=True).to_feather(f'output_data_{args.city}_{args.year}_{args.scenario}/{mun}_data.feather')
 
-        print('saving...', mun)
-        if args.save == 'db':
-            save_db.main(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass, df)
+    #     print('saving...', mun)
+    #     if args.save == 'db':
+    #         save_db.main(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass, df)
         
-        elif args.save == 'loc':  
-            Saver.df_to_csv(df=df, id=mun, folder_name=f'{args.year}_{args.scenario}')
+    #     elif args.save == 'loc':  
+    #         Saver.df_to_csv(df=df, id=mun, folder_name=f'{args.year}_{args.scenario}')
     
     
-    if args.save == 'loc':
-        print('saving_2...')
-        Saver.cat(folder_name=f'{args.year}_{args.scenario}')
+    # if args.save == 'loc':
+    #     print('saving_2...')
+    #     Saver.cat(folder_name=f'{args.year}_{args.scenario}')
 
 
 def main(houses_soc, mun_soc, args):
