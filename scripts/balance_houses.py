@@ -92,7 +92,7 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df):
 
     for mun in tqdm(mun_list):
         # print(mun)
-        citizens_mo_reg_bal = mun_age_sex_df.query(f'municipality_id == {mun}')['total'].sum()
+        citizens_mo_reg_bal = mun_age_sex_df.query(f'municipality_id == {mun}')['total_mun_soc_sum'].sum()
         
 
         # Выбрать дома, относящиеся к выбранному МО
