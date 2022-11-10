@@ -110,8 +110,7 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df):
         if citizens_mo_reg_bal > citizens_mo_bal:
             while citizens_mo_reg_bal > citizens_mo_bal:
                 # print('more', citizens_mo_reg_bal, citizens_mo_bal, end="\r")
-                df_mkd_mo_not_f = df_mkd_mo[(df_mkd_mo['failure'] == False) \
-                                            & (df_mkd_mo['citizens_reg_bal'] < df_mkd_mo['max_population'] * 1.5)]
+                df_mkd_mo_not_f = df_mkd_mo[df_mkd_mo['failure'] == False]
                 # Находим индекс неаварийного дома с максимальной разницей между ОМЧ и ВЧ
                 the_house = (df_mkd_mo_not_f['citizens_reg_bal'] / df_mkd_mo_not_f['max_population']).idxmin()
                 # Прибавляем жителей к "сбалансированной численности" этого дома
