@@ -65,20 +65,12 @@ class DBReader:
 
 
 
-            
-            
-            
-
-
-
-
-
-
-            if args.city in (2, 5):
+            if args.city in (2, 5, 6):
                 adm_age_sex_df = pd.read_csv(f'./scripts/Input_data/{args.city}/{args.city}_age_sex_administrative_units.csv', index_col=0)
                 mun_age_sex_df = pd.read_csv(f'./scripts/Input_data/{args.city}/{args.city}_age_sex_municipalities.csv', index_col=0)
                 
-                adm_age_sex_df = adm_age_sex_df[adm_age_sex_df['administrative_unit_id'].isin(adms)]
+                if args.city in (2, 5):
+                    adm_age_sex_df = adm_age_sex_df[adm_age_sex_df['administrative_unit_id'].isin(adms)]
 
             else:
                 # age_sex_administrative_units
@@ -116,18 +108,13 @@ class DBReader:
 
                 # print(mun_age_sex_df)
                 # 1/0
-
-
-                
-                
-
                 
 
                 # print('houses')
                 
-                if args.city == 2:
+                
                     # houses_df = pd.read_csv('/home/gk/Desktop/krd_houses.csv')
-                    houses_q =f'SELECT f.id, p.municipality_id as administrative_unit_id, p.administrative_unit_id as municipality_id, ' \
+                houses_q =f'SELECT f.id, p.municipality_id as administrative_unit_id, p.administrative_unit_id as municipality_id, ' \
                         f'b.resident_number, b.storeys_count, b.failure, ' \
                         f'CASE WHEN b.living_area IS NOT NULL THEN b.living_area ' \
                         f'ELSE ST_Area(geometry::geography) * 0.61212 * b.storeys_count END AS living_area ' \
@@ -173,8 +160,9 @@ class DBReader:
                 cur.execute(houses_q)
                 houses_df = pd.DataFrame(cur.fetchall(), columns=DBReader.get_columns(cur, query=houses_q))
 
-                if args.city == 5:
-                    houses_df = pd.read_csv('/home/gk/Desktop/sev_houses.csv')
+                # if args.city == 5:
+                #     houses_df = pd.read_csv('/home/gk/Desktop/sev_houses.csv')
+
                 houses_df = houses_df[houses_df['living_area']>0]
                 houses_df['failure'].fillna(False, inplace=True)
                 
@@ -206,7 +194,7 @@ class DBReader:
                 tmp_socs['women'] = round(tmp_socs['women'] * adm_total_df[adm_total_df.id == adm].proportion.squeeze(), 0)
                 tmp_socs['administrative_unit_id'] = adm
     
-            soc_adm_age_sex_df = soc_adm_age_sex_df.append(tmp_socs, ignore_index = True)
+                soc_adm_age_sex_df = soc_adm_age_sex_df.append(tmp_socs, ignore_index = True)
             
             # adm_spb = (f'select id, name, population from administrative_units where city_id=1')
             # adm_spb_df = DBReader.get_table(cur, soc_adm_age_sex_q).sort_values(by=['age'])

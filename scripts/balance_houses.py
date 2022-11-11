@@ -4,7 +4,7 @@ import pandas as pd
 from scripts import read_data
 from tqdm import tqdm
 from random import uniform
-from math import isnan
+# from math import isnan
 
 
 # Посчитать макс. и вероятное кол-во жителей в домике
@@ -75,16 +75,16 @@ def forecast_house_population(args):
 
 # Сбалансировать вероятное кол-во жителей в домике
 # и сохранить локально
-def balance_houses_population(houses_df_upd, mun_age_sex_df):
+def balance_houses_population(houses_df_upd, mun_age_sex_df, balancing_min=1, accuracy=1):
     mun_list = set(houses_df_upd['municipality_id'])
     houses_df_upd = houses_df_upd.assign(citizens_reg_bal=houses_df_upd['prob_population'])
 
     # Минимальное значение, до которого может сокращаться населения в доме при балансировке, кол-во человек
-    balancing_min = 1
+    # balancing_min = 1
     # 5
 
     # Точность балансировки, кол-во человек
-    accuracy = 1
+    # accuracy = 1
     # 1
 
     
@@ -109,7 +109,7 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df):
         # между не аварийными домами МО
         if citizens_mo_reg_bal > citizens_mo_bal:
             while citizens_mo_reg_bal > citizens_mo_bal:
-                # print('more', citizens_mo_reg_bal, citizens_mo_bal, end="\r")
+                # print('citizens_mo_reg_bal > citizens_mo_bal', citizens_mo_reg_bal, citizens_mo_bal, end="\r")
                 df_mkd_mo_not_f = df_mkd_mo[df_mkd_mo['failure'] == False]
                 # Находим индекс неаварийного дома с максимальной разницей между ОМЧ и ВЧ
                 the_house = (df_mkd_mo_not_f['citizens_reg_bal'] / df_mkd_mo_not_f['max_population']).idxmin()
@@ -118,13 +118,13 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df):
                 # Ищем новое значение сбалансированной численности для МО
                 citizens_mo_bal = df_mkd_mo['citizens_reg_bal'].sum()
                 
-
+ 
         # Если количество жителей в МО после балансировки по району МЕНЬШЕ,
         # чем рассчитанное вероятное количество жителей для этого МО, то разница должна быть вычтена
         # из количества жителей домов, причем аварийные дома также участвуют в балансировке
         elif citizens_mo_reg_bal < citizens_mo_bal:
             while citizens_mo_reg_bal < citizens_mo_bal:
-                # print('less', citizens_mo_reg_bal, citizens_mo_bal, end="\r")
+                # print('citizens_mo_reg_bal < citizens_mo_bal', citizens_mo_reg_bal, citizens_mo_bal, end="\r")
                 df_mkd_mo_not_f = df_mkd_mo[df_mkd_mo['citizens_reg_bal'] > balancing_min]
 
                 try:
@@ -135,7 +135,19 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df):
                 except ValueError as e:
                     print('Численность по МУН меньше, чем минимальное распределение по домикам в этом МУН')
                     print('\nError:Необходимо уменьшить минимальную численность населения для каждого дома\n')
-                    raise e
+
+                    if balancing_min == 0:
+                        print('\nДостигнут нижний предел кол-ва жителей в домах')
+                        print('\n Необходимо добавить больше домов или изменить численность населения.')
+                        raise e
+
+                    else:
+                        balancing_min -= 1
+                        print('\nУменьшение мин. кол-ва жильцов.')
+                        print('\nbalancing_mig:', balancing_min)
+                        
+                        balance_houses_population(houses_df_upd, mun_age_sex_df, balancing_min=balancing_min, accuracy=accuracy)
+
 
                 # Ищем новое значение сбалансированной численности для МО
                 citizens_mo_bal = df_mkd_mo['citizens_reg_bal'].sum()
@@ -162,6 +174,9 @@ def main(args, mun_soc_allages_sum):
     # print(houses_df_upd.municipality_id.unique())
     
     mun_age_sex_df = mun_soc_allages_sum.query('social_group_id >= 21 and social_group_id <= 32')
+
+    mun_age_sex_df.reset_index().to_feather('mun_age_sex_df_5.feather')
+    1/0
 
     df_mkd_balanced_mo = balance_houses_population(houses_df_upd, mun_age_sex_df)
 
