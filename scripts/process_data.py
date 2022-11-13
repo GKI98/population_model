@@ -245,15 +245,6 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
         coef_changes, year_ratio, change_coef = changes_coef.main(args, changes_forecast_df, city_forecast_years_age_ratio_df,
                                                                   city_population_forecast_df, year)
         
-        # print('\nchange_coef', change_coef, '\n')
-        # coef_changes.to_csv('coef_changes.csv')
-        # 1/0
-
-        # print('\n\n\n\n\n')
-        # print('coef_changes', coef_changes)
-        # # print('year_ratio', year_ratio)
-        # print('change_coef', change_coef)
-        
 
         def update_total_population(df):
             df['population'] = (df['population'] * change_coef).round()
@@ -272,70 +263,13 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
                 
 
             df['total'] = df['men'] + df['women']
-            # new_total_age_list = list()
-
-            # -------------------------------------
-            # print(coef_changes)
-            # 1/0
-
-            # print(df.loc[df['age']==1,['total', 'men', 'women']])
-            # print(coef_changes[coef_changes.index == 1])
-
-            # print(df.loc[df['age']==2,['total', 'men', 'women']])
-            # print(coef_changes[coef_changes.index == 2])
-
-            # 1/0
-            
-            # print(df)
-
 
             for age in range(0,101):
                 # print(df.loc[df['age']==age,['total', 'men', 'women']])
                 # print('coef_changes', coef_changes[coef_changes.index == age].squeeze())
                 df.loc[df['age']==age,['total', 'men', 'women']] *= coef_changes[coef_changes.index == age].squeeze()
 
-                # from time import sleep
-
-                # sleep(5)
-        
-                # print(df.loc[df['age']==age,['total', 'men', 'women']])
-
             df = df.round()
-
-            # 1/0
-
-
-            # -------------------------------------
-
-            # for age in range(0, 101):
-            #     age_slice = df.query(f'age == {age}')
-            #     total_age_value = age_slice['total'] * coef_changes[age]
-
-            #     # print('total_age_value', total_age_value, '\n')
-            #     # from time import sleep
-            #     # sleep(90)
-
-            #     new_total_age_list += list(total_age_value)
-
-            # df['new_total'] = new_total_age_list
-            
-            # print(df['new_total'].sum())
-            # # 1/0
-            
-
-            # new_men = list(df['men'] / df['total'] * df['new_total'])
-            # new_men = [0.0 if pd.isna(x) else x for x in new_men]
-            # df['men'] = new_men
-            
-
-            # new_women = list(df['women'] / df['total'] * df['new_total'])
-            # new_women = [0.0 if pd.isna(x) else x for x in new_women]
-
-            # df['women'] = new_women
-            # df['year'] = year
-
-            # df.drop('total', axis=1, inplace=True)
-            # df = df.rename(columns={'new_total': 'total'})
 
             return df
 
@@ -393,7 +327,14 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
         mun_age_sex_df = update_population_year(mun_age_sex_df, year)
 
         # ????
+        # print(coef_changes)
+        # print(soc_adm_age_sex_df[soc_adm_age_sex_df.social_group_id.isin(range(21,33))].sum())
         soc_adm_age_sex_df = update_population_year(soc_adm_age_sex_df, year)
+        # print(soc_adm_age_sex_df[soc_adm_age_sex_df.social_group_id.isin(range(21,33))].sum())
+
+
+        # 1/0
+
 
         # soc_adm_age_sex_df['total'] = soc_adm_age_sex_df['men'] + soc_adm_age_sex_df['women']
 

@@ -2,7 +2,7 @@ import os
 import time
 
 scenarios = ['mod','pos','neg']
-cities = [2,5]
+cities = [2,5,6]
 
 for city in cities:
     for year in range(2022, 2031, 1):

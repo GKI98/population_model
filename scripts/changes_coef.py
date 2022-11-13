@@ -11,6 +11,8 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
         coef_ages = pd.Series(forecast[f'total_{year}'].div(forecast['total_2022']))
         year_ratio = ''
         change_coef = forecast[f'total_{year}'].sum().squeeze() / forecast['total_2022'].sum().squeeze()
+
+        print(change_coef, '\n')
         
     # Изменение в прогнозируемой численности в сравнении с 2019 годом (отношение к численности в 2019 по возрастам)
     else: 

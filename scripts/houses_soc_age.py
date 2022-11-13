@@ -164,22 +164,24 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
         # print('saving', mun)
 
         # Откомментить тут
-        df.reset_index(drop=True).to_feather(f'output_data_{args.city}_{args.year}_{args.scenario}/{mun}_data.feather')
+        # df.reset_index(drop=True).to_feather(f'output_data_{args.city}_{args.year}_{args.scenario}/{mun}_data.feather')
 
-    #     print('saving...', mun)
-    #     if args.save == 'db':
-    #         save_db.main(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass, df)
+        print('saving...', mun)
+        if args.save == 'db':
+            save_db.main(args.db_addr, args.db_port, args.db_name, args.db_user, args.db_pass, df)
         
-    #     elif args.save == 'loc':  
-    #         Saver.df_to_csv(df=df, id=mun, folder_name=f'{args.year}_{args.scenario}')
+        elif args.save == 'loc':  
+            Saver.df_to_csv(df=df, id=mun, folder_name=f'{args.year}_{args.scenario}')
     
     
-    # if args.save == 'loc':
-    #     print('saving_2...')
-    #     Saver.cat(folder_name=f'{args.year}_{args.scenario}')
+    if args.save == 'loc':
+        print('saving_2...')
+        Saver.cat(folder_name=f'{args.year}_{args.scenario}')
 
 
 def main(houses_soc, mun_soc, args):
+    houses_soc = houses_soc.fillna(0)
+    print(houses_soc.head())
     print('В процессе: распределение жителей домов (по соц. группам) по возрастам')
 
     mun_soc = mun_soc[['municipality_id', 'social_group_id', 'age', 'men', 'women']]
@@ -187,7 +189,7 @@ def main(houses_soc, mun_soc, args):
     # print(houses_soc, '\n', mun_soc)
 
     import os
-    os.mkdir(f'output_data_{args.city}_{args.year}_{args.scenario}')
+    # os.mkdir(f'output_data_{args.city}_{args.year}_{args.scenario}')
     houses_soc_to_ages(args, houses_soc, mun_soc)
 
     print('Выполнено: распределение жителей домиков (по соц. группам) по возрастам\n')

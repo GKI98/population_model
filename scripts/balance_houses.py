@@ -109,7 +109,7 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, balancing_min=1, ac
         # между не аварийными домами МО
         if citizens_mo_reg_bal > citizens_mo_bal:
             while citizens_mo_reg_bal > citizens_mo_bal:
-                # print('citizens_mo_reg_bal > citizens_mo_bal', citizens_mo_reg_bal, citizens_mo_bal, end="\r")
+                print('citizens_mo_reg_bal > citizens_mo_bal', citizens_mo_reg_bal, citizens_mo_bal, end="\r")
                 df_mkd_mo_not_f = df_mkd_mo[df_mkd_mo['failure'] == False]
                 # Находим индекс неаварийного дома с максимальной разницей между ОМЧ и ВЧ
                 the_house = (df_mkd_mo_not_f['citizens_reg_bal'] / df_mkd_mo_not_f['max_population']).idxmin()
@@ -124,7 +124,7 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, balancing_min=1, ac
         # из количества жителей домов, причем аварийные дома также участвуют в балансировке
         elif citizens_mo_reg_bal < citizens_mo_bal:
             while citizens_mo_reg_bal < citizens_mo_bal:
-                # print('citizens_mo_reg_bal < citizens_mo_bal', citizens_mo_reg_bal, citizens_mo_bal, end="\r")
+                print('citizens_mo_reg_bal < citizens_mo_bal', citizens_mo_reg_bal, citizens_mo_bal, end="\r")
                 df_mkd_mo_not_f = df_mkd_mo[df_mkd_mo['citizens_reg_bal'] > balancing_min]
 
                 try:
@@ -175,8 +175,8 @@ def main(args, mun_soc_allages_sum):
     
     mun_age_sex_df = mun_soc_allages_sum.query('social_group_id >= 21 and social_group_id <= 32')
 
-    mun_age_sex_df.reset_index().to_feather('mun_age_sex_df_5.feather')
-    1/0
+    # mun_age_sex_df.reset_index().to_feather('mun_age_sex_df_5.feather')
+    # 1/0
 
     df_mkd_balanced_mo = balance_houses_population(houses_df_upd, mun_age_sex_df)
 
