@@ -76,8 +76,16 @@ def forecast_house_population(args):
 # Сбалансировать вероятное кол-во жителей в домике
 # и сохранить локально
 def balance_houses_population(houses_df_upd, mun_age_sex_df, balancing_min=1, accuracy=1):
-    mun_list = set(houses_df_upd['municipality_id'])
+    
     houses_df_upd = houses_df_upd.assign(citizens_reg_bal=houses_df_upd['prob_population'])
+
+
+    if houses_df_upd.municipality_id.iloc[0] is None and len(houses_df_upd.administrative_unit_id.unique())==1:
+        houses_df_upd.municipality_id = houses_df_upd.administrative_unit_id.iloc[0]
+
+
+
+    # print(houses_df_upd)
 
     # Минимальное значение, до которого может сокращаться населения в доме при балансировке, кол-во человек
     # balancing_min = 1
@@ -90,8 +98,12 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, balancing_min=1, ac
     
     df_mkd_balanced_mo = pd.DataFrame()
 
+    mun_list = set(houses_df_upd['municipality_id'])
+
     for mun in tqdm(mun_list):
         # print(mun)
+        # print(mun_age_sex_df)
+        # print(mun_age_sex_df.query(f'municipality_id == {mun}')['total_mun_soc_sum'].sum())
         citizens_mo_reg_bal = mun_age_sex_df.query(f'municipality_id == {mun}')['total_mun_soc_sum'].sum()
         
 
@@ -180,8 +192,8 @@ def main(args, mun_soc_allages_sum):
 
     df_mkd_balanced_mo = balance_houses_population(houses_df_upd, mun_age_sex_df)
 
-    # print(df_mkd_balanced_mo.sum())
-    
+    # print(df_mkd_balanced_mo.sum()).
+    # 1/0
 
     return df_mkd_balanced_mo
 

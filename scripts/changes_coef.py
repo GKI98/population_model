@@ -5,7 +5,7 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
     print('В процессе: расчет коэффициентов изменения численности населения')
 
     if args.city == 5:
-        print('took rosstat')
+        print('took rosstat forecast')
 
         forecast = pd.read_csv(f'./scripts/Input_data/{args.city}/{args.city}_forecast_{args.scenario}.csv', index_col=[0])        
         coef_ages = pd.Series(forecast[f'total_{year}'].div(forecast['total_2022']))

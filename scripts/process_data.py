@@ -375,6 +375,9 @@ def main(args, changes_forecast_df, city_forecast_years_age_ratio_df, city_popul
     # print(mun_age_sex_df)
     # print(mun_total_df)
 
+    print(mun_age_sex_df)
+    print(mun_total_df)
+
     mun_age_sex_df = pd.merge(mun_age_sex_df, mun_total_df[['municipality_id', 'admin_unit_parent_id']],
                               on=['municipality_id', 'admin_unit_parent_id'])
 

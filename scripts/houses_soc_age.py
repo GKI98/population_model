@@ -181,7 +181,7 @@ def houses_soc_to_ages(args, houses_soc, mun_soc):
 
 def main(houses_soc, mun_soc, args):
     houses_soc = houses_soc.fillna(0)
-    print(houses_soc.head())
+    # print(houses_soc.head())
     print('В процессе: распределение жителей домов (по соц. группам) по возрастам')
 
     mun_soc = mun_soc[['municipality_id', 'social_group_id', 'age', 'men', 'women']]

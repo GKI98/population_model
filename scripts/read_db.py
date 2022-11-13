@@ -65,7 +65,7 @@ class DBReader:
 
 
 
-            if args.city in (2, 5, 6):
+            if args.city in (2, 5, 6, 10):
                 adm_age_sex_df = pd.read_csv(f'./scripts/Input_data/{args.city}/{args.city}_age_sex_administrative_units.csv', index_col=0)
                 mun_age_sex_df = pd.read_csv(f'./scripts/Input_data/{args.city}/{args.city}_age_sex_municipalities.csv', index_col=0)
                 
@@ -83,9 +83,42 @@ class DBReader:
                 mun_age_sex_q = 'SELECT * FROM age_sex_municipalities'
                 mun_age_sex_df = DBReader.get_table(cur, mun_age_sex_q).sort_values(by=['age']).sort_values(by=['age'])
 
+            # krd_age_sex_mun.rename(columns={'municipality_id': 'administrative_unit_id', \
+            #                         'admin_unit_parent_id': 'municipality_parent_id'}, inplace=True)
+            # krd_age_sex_mun['municipality_parent_id'] = 132
+
+
+            if mun_total_df.shape[0] == 0:
+                # print(mun_total_df.shape[0] == 0)
+                mun_total_df = adm_total_df.copy()
+                mun_total_df.rename(columns={'municipality_parent_id': 'admin_unit_parent_id', \
+                                    'admin_unit_parent_id': 'municipality_parent_id' }, inplace=True)
+            
+            if adm_total_df.shape[0] == 0:
+                # print('adm_total_df.shape[0] == 0:')
+                adm_total_df = mun_total_df.copy()
+                adm_total_df.rename(columns={'admin_unit_parent_id': 'municipality_parent_id', \
+                                    'municipality_parent_id': 'admin_unit_parent_id'}, inplace=True)
+
             
 
+            if (mun_total_df.admin_unit_parent_id[0] is None) and (mun_total_df.shape[0] == 1):
+                mun_total_df.admin_unit_parent_id = mun_total_df['id']
+
+            # print(adm_total_df)
+            
+            if (adm_total_df.municipality_parent_id[0] is None) and (adm_total_df.shape[0] == 1):
+                adm_total_df.municipality_parent_id = adm_total_df['id']
+                print(adm_total_df)
+                
+            
+
+            
+
+
+
             city_division_type = DBReader.get_table(cur, f'SELECT city_division_type FROM cities WHERE id={args.city}').values[0][0]
+            # print(city_division_type)
 
             if city_division_type != 'ADMIN_UNIT_PARENT':
                 # print(mun_age_sex_df)
@@ -209,5 +242,12 @@ class DBReader:
                 #     soc_adm_age_sex_df = DBReader.get_table(cur, soc_adm_age_sex_q).sort_values(by=['age'])
             
             # print(adm_total_df, mun_total_df, adm_age_sex_df, mun_age_sex_df, soc_adm_age_sex_df)
+
+            
+            # print(mun_age_sex_df.sum())
+
+            # print(adm_total_df, mun_total_df, adm_age_sex_df, mun_age_sex_df, soc_adm_age_sex_df)
+
+            # 1/0
 
             return adm_total_df, mun_total_df, adm_age_sex_df, mun_age_sex_df, soc_adm_age_sex_df, houses_df
