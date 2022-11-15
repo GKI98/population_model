@@ -52,6 +52,7 @@ def insert_sex_age_social_houses(db_addr: str, db_port: int, db_name: str, db_us
                     except Exception as ex:
                         logger.error("Ошибка при сохранении значений расселения в БД: {!r}", ex)
                         raise
+                return
         except Exception as ex:
             logger.error('Ошибка при сохранении значений расселения в БД: {}. Повторная попытка через 20 секунд', ex)
             time.sleep(20)
