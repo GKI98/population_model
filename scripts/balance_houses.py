@@ -56,7 +56,10 @@ def forecast_house_population(args):
                 rand_coef = round(uniform(0.7, 1), 3)
                 val = int(round(row['max_population'] * rand_coef, 0))
             else:
-                val = int(round(a_omch * row['max_population'] + a_ich * row['resident_number'], 0))
+                try:
+                    val = int(round(a_omch * row['max_population'] + a_ich * row['resident_number'], 0))
+                except ValueError:
+                    val = 0
 
         if val < 0:
             val=0
@@ -100,6 +103,9 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, balancing_min=1, ac
 
     mun_list = set(houses_df_upd['municipality_id'])
 
+    # print('houses num: ', houses_df_upd.shape[0])
+
+
     for mun in tqdm(mun_list):
         # print(mun)
         # print(mun_age_sex_df)
@@ -121,7 +127,7 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, balancing_min=1, ac
         # между не аварийными домами МО
         if citizens_mo_reg_bal > citizens_mo_bal:
             while citizens_mo_reg_bal > citizens_mo_bal:
-                print('citizens_mo_reg_bal > citizens_mo_bal', citizens_mo_reg_bal, citizens_mo_bal, end="\r")
+                # print('citizens_mo_reg_bal > citizens_mo_bal', citizens_mo_reg_bal, citizens_mo_bal, end="\r")
                 df_mkd_mo_not_f = df_mkd_mo[df_mkd_mo['failure'] == False]
                 # Находим индекс неаварийного дома с максимальной разницей между ОМЧ и ВЧ
                 the_house = (df_mkd_mo_not_f['citizens_reg_bal'] / df_mkd_mo_not_f['max_population']).idxmin()
@@ -136,7 +142,7 @@ def balance_houses_population(houses_df_upd, mun_age_sex_df, balancing_min=1, ac
         # из количества жителей домов, причем аварийные дома также участвуют в балансировке
         elif citizens_mo_reg_bal < citizens_mo_bal:
             while citizens_mo_reg_bal < citizens_mo_bal:
-                print('citizens_mo_reg_bal < citizens_mo_bal', citizens_mo_reg_bal, citizens_mo_bal, end="\r")
+                # print('citizens_mo_reg_bal < citizens_mo_bal', citizens_mo_reg_bal, citizens_mo_bal, end="\r")
                 df_mkd_mo_not_f = df_mkd_mo[df_mkd_mo['citizens_reg_bal'] > balancing_min]
 
                 try:

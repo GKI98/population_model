@@ -51,7 +51,7 @@ class DBReader:
             
 
             # municipalities
-            # print('mun_total_df')
+            # print('adm_total_df')
             mun_total_q = f'SELECT id, admin_unit_parent_id, name, population ' \
                           f'FROM municipalities ' \
                           f'WHERE city_id={args.city}'
@@ -72,7 +72,11 @@ class DBReader:
                 if args.city in (2, 5):
                     adm_age_sex_df = adm_age_sex_df[adm_age_sex_df['administrative_unit_id'].isin(adms)]
 
-            else:
+                print(adm_age_sex_df)
+                print(mun_age_sex_df)
+
+            elif args.city == 1:
+                # print('Condition: SPB')
                 # age_sex_administrative_units
                 # print('age_sex_administrative_units')
                 adm_age_sex_q = 'SELECT * FROM age_sex_administrative_units'
@@ -82,6 +86,23 @@ class DBReader:
                 # print('age_sex_municipalities')
                 mun_age_sex_q = 'SELECT * FROM age_sex_municipalities'
                 mun_age_sex_df = DBReader.get_table(cur, mun_age_sex_q).sort_values(by=['age']).sort_values(by=['age'])
+
+                muns_q = 'SELECT id, admin_unit_parent_id FROM municipalities where city_id=1'
+                muns = DBReader.get_table(cur, muns_q)
+
+                
+                adm_age_sex_df = pd.merge(adm_age_sex_df, muns, left_on='administrative_unit_id', 
+                                            right_on='admin_unit_parent_id').rename(columns={'id': 'municipality_id'}). \
+                                            drop(columns='admin_unit_parent_id')
+
+                mun_age_sex_df = pd.merge(mun_age_sex_df, muns, left_on='municipality_id', 
+                                            right_on='id').drop(columns='id')
+                
+                
+                
+
+                
+                
 
             # krd_age_sex_mun.rename(columns={'municipality_id': 'administrative_unit_id', \
             #                         'admin_unit_parent_id': 'municipality_parent_id'}, inplace=True)
@@ -104,12 +125,14 @@ class DBReader:
 
             if (mun_total_df.admin_unit_parent_id[0] is None) and (mun_total_df.shape[0] == 1):
                 mun_total_df.admin_unit_parent_id = mun_total_df['id']
+                print('Condition: no admin_unit_parent_id')
 
             # print(adm_total_df)
             
             if (adm_total_df.municipality_parent_id[0] is None) and (adm_total_df.shape[0] == 1):
                 adm_total_df.municipality_parent_id = adm_total_df['id']
-                print(adm_total_df)
+                # print(adm_total_df)
+                print('Condition: no municipality_parent_id')
                 
             
 
@@ -122,6 +145,7 @@ class DBReader:
 
             if city_division_type != 'ADMIN_UNIT_PARENT':
                 # print(mun_age_sex_df)
+                # 1/0
                 # print(adm_age_sex_df)
                 # print(mun_total_df)
                 # print(adm_total_df)
@@ -157,12 +181,15 @@ class DBReader:
                         f'WHERE p.city_id = {args.city} AND f.city_service_type_id = ' \
                         f'(SELECT id FROM city_service_types WHERE code = \'houses\') ' \
                         f'{extra_condition}'
+
+                
         
                 cur.execute(houses_q)
                 houses_df = pd.DataFrame(cur.fetchall(), columns=DBReader.get_columns(cur, query=houses_q))
 
                 houses_df = houses_df[houses_df['living_area']>0]
                 houses_df['failure'].fillna(False, inplace=True)
+
 
 
                 if args.city == 2:
@@ -199,7 +226,7 @@ class DBReader:
                 houses_df = houses_df[houses_df['living_area']>0]
                 houses_df['failure'].fillna(False, inplace=True)
                 
-
+                print('houses num1: ', houses_df.shape[0])
                 # age_sex_social_administrative_units
                 # print('age_sex_social_administrative_units')
                 
@@ -248,6 +275,6 @@ class DBReader:
 
             # print(adm_total_df, mun_total_df, adm_age_sex_df, mun_age_sex_df, soc_adm_age_sex_df)
 
-            # 1/0
+            
 
             return adm_total_df, mun_total_df, adm_age_sex_df, mun_age_sex_df, soc_adm_age_sex_df, houses_df
